@@ -14,22 +14,30 @@ namespace NRKernal
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    
+    /// <summary> A background job executor. </summary>
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
      Justification = "Internal")]
     public class BackgroundJobExecutor
     {
+        /// <summary> The event. </summary>
         private AutoResetEvent m_Event = new AutoResetEvent(false);
+        /// <summary> Queue of jobs. </summary>
         private Queue<Action> m_JobsQueue = new Queue<Action>();
+        /// <summary> The thread. </summary>
         private Thread m_Thread;
+        /// <summary> True to running. </summary>
         private bool m_Running = false;
 
+        /// <summary> Default constructor. </summary>
         public BackgroundJobExecutor()
         {
             m_Thread = new Thread(Run);
             m_Thread.Start();
         }
 
+        /// <summary> Gets the number of pending jobs. </summary>
+        /// <value> The number of pending jobs. </value>
         public int PendingJobsCount
         {
             get
@@ -41,6 +49,8 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Pushes a job. </summary>
+        /// <param name="job"> The job.</param>
         public void PushJob(Action job)
         {
             lock (m_JobsQueue)
@@ -51,6 +61,7 @@ namespace NRKernal
             m_Event.Set();
         }
 
+        /// <summary> Removes all pending jobs. </summary>
         public void RemoveAllPendingJobs()
         {
             lock (m_JobsQueue)
@@ -59,6 +70,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Runs this object. </summary>
         private void Run()
         {
             while (true)
@@ -88,5 +100,4 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
 }

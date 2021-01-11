@@ -7,12 +7,36 @@
 * 
 *****************************************************************************/
 
-using UnityEngine;
-
 namespace NRKernal
 {
+    /// <summary> A native error listener. </summary>
     public class NativeErrorListener
     {
+        /// <summary> Checks. </summary>
+        /// <exception cref="NRKernalError">                 Raised when a NR Kernal error condition
+        ///                                                  occurs.</exception>
+        /// <exception cref="NRInvalidArgumentError">        Raised when a NR Invalid Argument error
+        ///                                                  condition occurs.</exception>
+        /// <exception cref="NRNotEnoughMemoryError">        Raised when a NR Not Enough Memory error
+        ///                                                  condition occurs.</exception>
+        /// <exception cref="NRUnSupportedError">            Raised when a NR Un Supported error condition
+        ///                                                  occurs.</exception>
+        /// <exception cref="NRGlassesConnectError">         Raised when a NR Glasses Connect error
+        ///                                                  condition occurs.</exception>
+        /// <exception cref="NRSdkVersionMismatchError">     Raised when a NR Sdk Version Mismatch error
+        ///                                                  condition occurs.</exception>
+        /// <exception cref="NRSdcardPermissionDenyError">   Raised when a NR Sdcard Permission Deny error
+        ///                                                  condition occurs.</exception>
+        /// <exception cref="NRRGBCameraDeviceNotFindError"> Raised when a NRRGB Camera Device Not Find
+        ///                                                  error condition occurs.</exception>
+        /// <exception cref="NRDPDeviceNotFindError">        Raised when a NRDP Device Not Find error
+        ///                                                  condition occurs.</exception>
+        /// <exception cref="Exception">                     Thrown when an exception error condition
+        ///                                                  occurs.</exception>
+        /// <param name="result">         The result.</param>
+        /// <param name="module">         The module.</param>
+        /// <param name="funcName">       (Optional) Name of the function.</param>
+        /// <param name="needthrowerror"> (Optional) True to needthrowerror.</param>
         public static void Check(NativeResult result, object module, string funcName = "", bool needthrowerror = false)
         {
 #if !UNITY_EDITOR
@@ -62,7 +86,7 @@ namespace NRKernal
             }
             else
             {
-                Debug.LogError(module_tag + result.ToString());
+                NRDebugger.Error(module_tag + result.ToString());
             }
 #endif
         }

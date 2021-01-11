@@ -1,21 +1,41 @@
-﻿namespace NRKernal.NRExamples
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+namespace NRKernal.NRExamples
 {
     using NRKernal;
     using System.Collections.Generic;
     using UnityEngine;
 
+    /// <summary> A polygon plane visualizer. </summary>
     public class PolygonPlaneVisualizer : NRTrackableBehaviour
     {
+        /// <summary> The material. </summary>
         public Material Material;
+        /// <summary> The renderer. </summary>
         private MeshRenderer m_Renderer;
+        /// <summary> Specifies the filter. </summary>
         private MeshFilter m_Filter;
+        /// <summary> The collider. </summary>
         private MeshCollider m_Collider;
+        /// <summary> List of positions. </summary>
         List<Vector3> m_PosList = new List<Vector3>();
+        /// <summary> The plane mesh. </summary>
         Mesh m_PlaneMesh = null;
 
 #if UNITY_EDITOR
+        /// <summary> The vectors data editor. </summary>
         [SerializeField]
         private Vector3[] VectorsDataEditor = new Vector3[4];
+        /// <summary> Gets boundary polygon. </summary>
+        /// <param name="tran">        The tran.</param>
+        /// <param name="polygonList"> List of polygons.</param>
         public void GetBoundaryPolygon(Transform tran, List<Vector3> polygonList)
         {
             polygonList.Clear();
@@ -29,6 +49,7 @@
         }
 #endif
 
+        /// <summary> Updates this object. </summary>
         private void Update()
         {
 #if UNITY_EDITOR
@@ -47,6 +68,9 @@
 #endif
         }
 
+        /// <summary> Draw from center. </summary>
+        /// <param name="centerPose"> The center pose.</param>
+        /// <param name="vectors">    The vectors.</param>
         private void DrawFromCenter(Pose centerPose, List<Vector3> vectors)
         {
             if (vectors == null || vectors.Count < 3)
@@ -93,6 +117,9 @@
             m_Collider.sharedMesh = m_PlaneMesh;
         }
 
+        /// <summary> Generates the triangles. </summary>
+        /// <param name="posList"> List of positions.</param>
+        /// <returns> An array of int. </returns>
         private int[] GenerateTriangles(List<Vector3> posList)
         {
             List<int> indices = new List<int>();

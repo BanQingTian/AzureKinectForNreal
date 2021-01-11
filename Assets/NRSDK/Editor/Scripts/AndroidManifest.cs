@@ -12,14 +12,21 @@ namespace NRKernal
     using System.Text;
     using System.Xml;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+
+    /// <summary> An android XML document. </summary>
     internal class AndroidXmlDocument : XmlDocument
     {
+        /// <summary> Full pathname of the file. </summary>
         protected string m_Path;
+        /// <summary> Manager for name space. </summary>
         protected XmlNamespaceManager nameSpaceManager;
+        /// <summary> The android XML namespace. </summary>
         public readonly string AndroidXmlNamespace = "http://schemas.android.com/apk/res/android";
+        /// <summary> The android tools XML namespace. </summary>
         public readonly string AndroidToolsXmlNamespace = "http://schemas.android.com/tools";
 
+        /// <summary> Constructor. </summary>
+        /// <param name="path"> Full pathname of the file.</param>
         public AndroidXmlDocument(string path)
         {
             m_Path = path;
@@ -32,11 +39,16 @@ namespace NRKernal
             nameSpaceManager.AddNamespace("android", AndroidXmlNamespace);
         }
 
+        /// <summary> Gets the save. </summary>
+        /// <returns> A string. </returns>
         public string Save()
         {
             return SaveAs(m_Path);
         }
 
+        /// <summary> Saves as. </summary>
+        /// <param name="path"> Full pathname of the file.</param>
+        /// <returns> A string. </returns>
         public string SaveAs(string path)
         {
             using (var writer = new XmlTextWriter(path, new UTF8Encoding(false)))
@@ -48,15 +60,24 @@ namespace NRKernal
         }
     }
 
+    /// <summary> A list of the android. </summary>
     internal class AndroidManifest : AndroidXmlDocument
     {
+        /// <summary> Element describing the application. </summary>
         private readonly XmlElement ApplicationElement;
 
+        /// <summary> Constructor. </summary>
+        /// <param name="path"> Full pathname of the file.</param>
         public AndroidManifest(string path) : base(path)
         {
             ApplicationElement = SelectSingleNode("/manifest/application") as XmlElement;
         }
 
+        /// <summary> Creates android attribute. </summary>
+        /// <param name="key">   The key.</param>
+        /// <param name="value"> The value.</param>
+        /// <param name="name">  (Optional) The name.</param>
+        /// <returns> The new android attribute. </returns>
         private XmlAttribute CreateAndroidAttribute(string key, string value, string name = "android")
         {
             XmlAttribute attr;
@@ -73,18 +94,24 @@ namespace NRKernal
             return attr;
         }
 
+        /// <summary> Gets activity with launch intent. </summary>
+        /// <returns> The activity with launch intent. </returns>
         internal XmlNode GetActivityWithLaunchIntent()
         {
             return SelectSingleNode("/manifest/application/activity[intent-filter/action/@android:name='android.intent.action.MAIN' and " +
                     "intent-filter/category/@android:name='android.intent.category.LAUNCHER']", nameSpaceManager);
         }
 
+        /// <summary> Gets activity with information intent. </summary>
+        /// <returns> The activity with information intent. </returns>
         internal XmlNode GetActivityWithInfoIntent()
         {
             return SelectSingleNode("/manifest/application/activity[intent-filter/action/@android:name='android.intent.action.MAIN' and " +
                    "intent-filter/category/@android:name='android.intent.category.INFO']", nameSpaceManager);
         }
 
+        /// <summary> Sets external storage. </summary>
+        /// <param name="flag"> True to flag.</param>
         internal void SetExternalStorage(bool flag)
         {
             var activity = SelectSingleNode("/manifest/application");
@@ -107,6 +134,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Sets camera permission. </summary>
         internal void SetCameraPermission()
         {
             var manifest = SelectSingleNode("/manifest");
@@ -119,10 +147,11 @@ namespace NRKernal
             }
             else
             {
-                NRDebugger.Log("Already has the camera permission.");
+                NRDebugger.Info("Already has the camera permission.");
             }
         }
 
+        /// <summary> Sets blue tooth permission. </summary>
         internal void SetBlueToothPermission()
         {
             var manifest = SelectSingleNode("/manifest");
@@ -137,10 +166,11 @@ namespace NRKernal
             }
             else
             {
-                NRDebugger.Log("Already has the bluetooth permission.");
+                NRDebugger.Info("Already has the bluetooth permission.");
             }
         }
 
+        /// <summary> Sets sdk meta data. </summary>
         internal void SetSDKMetaData()
         {
             var activity = SelectSingleNode("/manifest/application");
@@ -164,10 +194,12 @@ namespace NRKernal
             }
             else
             {
-                NRDebugger.Log("Already has the sdk meta data.");
+                NRDebugger.Info("Already has the sdk meta data.");
             }
         }
 
+        /// <summary> Sets a pk displayed on launcher. </summary>
+        /// <param name="show"> True to show, false to hide.</param>
         internal void SetAPKDisplayedOnLauncher(bool show)
         {
             var activity = GetActivityWithLaunchIntent();
@@ -215,5 +247,5 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
+
 }

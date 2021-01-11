@@ -1,12 +1,25 @@
-﻿using UnityEngine;
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+using UnityEngine;
 
 namespace NRKernal.NRExamples
 {
+    /// <summary> A simple controller vibration. </summary>
     public class SimpleControllerVibration : MonoBehaviour
     {
+        /// <summary> The vibration time. </summary>
         public float vibrationTime = 0.06f;
+        /// <summary> The vibration buttons. </summary>
         public ControllerButton[] vibrationButtons = { ControllerButton.TRIGGER, ControllerButton.APP, ControllerButton.HOME };
 
+        /// <summary> Updates this object. </summary>
         void Update()
         {
             if (vibrationButtons == null || vibrationButtons.Length == 0)

@@ -13,15 +13,19 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    
+    /// <summary> A nreal light controller visual. </summary>
     public class NrealLightControllerVisual : MonoBehaviour, IControllerVisual
     {
+        /// <summary> Destroys the self. </summary>
         public void DestroySelf()
         {
             if(gameObject)
                 Destroy(gameObject);
         }
 
+        /// <summary> Sets an active. </summary>
+        /// <param name="isActive"> True if is active, false if not.</param>
         public void SetActive(bool isActive)
         {
             if (!gameObject)
@@ -29,6 +33,8 @@ namespace NRKernal
             gameObject.SetActive(isActive);
         }
 
+        /// <summary> Updates the visual described by state. </summary>
+        /// <param name="state"> The state.</param>
         public void UpdateVisual(ControllerState state)
         {
             if (!gameObject || !gameObject.activeSelf)
@@ -36,5 +42,5 @@ namespace NRKernal
 
         }
     }
-    /// @endcond
+    
 }

@@ -1,21 +1,36 @@
-﻿using NRKernal.Record;
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+using NRKernal.Record;
 using System.Linq;
 using UnityEngine;
 
 namespace NRKernal.NRExamples
 {
+    /// <summary> A photo capture example. </summary>
     [HelpURL("https://developer.nreal.ai/develop/unity/video-capture")]
     public class PhotoCaptureExample : MonoBehaviour
     {
+        /// <summary> The previewer. </summary>
         public NRPreviewer Previewer;
+        /// <summary> The photo capture object. </summary>
         private NRPhotoCapture m_PhotoCaptureObject;
+        /// <summary> The camera resolution. </summary>
         private Resolution m_CameraResolution;
 
+        /// <summary> Starts this object. </summary>
         void Start()
         {
             this.Create();
         }
 
+        /// <summary> Updates this object. </summary>
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.T) || NRInput.GetButtonDown(ControllerButton.TRIGGER))
@@ -39,12 +54,12 @@ namespace NRKernal.NRExamples
             }
         }
 
-        // Use this for initialization
+        /// <summary> Use this for initialization. </summary>
         void Create()
         {
             if (m_PhotoCaptureObject != null)
             {
-                Debug.LogError("The NRPhotoCapture has already been created.");
+                NRDebugger.Error("The NRPhotoCapture has already been created.");
                 return;
             }
 
@@ -59,7 +74,7 @@ namespace NRKernal.NRExamples
                 }
                 else
                 {
-                    Debug.LogError("Can not get a captureObject.");
+                    NRDebugger.Error("Can not get a captureObject.");
                 }
 
                 CameraParameters cameraParameters = new CameraParameters();
@@ -71,22 +86,26 @@ namespace NRKernal.NRExamples
                 // Activate the camera
                 m_PhotoCaptureObject.StartPhotoModeAsync(cameraParameters, delegate (NRPhotoCapture.PhotoCaptureResult result)
                 {
-                    Debug.Log("Start PhotoMode Async");
+                    NRDebugger.Info("Start PhotoMode Async");
                 });
             });
         }
 
+        /// <summary> Take a photo. </summary>
         void TakeAPhoto()
         {
             if (m_PhotoCaptureObject == null)
             {
-                Debug.Log("The NRPhotoCapture has not been created.");
+                NRDebugger.Info("The NRPhotoCapture has not been created.");
                 return;
             }
             // Take a picture
             m_PhotoCaptureObject.TakePhotoAsync(OnCapturedPhotoToMemory);
         }
 
+        /// <summary> Executes the 'captured photo memory' action. </summary>
+        /// <param name="result">            The result.</param>
+        /// <param name="photoCaptureFrame"> The photo capture frame.</param>
         void OnCapturedPhotoToMemory(NRPhotoCapture.PhotoCaptureResult result, PhotoCaptureFrame photoCaptureFrame)
         {
             var targetTexture = new Texture2D(m_CameraResolution.width, m_CameraResolution.height);
@@ -106,22 +125,25 @@ namespace NRKernal.NRExamples
             quadRenderer.material.SetTexture("_MainTex", targetTexture);
         }
 
+        /// <summary> Closes this object. </summary>
         void Close()
         {
             if (m_PhotoCaptureObject == null)
             {
-                Debug.LogError("The NRPhotoCapture has not been created.");
+                NRDebugger.Error("The NRPhotoCapture has not been created.");
                 return;
             }
             // Deactivate our camera
             m_PhotoCaptureObject.StopPhotoModeAsync(OnStoppedPhotoMode);
         }
 
+        /// <summary> Executes the 'stopped photo mode' action. </summary>
+        /// <param name="result"> The result.</param>
         void OnStoppedPhotoMode(NRPhotoCapture.PhotoCaptureResult result)
         {
             if (m_PhotoCaptureObject == null)
             {
-                Debug.LogError("The NRPhotoCapture has not been created.");
+                NRDebugger.Error("The NRPhotoCapture has not been created.");
                 return;
             }
             // Shutdown our photo capture resource
@@ -129,6 +151,7 @@ namespace NRKernal.NRExamples
             m_PhotoCaptureObject = null;
         }
 
+        /// <summary> Executes the 'destroy' action. </summary>
         void OnDestroy()
         {
             // Shutdown our photo capture resource

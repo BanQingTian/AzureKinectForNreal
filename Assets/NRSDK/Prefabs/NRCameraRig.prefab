@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 20850121355348172}
   m_Layer: 0
   m_Name: LeftCamera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -239,10 +239,10 @@ Camera:
   field of view: 25
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -272,7 +272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 857434b74457b704ba6f53c82a2d9bc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quitLongPressTime: 3
+  enableTriggerProfiler: 0
 --- !u!114 &114176646661500702
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -313,5 +313,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e143cd77ac2aace40af826fca22209a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isDirty: 0
   SessionConfig: {fileID: 11400000, guid: 27d90d2c2ddcd074ca3e384fea9d08ca, type: 2}

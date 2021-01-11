@@ -11,29 +11,32 @@ namespace NRKernal
 {
     using UnityEngine;
 
+    /// <summary> A conversion utility. </summary>
     public class ConversionUtility
     {
         #region transform utility
-        /// <summary>
-        /// Get a matrix from position and rotation.
-        /// </summary>
-        /// <returns></returns>
+        /// <summary> Get a matrix from position and rotation. </summary>
+        /// <param name="position"> The position.</param>
+        /// <param name="rotation"> The rotation.</param>
+        /// <returns> The matrix. </returns>
         public static Matrix4x4 GetTMatrix(Vector3 position, Quaternion rotation)
         {
             return Matrix4x4.TRS(position, rotation, Vector3.one);
         }
 
-        /// <summary>
-        /// Get a matrix from position , rotation and scale.
-        /// </summary>
+        /// <summary> Get a matrix from position , rotation and scale. </summary>
+        /// <param name="position"> The position.</param>
+        /// <param name="rotation"> The rotation.</param>
+        /// <param name="scale">    The scale.</param>
+        /// <returns> The matrix. </returns>
         public static Matrix4x4 GetTMatrix(Vector3 position, Quaternion rotation, Vector3 scale)
         {
             return Matrix4x4.TRS(position, rotation, scale);
         }
 
-        /// <summary>
-        /// Get the position from a matrix4x4.
-        /// </summary>
+        /// <summary> Get the position from a matrix4x4. </summary>
+        /// <param name="matrix"> The matrix.</param>
+        /// <returns> The position from t matrix. </returns>
         public static Vector3 GetPositionFromTMatrix(Matrix4x4 matrix)
         {
             Vector3 position;
@@ -44,9 +47,9 @@ namespace NRKernal
             return position;
         }
 
-        /// <summary>
-        /// Get the rotation from a matrix4x4.
-        /// </summary>
+        /// <summary> Get the rotation from a matrix4x4. </summary>
+        /// <param name="matrix"> The matrix.</param>
+        /// <returns> The rotation from t matrix. </returns>
         public static Quaternion GetRotationFromTMatrix(Matrix4x4 matrix)
         {
             Vector3 forward;
@@ -62,12 +65,18 @@ namespace NRKernal
             return Quaternion.LookRotation(forward, upwards);
         }
 
+        /// <summary> Convert position. </summary>
+        /// <param name="vec"> The vector.</param>
+        /// <returns> The position converted. </returns>
         public static Vector3 ConvertPosition(Vector3 vec)
         {
             // Convert to left-handed
             return new Vector3((float)vec.x, (float)vec.y, (float)-vec.z);
         }
 
+        /// <summary> Convert orientation. </summary>
+        /// <param name="quat"> The quaternion.</param>
+        /// <returns> The orientation converted. </returns>
         public static Quaternion ConvertOrientation(Quaternion quat)
         {
             // Convert to left-handed
@@ -75,6 +84,9 @@ namespace NRKernal
         }
         #endregion
 
+        /// <summary> Unity pose to API pose. </summary>
+        /// <param name="unityPose"> [out] The unity pose.</param>
+        /// <param name="apiPose">   [out] The API pose.</param>
         public static void UnityPoseToApiPose(Pose unityPose, out NativeMat4f apiPose)
         {
             Matrix4x4 glWorld_T_glLocal = Matrix4x4.TRS(unityPose.position, unityPose.rotation, Vector3.one);
@@ -89,6 +101,9 @@ namespace NRKernal
             apiPose = new NativeMat4f(matrix);
         }
 
+        /// <summary> API pose to unity pose. </summary>
+        /// <param name="apiPose">   The API pose.</param>
+        /// <param name="unityPose"> [out] The unity pose.</param>
         public static void ApiPoseToUnityPose(NativeMat4f apiPose, out Pose unityPose)
         {
             Matrix4x4 glWorld_T_glLocal = apiPose.ToUnityMat4f();
@@ -100,6 +115,9 @@ namespace NRKernal
             unityPose = new Pose(position, rotation);
         }
 
+        /// <summary> API pose to unity matrix. </summary>
+        /// <param name="apiPose">     The API pose.</param>
+        /// <param name="unityMatrix"> [out] The unity matrix.</param>
         public static void ApiPoseToUnityMatrix(NativeMat4f apiPose, out Matrix4x4 unityMatrix)
         {
             Matrix4x4 glWorld_T_glLocal = apiPose.ToUnityMat4f();
@@ -109,6 +127,11 @@ namespace NRKernal
             unityMatrix = unityWorld_T_unityLocal;
         }
 
+        /// <summary> Gets projection matrix from fov. </summary>
+        /// <param name="fov">    The fov.</param>
+        /// <param name="z_near"> The near.</param>
+        /// <param name="z_far">  The far.</param>
+        /// <returns> The projection matrix from fov. </returns>
         public static NativeMat4f GetProjectionMatrixFromFov(NativeFov4f fov, float z_near, float z_far)
         {
             NativeMat4f pm = NativeMat4f.identity;

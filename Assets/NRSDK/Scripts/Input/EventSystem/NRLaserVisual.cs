@@ -11,22 +11,29 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    
+    /// <summary> A nr laser visual. </summary>
     public class NRLaserVisual : MonoBehaviour
     {
+        /// <summary> The raycaster. </summary>
         [SerializeField]
         private NRPointerRaycaster m_Raycaster;
+        /// <summary> The line renderer. </summary>
         [SerializeField]
         private LineRenderer m_LineRenderer;
 
+        /// <summary> True to show, false to hide the on hit only. </summary>
         public bool showOnHitOnly;
+        /// <summary> The default distance. </summary>
         public float defaultDistance = 1.2f;
 
+        /// <summary> Awakes this object. </summary>
         private void Awake()
         {
             defaultDistance = Mathf.Clamp(defaultDistance, m_Raycaster.NearDistance, m_Raycaster.FarDistance);
         }
 
+        /// <summary> Late update. </summary>
         protected virtual void LateUpdate()
         {
             if (!NRInput.LaserVisualActive)
@@ -70,10 +77,11 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Executes the 'disable' action. </summary>
         protected virtual void OnDisable()
         {
             m_LineRenderer.enabled = false;
         }
     }
-    /// @endcond
+    
 }

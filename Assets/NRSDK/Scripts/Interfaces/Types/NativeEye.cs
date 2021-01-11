@@ -9,10 +9,22 @@
 
 namespace NRKernal
 {
+    /// <summary> Values that represent native eyes. </summary>
     public enum NativeEye
     {
+        /// <summary> 
+        /// Left display. 
+        /// </summary>
         LEFT = 0,
+
+        /// <summary> 
+        /// Right display. 
+        /// </summary>
         RIGHT = 1,
+
+        /// <summary> 
+        /// RGB camera. 
+        /// </summary>
         RGB = 2,
     }
 }

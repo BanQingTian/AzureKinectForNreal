@@ -11,10 +11,14 @@ namespace NRKernal.Record
 {
     using System.Collections.Generic;
 
+    /// <summary> A frame capture context factory. </summary>
     public class FrameCaptureContextFactory
     {
+        /// <summary> List of contexts. </summary>
         private static List<FrameCaptureContext> m_ContextList = new List<FrameCaptureContext>();
 
+        /// <summary> Creates a new FrameCaptureContext. </summary>
+        /// <returns> A FrameCaptureContext. </returns>
         public static FrameCaptureContext Create()
         {
 #if UNITY_EDITOR
@@ -28,6 +32,7 @@ namespace NRKernal.Record
             return context;
         }
 
+        /// <summary> Dispose all context. </summary>
         public static void DisposeAllContext()
         {
             foreach (var item in m_ContextList)

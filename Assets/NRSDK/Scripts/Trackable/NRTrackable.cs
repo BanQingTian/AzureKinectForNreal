@@ -13,25 +13,27 @@ namespace NRKernal
     using UnityEngine;
 
     /// <summary>
-    /// A Trackable in the real world detected by NRInternel.
-    /// The base class of TrackablePlane and TrackableImage.Through this class, 
-    /// application can get the infomation of a trackable object.
-    /// </summary>
+    /// A Trackable in the real world detected by NRInternel. The base class of TrackablePlane and
+    /// TrackableImage.Through this class, application can get the infomation of a trackable object. </summary>
     public abstract class NRTrackable
     {
+        /// <summary> Handle of the trackable native. </summary>
         internal UInt64 TrackableNativeHandle = 0;
 
+        /// <summary> The native interface. </summary>
         internal NativeInterface NativeInterface;
 
+        /// <summary> Constructor. </summary>
+        /// <param name="trackableNativeHandle"> Handle of the trackable native.</param>
+        /// <param name="nativeinterface">       The nativeinterface.</param>
         internal NRTrackable(UInt64 trackableNativeHandle, NativeInterface nativeinterface)
         {
             TrackableNativeHandle = trackableNativeHandle;
             NativeInterface = nativeinterface;
         }
 
-        /// <summary>
-        /// Get the id of trackable.
-        /// </summary>
+        /// <summary> Get the id of trackable. </summary>
+        /// <returns> The data base index. </returns>
         public int GetDataBaseIndex()
         {
             UInt32 identify = NativeInterface.NativeTrackable.GetIdentify(TrackableNativeHandle);
@@ -39,9 +41,8 @@ namespace NRKernal
             return (int)identify;
         }
 
-        /// <summary>
-        /// Get the tracking state of current trackable.
-        /// </summary>
+        /// <summary> Get the tracking state of current trackable. </summary>
+        /// <returns> The tracking state. </returns>
         public TrackingState GetTrackingState()
         {
             if (NRFrame.SessionStatus != SessionState.Running)
@@ -51,10 +52,10 @@ namespace NRKernal
             return NativeInterface.NativeTrackable.GetTrackingState(TrackableNativeHandle);
         }
 
+        /// <summary> Type of the trackable. </summary>
         TrackableType trackableType;
-        /// <summary>
-        /// Get the tracking type of current trackable.
-        /// </summary>
+        /// <summary> Get the tracking type of current trackable. </summary>
+        /// <returns> The trackable type. </returns>
         public TrackableType GetTrackableType()
         {
             if (NRFrame.SessionStatus != SessionState.Running)
@@ -65,17 +66,15 @@ namespace NRKernal
             return trackableType;
         }
 
-        /// <summary>
-        /// Get the center pose of current trackable.
-        /// </summary>
+        /// <summary> Get the center pose of current trackable. </summary>
+        /// <returns> The center pose. </returns>
         public virtual Pose GetCenterPose()
         {
             return Pose.identity;
         }
 
-        /// <summary>
-        /// Creates an anchor attached to current trackable at given pose.
-        /// </summary>
+        /// <summary> Creates an anchor attached to current trackable at given pose. </summary>
+        /// <returns> The new anchor. </returns>
         public NRAnchor CreateAnchor()
         {
             return NRAnchor.Factory(this);

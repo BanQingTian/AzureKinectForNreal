@@ -9,9 +9,7 @@
 
 namespace NRKernal
 {
-    /// <summary>
-    /// Trackable plane type.
-    /// </summary>
+    /// <summary> Trackable plane type. </summary>
     public enum TrackablePlaneType
     {
         /// <summary>
@@ -30,9 +28,7 @@ namespace NRKernal
         INVALID = 2
     }
 
-    /// <summary>
-    /// Trackable plane's finding mode.
-    /// </summary>
+    /// <summary> Trackable plane's finding mode. </summary>
     public enum TrackablePlaneFindingMode
     {
         /// <summary>

@@ -13,36 +13,59 @@ namespace NRKernal
     using UnityEngine;
 
     /// <summary>
-    /// The class parses the raw states of Nreal Light Controller to usable states by invoking parsing method every frame.
-    /// </summary>
+    /// The class parses the raw states of Nreal Light Controller to usable states by invoking
+    /// parsing method every frame. </summary>
     public class NrealLightControllerStateParser : IControllerStateParser
     {
+        /// <summary> Values that represent touch area enums. </summary>
         private enum TouchAreaEnum
         {
+            /// <summary> An enum constant representing the none option. </summary>
             None,
+            /// <summary> An enum constant representing the center option. </summary>
             Center,
+            /// <summary> An enum constant representing the up option. </summary>
             Up,
+            /// <summary> An enum constant representing the down option. </summary>
             Down,
+            /// <summary> An enum constant representing the left option. </summary>
             Left,
+            /// <summary> An enum constant representing the right option. </summary>
             Right
         }
 
+        /// <summary> The buttons down. </summary>
         private bool[] _buttons_down = new bool[3];
+        /// <summary> The buttons up. </summary>
         private bool[] _buttons_up = new bool[3];
+        /// <summary> The buttons. </summary>
         private bool[] _buttons = new bool[3];
+        /// <summary> The down. </summary>
         private bool[] _down = new bool[3];
+        /// <summary> The touch. </summary>
         private Vector2 _touch;
+        /// <summary> The current touch area. </summary>
         private TouchAreaEnum _currentTouchArea = TouchAreaEnum.None;
+        /// <summary> True to touch status. </summary>
         private bool _touch_status;
+        /// <summary> True to physical button. </summary>
         private bool _physical_button;
+        /// <summary> True to physical button down. </summary>
         private bool _physical_button_down;
+        /// <summary> The current down button. </summary>
         private int _current_down_btn = -1;
 
+        /// <summary> The second parameters sqrt. </summary>
         private const float Params_Sqrt_2 = 1.414f;
+        /// <summary> Length of the center half side. </summary>
         private const float CenterHalfSideLength = 0.9f / Params_Sqrt_2;
+        /// <summary> Length of the ok half side. </summary>
         private const float OKHalfSideLength = 0.9f / Params_Sqrt_2 * 0.5f;
+        /// <summary> The precision. </summary>
         private const float PRECISION = 0.000001f;
 
+        /// <summary> Parser controller state. </summary>
+        /// <param name="state"> The state.</param>
         public void ParserControllerState(ControllerState state)
         {
             try
@@ -119,7 +142,7 @@ namespace NRKernal
             }
             catch (Exception e)
             {
-                NRDebugger.LogError("Controller Data Error :" + e.ToString());
+                NRDebugger.Error("Controller Data Error :" + e.ToString());
             }
 
             state.isTouching = _touch_status;
@@ -138,6 +161,7 @@ namespace NRKernal
                 | (_buttons_up[2] ? ControllerButton.HOME : 0);
         }
 
+        /// <summary> Updates the current touch area. </summary>
         private void UpdateCurrentTouchArea()
         {
             _currentTouchArea = TouchAreaEnum.None;

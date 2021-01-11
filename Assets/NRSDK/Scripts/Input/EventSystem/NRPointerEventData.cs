@@ -14,34 +14,50 @@ namespace NRKernal
     using UnityEngine;
     using UnityEngine.EventSystems;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+
+    /// <summary> A nr pointer event data. </summary>
     public class NRPointerEventData : PointerEventData
     {
+        /// <summary> The raycaster. </summary>
         public readonly NRPointerRaycaster raycaster;
 
+        /// <summary> The position 3D. </summary>
         public Vector3 position3D;
+        /// <summary> The rotation. </summary>
         public Quaternion rotation;
 
+        /// <summary> The position 3D delta. </summary>
         public Vector3 position3DDelta;
+        /// <summary> The rotation delta. </summary>
         public Quaternion rotationDelta;
 
+        /// <summary> The press position 3D. </summary>
         public Vector3 pressPosition3D;
+        /// <summary> The press rotation. </summary>
         public Quaternion pressRotation;
 
+        /// <summary> The press distance. </summary>
         public float pressDistance;
+        /// <summary> The press enter. </summary>
         public GameObject pressEnter;
+        /// <summary> True if press precessed. </summary>
         public bool pressPrecessed;
 
+        /// <summary> Constructor. </summary>
+        /// <param name="raycaster">   The raycaster.</param>
+        /// <param name="eventSystem"> The event system.</param>
         public NRPointerEventData(NRPointerRaycaster raycaster, EventSystem eventSystem) : base(eventSystem)
         {
             this.raycaster = raycaster;
         }
 
+        /// <summary> Gets the press. </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public virtual bool GetPress()
         {
             if (raycaster is NRMultScrPointerRaycaster)
             {
-                return MultiScreenController.SystemButtonState.pressing;
+                return NRVirtualDisplayer.SystemButtonState.pressing;
             }
             else
             {
@@ -49,11 +65,13 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Gets press down. </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public virtual bool GetPressDown()
         {
             if (raycaster is NRMultScrPointerRaycaster)
             {
-                return MultiScreenController.SystemButtonState.pressDown;
+                return NRVirtualDisplayer.SystemButtonState.pressDown;
             }
             else
             {
@@ -61,11 +79,13 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Gets press up. </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public virtual bool GetPressUp()
         {
             if (raycaster is NRMultScrPointerRaycaster)
             {
-                return MultiScreenController.SystemButtonState.pressUp;
+                return NRVirtualDisplayer.SystemButtonState.pressUp;
             }
             else
             {
@@ -74,5 +94,5 @@ namespace NRKernal
         }
 
     }
-    /// @endcond
+
 }

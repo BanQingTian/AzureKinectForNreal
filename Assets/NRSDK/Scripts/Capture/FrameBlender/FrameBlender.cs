@@ -11,17 +11,28 @@ namespace NRKernal.Record
 {
     using UnityEngine;
 
+    /// <summary> A frame blender. </summary>
     public class FrameBlender
     {
+        /// <summary> Target camera. </summary>
         protected Camera m_TargetCamera;
+        /// <summary> The encoder. </summary>
         protected IEncoder m_Encoder;
+        /// <summary> The blend material. </summary>
         private Material m_BlendMaterial;
+        /// <summary> The blend mode. </summary>
         protected BlendMode m_BlendMode;
+        /// <summary> The RGB origin. </summary>
         protected Texture2D m_RGBOrigin;
+        /// <summary> The RGB source. </summary>
         protected RenderTexture m_RGBSource;
+        /// <summary> The temporary combine tex. </summary>
         protected Texture2D m_TempCombineTex;
+        /// <summary> Number of frames. </summary>
         private int m_FrameCount;
 
+        /// <summary> Gets the blend mode. </summary>
+        /// <value> The blend mode. </value>
         public BlendMode BlendMode
         {
             get
@@ -30,7 +41,10 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> The blend texture. </summary>
         private RenderTexture m_BlendTexture;
+        /// <summary> Gets or sets the blend texture. </summary>
+        /// <value> The blend texture. </value>
         public RenderTexture BlendTexture
         {
             get
@@ -43,6 +57,8 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> Gets the RGB texture. </summary>
+        /// <value> The RGB texture. </value>
         public RenderTexture RGBTexture
         {
             get
@@ -51,6 +67,8 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> Gets the virtual texture. </summary>
+        /// <value> The virtual texture. </value>
         public RenderTexture VirtualTexture
         {
             get
@@ -59,18 +77,24 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> Gets or sets the width. </summary>
+        /// <value> The width. </value>
         public int Width
         {
             get;
             private set;
         }
 
+        /// <summary> Gets or sets the height. </summary>
+        /// <value> The height. </value>
         public int Height
         {
             get;
             private set;
         }
 
+        /// <summary> Gets or sets the number of frames. </summary>
+        /// <value> The number of frames. </value>
         public int FrameCount
         {
             get
@@ -83,6 +107,10 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> Initializes this object. </summary>
+        /// <param name="camera">  The camera.</param>
+        /// <param name="encoder"> The encoder.</param>
+        /// <param name="param">   The parameter.</param>
         public virtual void Init(Camera camera, IEncoder encoder, CameraParameters param)
         {
             Width = param.cameraResolutionWidth;
@@ -122,6 +150,8 @@ namespace NRKernal.Record
             m_TargetCamera.targetTexture = new RenderTexture(Width, Height, 24, RenderTextureFormat.ARGB32);
         }
 
+        /// <summary> Executes the 'frame' action. </summary>
+        /// <param name="frame"> The frame.</param>
         public void OnFrame(CameraTextureFrame frame)
         {
             Texture2D frametex = frame.texture as Texture2D;
@@ -156,6 +186,11 @@ namespace NRKernal.Record
             FrameCount++;
         }
 
+        /// <summary> Combine texture. </summary>
+        /// <param name="bgsource">   The bgsource.</param>
+        /// <param name="foresource"> The foresource.</param>
+        /// <param name="tempdest">   The tempdest.</param>
+        /// <param name="dest">       Destination for the.</param>
         private void CombineTexture(Texture2D bgsource, RenderTexture foresource, Texture2D tempdest, RenderTexture dest)
         {
             m_BlendMaterial.SetTexture("_MainTex", m_RGBSource);
@@ -173,6 +208,9 @@ namespace NRKernal.Record
             Graphics.Blit(tempdest, dest);
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged
+        /// resources. </summary>
         public virtual void Dispose()
         {
             RenderTexture.active = null;

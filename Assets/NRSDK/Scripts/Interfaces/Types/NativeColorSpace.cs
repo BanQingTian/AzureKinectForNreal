@@ -9,6 +9,7 @@
 
 namespace NRKernal
 {
+    /// <summary> Values that represent native color spaces. </summary>
     public enum NativeColorSpace
     {
         /// <summary>

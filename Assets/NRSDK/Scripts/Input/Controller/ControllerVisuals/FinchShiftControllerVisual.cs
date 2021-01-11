@@ -16,25 +16,26 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    
+    /// <summary> A finch shift controller visual. </summary>
     public class FinchShiftControllerVisual : MonoBehaviour, IControllerVisual
     {
+        /// <summary> (Serializable) a buttons. </summary>
         [Serializable]
         public class Buttons
         {
+            /// <summary> Type of the button. </summary>
             public ControllerButton buttonType;
 
-            /// <summary>
-            /// Pressed button visualisation model.
-            /// </summary>
+            /// <summary> Pressed button visualisation model. </summary>
             public MeshRenderer buttonMeshRenderer;
 
+            /// <summary> The pressed. </summary>
             private readonly Color pressed = new Color(0.671f, 0.671f, 0.671f);
+            /// <summary> The unpressed. </summary>
             private readonly Color unpressed = Color.black;
-            /// <summary>
-            /// Update pressing state of buttons.
-            /// </summary>
-            /// <param name="isPressing"></param>
+            /// <summary> Update pressing state of buttons. </summary>
+            /// <param name="isPressing"> .</param>
             public void UpdateState(bool isPressing)
             {
                 buttonMeshRenderer.material.color = isPressing ? pressed : unpressed;
@@ -42,57 +43,55 @@ namespace NRKernal
             }
         }
 
+        /// <summary> (Serializable) a battery level. </summary>
         [Serializable]
         public class BatteryLevel
         {
-            /// <summary>
-            /// Sprite, visualizing a certain level of charge.
-            /// </summary>
+            /// <summary> Sprite, visualizing a certain level of charge. </summary>
             public Sprite BatteryMaterial;
 
-            /// <summary>
-            /// The level of charge in percent.
-            /// </summary>
+            /// <summary> The level of charge in percent. </summary>
             [Range(0, 100)]
             public int MinimumBatteryBorder;
         }
 
-        /// <summary>
-        /// Object to visualise controller state.
-        /// </summary>
+        /// <summary> Object to visualise controller state. </summary>
         public GameObject Model;
 
-        /// <summary>
-        /// List of visualisable buttons.
-        /// </summary>
+        /// <summary> List of visualisable buttons. </summary>
         public Buttons[] buttonsArr = new Buttons[0];
 
-        /// <summary>
-        /// Battery level renderer.
-        /// </summary>
+        /// <summary> Battery level renderer. </summary>
         public SpriteRenderer BatteryObject;
 
-        /// <summary>
-        /// Array of different charge level materials.
-        /// </summary>
+        /// <summary> Array of different charge level materials. </summary>
         public BatteryLevel[] BatteryLevels = new BatteryLevel[4];
 
-        /// <summary>
-        /// Touch point model element transform.
-        /// </summary>
+        /// <summary> Touch point model element transform. </summary>
         public Transform TouchPoint;
 
+        /// <summary> The battery level. </summary>
         private float m_BatteryLevel;
+        /// <summary> The touch point power. </summary>
         private float m_TouchPointPower;
+        /// <summary> State of the controller. </summary>
         private ControllerState m_ControllerState;
 
+        /// <summary> The epsilon. </summary>
         private const float EPSILON = 0.05f;
+        /// <summary> The charge level epsilon. </summary>
         private const float CHARGE_LEVEL_EPSILON = 1.5f;
+        /// <summary> Depth of the touch point. </summary>
         private const float TOUCH_POINT_DEPTH = 0.001f;
+        /// <summary> The touchpad radius. </summary>
         private const float TOUCHPAD_RADIUS = 0.0175f;
+        /// <summary> The touchpoint radius. </summary>
         private const float TOUCHPOINT_RADIUS = 0.0056f;
+        /// <summary> The scale timer. </summary>
         private const float SCALE_TIMER = 0.15f;
 
+        /// <summary> Sets an active. </summary>
+        /// <param name="isActive"> True if is active, false if not.</param>
         public void SetActive(bool isActive)
         {
             if (!gameObject)
@@ -100,12 +99,15 @@ namespace NRKernal
             gameObject.SetActive(isActive);
         }
 
+        /// <summary> Destroys the self. </summary>
         public void DestroySelf()
         {
             if (gameObject)
                 Destroy(gameObject);
         }
 
+        /// <summary> Updates the visual described by state. </summary>
+        /// <param name="state"> The state.</param>
         public void UpdateVisual(ControllerState state)
         {
             if (!gameObject || !gameObject.activeSelf)
@@ -118,6 +120,7 @@ namespace NRKernal
             UpdateTouchpad();
         }
 
+        /// <summary> Button update. </summary>
         private void ButtonUpdate()
         {
             foreach (var b in buttonsArr)
@@ -126,6 +129,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Battery update. </summary>
         private void BatteryUpdate()
         {
             if (BatteryObject == null)
@@ -160,6 +164,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Updates the touchpad. </summary>
         private void UpdateTouchpad()
         {
             Vector3 size = new Vector3(TOUCHPOINT_RADIUS, TOUCH_POINT_DEPTH, TOUCHPOINT_RADIUS);
@@ -177,5 +182,5 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
+    
 }

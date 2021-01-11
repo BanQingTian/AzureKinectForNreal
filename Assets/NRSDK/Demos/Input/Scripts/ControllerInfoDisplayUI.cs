@@ -1,39 +1,54 @@
-﻿using System;
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace NRKernal.NRExamples
 {
+    /// <summary> A controller information display user interface. </summary>
     public class ControllerInfoDisplayUI : MonoBehaviour
     {
+        /// <summary> The main information text. </summary>
         public Text mainInfoText;
+        /// <summary> The extra information text. </summary>
         public Text extraInfoText;
 
+        /// <summary> The extra information string. </summary>
         private string m_ExtraInfoStr;
+        /// <summary> The maximum line. </summary>
         private int m_MaxLine = 20;
+        /// <summary> The current debug hand. </summary>
         private ControllerHandEnum m_CurrentDebugHand = ControllerHandEnum.Right;
 
-        private Transform _MainCamera;
-        public Transform mainCamera
+        private Transform m_CenterCamera;
+        private Transform CenterCamera
         {
             get
             {
-                if (_MainCamera == null)
+                if (m_CenterCamera == null)
                 {
-                    if (Camera.main != null)
+                    if (NRSessionManager.Instance.CenterCameraAnchor != null)
                     {
-                        _MainCamera = Camera.main.transform;
+                        m_CenterCamera = NRSessionManager.Instance.CenterCameraAnchor;
                     }
-                    else if (NRSessionManager.Instance.NRHMDPoseTracker != null)
+                    else if (Camera.main != null)
                     {
-                        _MainCamera = NRSessionManager.Instance.NRHMDPoseTracker.centerCamera.transform;
+                        m_CenterCamera = Camera.main.transform;
                     }
                 }
-
-                return _MainCamera;
+                return m_CenterCamera;
             }
         }
 
+        /// <summary> Updates this object. </summary>
         private void Update()
         {
             if (NRInput.GetAvailableControllersCount() < 2)
@@ -74,12 +89,14 @@ namespace NRKernal.NRExamples
             RefreshInfoTexts();
         }
 
+        /// <summary> Follow main camera. </summary>
         private void FollowMainCam()
         {
-            transform.position = mainCamera.position;
-            transform.rotation = mainCamera.rotation;
+            transform.position = CenterCamera.position;
+            transform.rotation = CenterCamera.rotation;
         }
 
+        /// <summary> Refresh information texts. </summary>
         private void RefreshInfoTexts()
         {
             mainInfoText.text =
@@ -106,8 +123,23 @@ namespace NRKernal.NRExamples
                 + "mag: " + NRInput.GetMag(m_CurrentDebugHand).ToString("F3") + "\n"
                 + "battery: " + NRInput.GetControllerBattery(m_CurrentDebugHand);
             extraInfoText.text = m_ExtraInfoStr;
+            //Debug.Log("istouching:" + NRInput.IsTouching() + " value:" + NRInput.GetTouch(m_CurrentDebugHand).ToString("F3"));
+            PrintInputState();
         }
 
+        private void PrintInputState()
+        {
+            Debug.LogFormat("istouching:{0} getbutton app:{1} trigger:{2} home:{3} \n" +
+                "getbuttondown app:{4} trigger:{5} home:{6} \n" +
+                "getbuttonup app:{7} trigger:{8} home:{9} \n" +
+                "origin touch:[{10}] gettouch:{11}", NRInput.IsTouching(), NRInput.GetButton(ControllerButton.APP), NRInput.GetButton(ControllerButton.TRIGGER), NRInput.GetButton(ControllerButton.HOME)
+                , NRInput.GetButtonDown(ControllerButton.APP), NRInput.GetButtonDown(ControllerButton.TRIGGER), NRInput.GetButtonDown(ControllerButton.HOME)
+                , NRInput.GetButtonUp(ControllerButton.APP), NRInput.GetButtonUp(ControllerButton.TRIGGER), NRInput.GetButtonUp(ControllerButton.HOME)
+                , NRVirtualDisplayer.SystemButtonState.ToString(), NRInput.GetTouch(m_CurrentDebugHand).ToString("F3"));
+        }
+
+        /// <summary> Adds an extra information. </summary>
+        /// <param name="infoStr"> The information string.</param>
         private void AddExtraInfo(string infoStr)
         {
             if (string.IsNullOrEmpty(infoStr))

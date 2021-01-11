@@ -1,10 +1,21 @@
-﻿using UnityEngine;
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace NRKernal.NRExamples
 {
+    /// <summary> The examples hub. </summary>
     public class ExamplesHub : SingletonBehaviour<ExamplesHub>
     {
+        /// <summary> The scenes. </summary>
         private string[] m_Scenes = new string[] {
             "HelloMR",
             "ImageTracking",
@@ -14,7 +25,10 @@ namespace NRKernal.NRExamples
             "RGBCamera-Capture",
             "RGBCamera-Record"
         };
+        /// <summary> The current index. </summary>
         private int m_CurrentIndex = 0;
+        /// <summary> Gets or sets the current index. </summary>
+        /// <value> The current index. </value>
         public int CurrentIndex
         {
             get
@@ -30,8 +44,10 @@ namespace NRKernal.NRExamples
                 }
             }
         }
+        /// <summary> True if is lock, false if not. </summary>
         private bool m_IsLock = false;
 
+        /// <summary> Updates this object. </summary>
         private void Update()
         {
 #if UNITY_EDITOR
@@ -56,6 +72,7 @@ namespace NRKernal.NRExamples
             }
         }
 
+        /// <summary> Loads next scene. </summary>
         public void LoadNextScene()
         {
             if (m_IsLock)
@@ -72,6 +89,7 @@ namespace NRKernal.NRExamples
             Invoke("Unlock", 1f);
         }
 
+        /// <summary> Loads last scene. </summary>
         public void LoadLastScene()
         {
             if (m_IsLock)
@@ -88,11 +106,15 @@ namespace NRKernal.NRExamples
             Invoke("Unlock", 1f);
         }
 
+        /// <summary> Unlocks this object. </summary>
         private void Unlock()
         {
             m_IsLock = false;
         }
 
+        /// <summary> Determine if we can scene loaded. </summary>
+        /// <param name="name"> The name.</param>
+        /// <returns> True if we can scene loaded, false if not. </returns>
         private bool CanSceneLoaded(string name)
         {
             return (SceneUtility.GetBuildIndexByScenePath(name) != -1) &&

@@ -1,33 +1,75 @@
-﻿using AOT;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using UnityEngine;
-using UnityEngine.UI;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/         
+* 
+*****************************************************************************/
 
 namespace NRKernal
 {
+    using AOT;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Runtime.InteropServices;
+    using UnityEngine;
+    using UnityEngine.UI;
+
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
+
+    /// <summary> A nr virtual displayer. </summary>
     [HelpURL("https://developer.nreal.ai/develop/unity/customize-phone-controller")]
-    public class NRVirtualDisplayer : SingletonBehaviour<NRVirtualDisplayer>
+    [ScriptOrder(-200)]
+    public class NRVirtualDisplayer : SingletonBehaviour<NRVirtualDisplayer>, ISystemButtonStateReceiver
     {
+        /// <summary>
+        /// Event queue for all listeners interested in onDisplayScreenChanged events. </summary>
         public static event Action<Resolution> OnDisplayScreenChangedEvent;
+        /// <summary> State of the system button. </summary>
+        internal static SystemInputState SystemButtonState = new SystemInputState();
+
+        /// <summary> The camera. </summary>
         [SerializeField]
         private Camera m_UICamera;
+        /// <summary> The virtual controller. </summary>
         [SerializeField]
         private MultiScreenController m_VirtualController;
-
-        private Vector3 m_StartPos = Vector3.one * 1000f;
+        private ISystemButtonStateProvider m_ISystemButtonStateProvider;
+        /// <summary> The screen resolution. </summary>
         private Vector2 m_ScreenResolution;
 
-        // Not supported on runtime
+        /// <summary> Not supported on runtime. </summary>
         private const float ScaleFactor = 1f;
-        public static int VirtualDisplayFPS = 30;
+        /// <summary> The virtual display FPS. </summary>
+        public static int VirtualDisplayFPS = 24;
+        /// <summary> The current time. </summary>
         private float m_CurrentTime;
+
+        public enum DisplayMode
+        {
+            Unity,
+            AndroidNative
+        }
+
+        private DisplayMode m_DisplayMode = DisplayMode.AndroidNative;
+        public static DisplayMode displayMode
+        {
+            get
+            {
+                if (Instance != null)
+                {
+                    return Instance.m_DisplayMode;
+                }
+                else
+                {
+                    return DisplayMode.AndroidNative;
+                }
+            }
+        }
 
 #if !UNITY_EDITOR
         private static IntPtr m_RenderTexturePtr;
@@ -35,18 +77,28 @@ namespace NRKernal
         private static RenderEventDelegate RenderThreadHandle = new RenderEventDelegate(RunOnRenderThread);
         private static IntPtr RenderThreadHandlePtr = Marshal.GetFunctionPointerForDelegate(RenderThreadHandle);
 #else
+        /// <summary> The controller screen. </summary>
         private static RenderTexture m_ControllerScreen;
 #endif
+        /// <summary> Gets or sets the native multi display. </summary>
+        /// <value> The native multi display. </value>
         internal static NativeMultiDisplay NativeMultiDisplay { get; private set; }
-        public event Action OnMultiDisplayInited;
+        /// <summary> Event queue for all listeners interested in OnMultiDisplayInited events. </summary>
+        public event Action OnMultiDisplayInitialized;
 
+        /// <summary> True to run in background. </summary>
         public static bool RunInBackground;
-        private bool m_IsInit = false;
+        /// <summary> True if is initialize, false if not. </summary>
+        private bool m_IsInitialized = false;
+        /// <summary> Gets or sets a value indicating whether this object is playing. </summary>
+        /// <value> True if this object is playing, false if not. </value>
         public bool IsPlaying { get; private set; }
 
+        /// <summary> Executes the 'application pause' action. </summary>
+        /// <param name="pause"> True to pause.</param>
         private void OnApplicationPause(bool pause)
         {
-            if (!m_IsInit)
+            if (!m_IsInitialized || isDirty)
             {
                 return;
             }
@@ -64,13 +116,14 @@ namespace NRKernal
             }
             else
             {
-                NRDevice.ForceKill(true);
+                NRDevice.ForceKill();
             }
         }
 
+        /// <summary> Pauses this object. </summary>
         private void Pause()
         {
-            if (!m_IsInit || !IsPlaying)
+            if (!m_IsInitialized || !IsPlaying)
             {
                 return;
             }
@@ -80,9 +133,10 @@ namespace NRKernal
             IsPlaying = false;
         }
 
+        /// <summary> Resumes this object. </summary>
         private void Resume()
         {
-            if (!m_IsInit || IsPlaying)
+            if (!m_IsInitialized || IsPlaying)
             {
                 return;
             }
@@ -92,42 +146,98 @@ namespace NRKernal
             IsPlaying = true;
         }
 
+        /// <summary> Starts this object. </summary>
         void Start()
         {
             if (isDirty) return;
 
-            NRDebugger.Log("[NRVirtualDisplayer] Start");
-            this.IsPlaying = false;
-#if UNITY_EDITOR
-            this.m_UICamera.enabled = false;
-#endif
-            NRSessionManager.Instance.AfterInitialized(Init);
+            NRDebugger.Info("[NRVirtualDisplayer] Start");
+            this.CreateDisplay();
         }
 
-#if UNITY_EDITOR
+        /// <summary> Initializes this object. </summary>
+        private void CreateDisplay()
+        {
+            if (m_IsInitialized) return;
+
+            try
+            {
+                NRDevice.Instance.Init();
+            }
+            catch (Exception e)
+            {
+                NRDebugger.Error("[NRVirtualDisplayer] NRDevice init error:" + e.ToString());
+                throw;
+            }
+
+#if !UNITY_EDITOR && UNITY_ANDROID
+            //m_RenderTexturePtr = m_ControllerScreen.GetNativeTexturePtr();
+            NativeMultiDisplay = new NativeMultiDisplay();
+            NativeMultiDisplay.Create();
+            //NativeMultiDisplay.InitColorSpace();
+            NativeMultiDisplay.ListenMainScrResolutionChanged(OnDisplayResolutionChanged);
+            NativeMultiDisplay.Start();
+            // Creat multiview controller.
+            //GL.IssuePluginEvent(RenderThreadHandlePtr, 0);
+            //LoadPhoneScreen();
+            
+            if (m_VirtualController == null)
+            {
+                var phoneScreenReplayceTool = FindObjectOfType<NRPhoneDisplayReplayceTool>();
+                if (phoneScreenReplayceTool == null)
+                {
+                    NRDebugger.Info("[NRMultiDisplayManager] Use default phone sceen provider.");
+                    this.BindVirtualDisplayProvider(new NRDefaultPhoneScreenProvider());
+                }
+                else
+                {
+                    NRDebugger.Info("[NRMultiDisplayManager] Use replayced phone sceen provider.");
+                    this.BindVirtualDisplayProvider(phoneScreenReplayceTool.CreatePhoneScreenProvider());
+                }
+            }
+            else
+            {
+                this.BindVirtualDisplayProvider(null);
+            }
+#else
+            this.BindVirtualDisplayProvider(null);
+#endif
+
+            NRSessionManager.Instance.VirtualDisplayer = this;
+            NRDebugger.Info("[NRVirtualDisplayer] Initialize");
+            m_IsInitialized = true;
+            OnMultiDisplayInitialized?.Invoke();
+        }
+
+        /// <summary> Updates this object. </summary>
         private void Update()
         {
-            if (!m_IsInit) return;
+            if (!m_IsInitialized) return;
 
+#if UNITY_EDITOR
             UpdateEmulator();
             if (m_VirtualController)
             {
                 m_VirtualController.gameObject.SetActive(NRInput.EmulateVirtualDisplayInEditor);
             }
-
-            if (IsPlaying)
+#else
+            if (m_DisplayMode == DisplayMode.Unity)
             {
-                m_CurrentTime += Time.deltaTime;
-            }
+                if (IsPlaying)
+                {
+                    m_CurrentTime += Time.deltaTime;
+                }
 
-            if (IsPlaying && m_CurrentTime > (1f / VirtualDisplayFPS))
-            {
-                m_CurrentTime = 0;
-                m_UICamera.Render();
+                if (IsPlaying && m_CurrentTime > (1f / VirtualDisplayFPS))
+                {
+                    m_CurrentTime = 0;
+                    m_UICamera?.Render();
+                }
             }
-        }
 #endif
+        }
 
+        /// <summary> Destories this object. </summary>
         public void Destory()
         {
 #if !UNITY_EDITOR
@@ -144,6 +254,10 @@ namespace NRKernal
             IsPlaying = false;
         }
 
+        /// <summary>
+        /// Base OnDestroy method that destroys the Singleton's unique instance. Called by Unity when
+        /// destroying a MonoBehaviour. Scripts that extend Singleton should be sure to call
+        /// base.OnDestroy() to ensure the underlying static Instance reference is properly cleaned up. </summary>
         new void OnDestroy()
         {
             if (isDirty) return;
@@ -151,51 +265,58 @@ namespace NRKernal
             this.Destory();
         }
 
-        private void Init()
+        /// <summary> If m_VirtualController is null, use android native 
+        ///           fragment as the virtual controller provider. </summary>
+        private void BindVirtualDisplayProvider(NRPhoneScreenProviderBase provider)
         {
-            if (m_IsInit) return;
-
-            try
+            if (m_ISystemButtonStateProvider != null)
             {
-                NRDevice.Instance.Init();
-            }
-            catch (Exception e)
-            {
-                NRDebugger.LogError("[NRVirtualDisplayer] NRDevice init error:" + e.ToString());
-                throw;
+                return;
             }
 
-            transform.position = m_StartPos;
-            NRSessionManager.Instance.VirtualDisplayer = this;
-            NRDebugger.Log("[NRVirtualDisplayer] Init");
-
-#if !UNITY_EDITOR
-            //m_RenderTexturePtr = m_ControllerScreen.GetNativeTexturePtr();
-            NativeMultiDisplay = new NativeMultiDisplay();
-            NativeMultiDisplay.Create();
-            //NativeMultiDisplay.InitColorSpace();
-            NativeMultiDisplay.ListenMainScrResolutionChanged(OnDisplayResolutionChanged);
-            NativeMultiDisplay.Start();
-            // Creat multiview controller..
-            //GL.IssuePluginEvent(RenderThreadHandlePtr, 0);
-            //LoadPhoneScreen();
-#elif UNITY_EDITOR
-            var canvas = transform.GetComponentInChildren<Canvas>();
-            var scaler = canvas.transform.GetComponent<CanvasScaler>();
-            if (scaler != null)
+            if (provider != null && m_VirtualController == null && Application.platform == RuntimePlatform.Android)
             {
-                scaler.enabled = false;
+                m_DisplayMode = DisplayMode.AndroidNative;
+                m_ISystemButtonStateProvider = provider;
+                NRDebugger.Info("[NRVirtualDisplayer] Bind android native controller");
             }
-
-            SetVirtualDisplayResolution();
-            InitEmulator();
+            else
+            {
+                m_DisplayMode = DisplayMode.Unity;
+                transform.position = Vector3.one * 99999f;
+                m_ISystemButtonStateProvider = m_VirtualController;
+                NRDebugger.Info("[NRVirtualDisplayer] Bind unity virtual controller");
+#if UNITY_EDITOR
+                var canvas = transform.GetComponentInChildren<Canvas>();
+                var scaler = canvas.transform.GetComponent<CanvasScaler>();
+                if (scaler != null)
+                {
+                    scaler.enabled = false;
+                }
+                SetVirtualDisplayResolution();
+                InitEmulator();
+#else
+                if (m_UICamera != null)
+                {
+                    this.m_UICamera.enabled = false;
+                }
 #endif
-            m_VirtualController?.Init();
-            m_IsInit = true;
-            OnMultiDisplayInited?.Invoke();
+            }
+
+            m_ISystemButtonStateProvider?.BindReceiver(this);
             IsPlaying = true;
         }
 
+        public void OnDataReceived(SystemButtonState state)
+        {
+            lock (SystemButtonState)
+            {
+                state.TransformTo(SystemButtonState);
+            }
+        }
+
+        /// <summary> Updates the resolution described by size. </summary>
+        /// <param name="size"> The size.</param>
         public void UpdateResolution(Vector2 size)
         {
 #if !UNITY_EDITOR
@@ -208,10 +329,19 @@ namespace NRKernal
 #endif
 
             var m_PointRaycaster = gameObject.GetComponentInChildren<NRMultScrPointerRaycaster>();
-            m_PointRaycaster.UpdateScreenSize(size * ScaleFactor);
+            if (m_PointRaycaster != null)
+            {
+                m_PointRaycaster.UpdateScreenSize(size * ScaleFactor);
+            }
+
+            if (m_ISystemButtonStateProvider != null && m_ISystemButtonStateProvider is NRPhoneScreenProviderBase)
+            {
+                ((NRPhoneScreenProviderBase)m_ISystemButtonStateProvider).ResizeView((int)size.x, (int)size.y);
+            }
         }
 
 #if UNITY_EDITOR
+        /// <summary> Sets virtual display resolution. </summary>
         private void SetVirtualDisplayResolution()
         {
             m_ScreenResolution = NRPhoneScreen.Resolution;
@@ -231,10 +361,13 @@ namespace NRKernal
         }
 #endif
 
+        /// <summary> Executes the 'display resolution changed' action. </summary>
+        /// <param name="w"> The width.</param>
+        /// <param name="h"> The height.</param>
         [MonoPInvokeCallback(typeof(NativeMultiDisplay.NRDisplayResolutionCallback))]
         public static void OnDisplayResolutionChanged(int w, int h)
         {
-            Debug.LogFormat("[NRVirtualDisplayer] Display resolution changed width:{0} height:{1}", w, h);
+            NRDebugger.Info("[NRVirtualDisplayer] Display resolution changed width:{0} height:{1}", w, h);
             MainThreadDispather.QueueOnMainThread(delegate ()
             {
                 NRVirtualDisplayer.Instance.UpdateResolution(new Vector2(w, h));
@@ -255,17 +388,25 @@ namespace NRKernal
 #endif
 
 #if UNITY_EDITOR
+        /// <summary> The emulator touch. </summary>
         private static Vector2 m_EmulatorTouch = Vector2.zero;
+        /// <summary> The emulator phone screen anchor. </summary>
         private Vector2 m_EmulatorPhoneScreenAnchor;
+        /// <summary> Width of the emulator raw image. </summary>
         private float m_EmulatorRawImageWidth;
+        /// <summary> Height of the emulator raw image. </summary>
         private float m_EmulatorRawImageHeight;
+        /// <summary> The emulator phone raw image. </summary>
         private RawImage emulatorPhoneRawImage;
 
+        /// <summary> Gets emulator screen touch. </summary>
+        /// <returns> The emulator screen touch. </returns>
         public static Vector2 GetEmulatorScreenTouch()
         {
             return m_EmulatorTouch;
         }
 
+        /// <summary> Initializes the emulator. </summary>
         private void InitEmulator()
         {
             GameObject emulatorVirtualController = new GameObject("NREmulatorVirtualController");
@@ -279,6 +420,8 @@ namespace NRKernal
             UpdateEmulatorScreen(m_ScreenResolution * ScaleFactor);
         }
 
+        /// <summary> Updates the emulator screen described by size. </summary>
+        /// <param name="size"> The size.</param>
         private void UpdateEmulatorScreen(Vector2 size)
         {
             float scaleRate = 0.18f;
@@ -295,6 +438,7 @@ namespace NRKernal
             m_EmulatorPhoneScreenAnchor = new Vector2(gameViewSize.x - m_EmulatorRawImageWidth, 0f);
         }
 
+        /// <summary> Updates the emulator. </summary>
         private void UpdateEmulator()
         {
             if (NRInput.EmulateVirtualDisplayInEditor

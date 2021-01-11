@@ -2,17 +2,28 @@
 {
     using UnityEngine;
 
+    /// <summary> The FPS counter. </summary>
     public class FPSCounter : MonoBehaviour
     {
+        /// <summary> The frame range. </summary>
         public int frameRange = 60;
 
+        /// <summary> Gets or sets the average FPS. </summary>
+        /// <value> The average FPS. </value>
         public int AverageFPS { get; private set; }
+        /// <summary> Gets or sets the highest FPS. </summary>
+        /// <value> The highest FPS. </value>
         public int HighestFPS { get; private set; }
+        /// <summary> Gets or sets the lowest FPS. </summary>
+        /// <value> The lowest FPS. </value>
         public int LowestFPS { get; private set; }
 
+        /// <summary> Buffer for FPS data. </summary>
         int[] fpsBuffer;
+        /// <summary> Zero-based index of the FPS buffer. </summary>
         int fpsBufferIndex;
 
+        /// <summary> Updates this object. </summary>
         void Update()
         {
             if (fpsBuffer == null || fpsBuffer.Length != frameRange)
@@ -23,6 +34,7 @@
             CalculateFPS();
         }
 
+        /// <summary> Initializes the buffer. </summary>
         void InitializeBuffer()
         {
             if (frameRange <= 0)
@@ -33,6 +45,7 @@
             fpsBufferIndex = 0;
         }
 
+        /// <summary> Updates the buffer. </summary>
         void UpdateBuffer()
         {
             fpsBuffer[fpsBufferIndex++] = (int)(1f / Time.unscaledDeltaTime);
@@ -42,6 +55,7 @@
             }
         }
 
+        /// <summary> Calculates the FPS. </summary>
         void CalculateFPS()
         {
             int sum = 0;

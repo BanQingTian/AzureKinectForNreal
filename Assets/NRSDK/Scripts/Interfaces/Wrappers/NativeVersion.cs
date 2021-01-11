@@ -11,11 +11,11 @@ namespace NRKernal
 {
     using System.Runtime.InteropServices;
 
-    /// <summary>
-    /// 6-dof Trackable Image Tracking's Native API .
-    /// </summary>
+    /// <summary> 6-dof Trackable Image Tracking's Native API . </summary>
     internal partial class NativeVersion
     {
+        /// <summary> Gets the version. </summary>
+        /// <returns> The version. </returns>
         public static string GetVersion()
         {
             NRVersion version = new NRVersion();
@@ -25,6 +25,9 @@ namespace NRKernal
 
         private partial struct NativeApi
         {
+            /// <summary> Nr get version. </summary>
+            /// <param name="out_version"> [in,out] The out version.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRGetVersion(ref NRVersion out_version);
         };

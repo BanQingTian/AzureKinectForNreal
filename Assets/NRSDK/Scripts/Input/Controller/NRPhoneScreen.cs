@@ -2,14 +2,21 @@
 {
     using UnityEngine;
 
+    /// <summary> A nr phone screen. </summary>
     public class NRPhoneScreen
     {
+        /// <summary> Width of the screen. </summary>
         private static float m_ScreenWidth = 0;
+        /// <summary> Height of the screen. </summary>
         private static float m_ScreenHeight = 0;
 
+        /// <summary> The default width. </summary>
         public const float DefaultWidth = 1080;
+        /// <summary> The default height. </summary>
         public const float DefaultHeight = 2340;
 
+        /// <summary> Gets or sets the resolution. </summary>
+        /// <value> The resolution. </value>
         public static Vector2 Resolution
         {
             get
@@ -29,7 +36,7 @@
                     m_ScreenWidth = DefaultWidth;
                     m_ScreenHeight = DefaultHeight;
 #endif
-                    NRDebugger.Log(string.Format("[NRPhoneScreen] width:{0} height:{1}", m_ScreenWidth, m_ScreenHeight));
+                    NRDebugger.Debug(string.Format("[NRPhoneScreen] width:{0} height:{1}", m_ScreenWidth, m_ScreenHeight));
                 }
                 return new Vector2(m_ScreenWidth, m_ScreenHeight);
             }

@@ -9,11 +9,11 @@
 
 namespace NRKernal
 {
-    /// <summary>
-    /// Holds information about Nreal SDK version info.
-    /// </summary>
+    /// <summary> Holds information about Nreal SDK version info. </summary>
     public class NRVersionInfo
     {
+        /// <summary> Gets the version. </summary>
+        /// <returns> The version. </returns>
         public static string GetVersion()
         {
             return NativeVersion.GetVersion();

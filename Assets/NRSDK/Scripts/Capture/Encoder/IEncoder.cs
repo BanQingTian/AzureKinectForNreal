@@ -12,16 +12,25 @@ namespace NRKernal.Record
     using System;
     using UnityEngine;
 
+    /// <summary> Interface for encoder. </summary>
     public interface IEncoder
     {
+        /// <summary> Configurations the given parameter. </summary>
+        /// <param name="param"> The parameter.</param>
         void Config(CameraParameters param);
 
+        /// <summary> Commits. </summary>
+        /// <param name="rt">        The right.</param>
+        /// <param name="timestamp"> The timestamp.</param>
         void Commit(RenderTexture rt, UInt64 timestamp);
 
+        /// <summary> Starts this object. </summary>
         void Start();
 
+        /// <summary> Stops this object. </summary>
         void Stop();
 
+        /// <summary> Releases this object. </summary>
         void Release();
     }
 }

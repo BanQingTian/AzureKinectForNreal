@@ -1,25 +1,35 @@
-﻿namespace NRKernal.NRExamples
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+namespace NRKernal.NRExamples
 {
     using System.Collections.Generic;
     using UnityEngine;
 
-    /// <summary>
-    /// Controller for TrackingImage example.
-    /// </summary>
+    /// <summary> Controller for TrackingImage example. </summary>
     [HelpURL("https://developer.nreal.ai/develop/unity/image-tracking")]
     public class TrackingImageExampleController : MonoBehaviour
     {
-        // A prefab for visualizing an TrackingImage.
+        /// <summary> A prefab for visualizing an TrackingImage. </summary>
         public TrackingImageVisualizer TrackingImageVisualizerPrefab;
 
-        // The overlay containing the fit to scan user guide.
+        /// <summary> The overlay containing the fit to scan user guide. </summary>
         public GameObject FitToScanOverlay;
 
+        /// <summary> The visualizers. </summary>
         private Dictionary<int, TrackingImageVisualizer> m_Visualizers
             = new Dictionary<int, TrackingImageVisualizer>();
 
+        /// <summary> The temporary tracking images. </summary>
         private List<NRTrackableImage> m_TempTrackingImages = new List<NRTrackableImage>();
 
+        /// <summary> Updates this object. </summary>
         public void Update()
         {
 #if !UNITY_EDITOR
@@ -40,7 +50,7 @@
                 m_Visualizers.TryGetValue(image.GetDataBaseIndex(), out visualizer);
                 if (image.GetTrackingState() == TrackingState.Tracking && visualizer == null)
                 {
-                    NRDebugger.Log("Create new TrackingImageVisualizer!");
+                    NRDebugger.Info("Create new TrackingImageVisualizer!");
                     // Create an anchor to ensure that NRSDK keeps tracking this augmented image.
                     visualizer = (TrackingImageVisualizer)Instantiate(TrackingImageVisualizerPrefab, image.GetCenterPose().position, image.GetCenterPose().rotation);
                     visualizer.Image = image;
@@ -58,6 +68,7 @@
 
         }
 
+        /// <summary> Enables the image tracking. </summary>
         public void EnableImageTracking()
         {
             var config = NRSessionManager.Instance.NRSessionBehaviour.SessionConfig;
@@ -65,6 +76,7 @@
             NRSessionManager.Instance.SetConfiguration(config);
         }
 
+        /// <summary> Disables the image tracking. </summary>
         public void DisableImageTracking()
         {
             var config = NRSessionManager.Instance.NRSessionBehaviour.SessionConfig;

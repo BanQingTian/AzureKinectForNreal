@@ -10,16 +10,17 @@
 namespace NRKernal.Record
 {
     /// <summary>
-    /// Record video from the MR world.
-    /// You can record a RGB only, Virtual only or Blended image through this class.
-    /// </summary>
+    /// Record video from the MR world. You can record a RGB only, Virtual only or Blended image
+    /// through this class. </summary>
     public class NRRecordBehaviour : CaptureBehaviourBase
     {
+        /// <summary> Sets out put path. </summary>
+        /// <param name="path"> Full pathname of the file.</param>
         public void SetOutPutPath(string path)
         {
             var encoder = this.GetContext().GetEncoder();
             ((VideoEncoder)encoder).EncodeConfig.SetOutPutPath(path);
-            NRDebugger.Log("Encode SetOutPutPath: " + ((VideoEncoder)encoder).EncodeConfig.ToString());
+            NRDebugger.Info("Encode SetOutPutPath: " + ((VideoEncoder)encoder).EncodeConfig.ToString());
         }
     }
 }

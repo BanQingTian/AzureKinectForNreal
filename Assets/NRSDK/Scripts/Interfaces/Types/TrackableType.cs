@@ -9,9 +9,7 @@
 
 namespace NRKernal
 {
-    /// <summary>
-    /// Tracable object type.
-    /// </summary>
+    /// <summary> Tracable object type. </summary>
     public enum TrackableType
     {
         /// <summary>
@@ -30,9 +28,7 @@ namespace NRKernal
         TRACKABLE_IMAGE = 2,
     }
 
-    /// <summary>
-    /// Trackable image's finding mode.
-    /// </summary>
+    /// <summary> Trackable image's finding mode. </summary>
     public enum TrackableImageFindingMode
     {
         /// <summary>

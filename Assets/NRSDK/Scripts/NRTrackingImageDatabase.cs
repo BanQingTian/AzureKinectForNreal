@@ -21,16 +21,19 @@ namespace NRKernal
 #endif
 
     /// <summary>
-    /// A database storing a list of images to be detected and tracked by NRSDK.
-    /// An image database supports up to 1000 images.Only one image database can be in use at any given time.
-    /// </summary>
+    /// A database storing a list of images to be detected and tracked by NRSDK. An image database
+    /// supports up to 1000 images.Only one image database can be in use at any given time. </summary>
     public class NRTrackingImageDatabase : ScriptableObject
     {
+        /// <summary> The images. </summary>
         [SerializeField]
         private List<NRTrackingImageDatabaseEntry> m_Images = new List<NRTrackingImageDatabaseEntry>();
 
+        /// <summary> Information describing the raw. </summary>
         [SerializeField]
         private byte[] m_RawData = null;
+        /// <summary> Gets information describing the raw. </summary>
+        /// <value> Information describing the raw. </value>
         public byte[] RawData
         {
             get
@@ -39,8 +42,11 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Unique identifier. </summary>
         public string GUID;
 
+        /// <summary> Gets the full pathname of the tracking image data file. </summary>
+        /// <value> The full pathname of the tracking image data file. </value>
         public string TrackingImageDataPath
         {
             get
@@ -49,6 +55,8 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Gets the full pathname of the tracking image data out put file. </summary>
+        /// <value> The full pathname of the tracking image data out put file. </value>
         public string TrackingImageDataOutPutPath
         {
             get
@@ -58,12 +66,16 @@ namespace NRKernal
         }
 
 #if UNITY_EDITOR
+        /// <summary> True if is raw data dirty, false if not. </summary>
         [SerializeField]
         private bool m_IsRawDataDirty = true;
 
+        /// <summary> The CLI version. </summary>
         [SerializeField]
         private string m_CliVersion = string.Empty;
 
+        /// <summary> Gets a value indicating whether this object is CLI updated. </summary>
+        /// <value> True if this object is CLI updated, false if not. </value>
         public bool isCliUpdated
         {
             get
@@ -79,7 +91,7 @@ namespace NRKernal
                     string error;
                     ShellHelper.RunCommand(cliBinaryPath, "-version", out currentCliVersion, out error);
                 }
-                //Debug.LogFormat("current version:{0} old version:{1}", currentCliVersion, m_CliVersion);
+                //NRDebugger.Info("current version:{0} old version:{1}", currentCliVersion, m_CliVersion);
 
                 bool cliUpdated = m_CliVersion != currentCliVersion;
                 return cliUpdated;
@@ -87,9 +99,7 @@ namespace NRKernal
         }
 #endif
 
-        /// <summary>
-        /// Constructs a new <c>TrackingImageDatabase</c>.
-        /// </summary>
+        /// <summary> Constructs a new <c>TrackingImageDatabase</c>. </summary>
         public NRTrackingImageDatabase()
         {
 #if UNITY_EDITOR
@@ -97,9 +107,8 @@ namespace NRKernal
 #endif
         }
 
-        /// <summary>
-        /// Gets the number of images in the database.
-        /// </summary>
+        /// <summary> Gets the number of images in the database. </summary>
+        /// <value> The count. </value>
         public int Count
         {
             get
@@ -112,11 +121,10 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Gets or sets the image at the specified <c>index</c>.
-        /// You can only modify the database in the Unity editor.
-        /// </summary>
-        /// <param name="index">The zero-based index of the image entry to get or set.</param>
-        /// <returns>The image entry at <c>index</c>.</returns>
+        /// Gets or sets the image at the specified <c>index</c>. You can only modify the database in the
+        /// Unity editor. </summary>
+        /// <param name="index"> The zero-based index of the image entry to get or set.</param>
+        /// <returns> The image entry at <c>index</c>. </returns>
         public NRTrackingImageDatabaseEntry this[int index]
         {
             get
@@ -147,34 +155,28 @@ namespace NRKernal
         }
 
 #if UNITY_EDITOR
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Adds an image entry to the end of the database.
-        /// </summary>
-        /// <param name="entry">The image entry to add.</param>
+        
+        /// <summary> Adds an image entry to the end of the database. </summary>
+        /// <param name="entry"> The image entry to add.</param>
         public void Add(NRTrackingImageDatabaseEntry entry)
         {
             m_Images.Add(entry);
             EditorUtility.SetDirty(this);
         }
-        /// @endcond
+        
 
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Removes an image entry at a specified zero-based index.
-        /// </summary>
-        /// <param name="index">The index of the image entry to remove.</param>
+        
+        /// <summary> Removes an image entry at a specified zero-based index. </summary>
+        /// <param name="index"> The index of the image entry to remove.</param>
         public void RemoveAt(int index)
         {
             m_Images.RemoveAt(index);
             EditorUtility.SetDirty(this);
         }
-        /// @endcond
+        
 
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Rebuilds the database asset, if needed.
-        /// </summary>
+        
+        /// <summary> Rebuilds the database asset, if needed. </summary>
         public void BuildIfNeeded()
         {
             if (!m_IsRawDataDirty)
@@ -238,7 +240,7 @@ namespace NRKernal
                 {
                     // Read the zip bytes
                     m_RawData = File.ReadAllBytes(file_path);
-                    //Debug.Log("Generate raw data success!" + file_path);
+                    //NRDebugger.Info("Generate raw data success!" + file_path);
                     //m_IsNeedLoadRawData = false;
 
                     EditorUtility.SetDirty(this);
@@ -250,8 +252,8 @@ namespace NRKernal
             UpdateClipVersion();
         }
 
-        /// @endcond
-        /// 
+        
+        /// <summary> Updates the clip version. </summary>
         private void UpdateClipVersion()
         {
             string cliBinaryPath;
@@ -265,16 +267,14 @@ namespace NRKernal
                 string error;
                 ShellHelper.RunCommand(cliBinaryPath, "-version", out currentCliVersion, out error);
             }
-            //Debug.LogFormat("current version:{0} old version:{1}", currentCliVersion, m_CliVersion);
+            //NRDebugger.Info("current version:{0} old version:{1}", currentCliVersion, m_CliVersion);
 
             m_CliVersion = currentCliVersion;
         }
 
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Gets the image entries that require updating of the image quality score.
-        /// </summary>
-        /// <returns>A list of image entries that require updating of the image quality score.</returns>
+        
+        /// <summary> Gets the image entries that require updating of the image quality score. </summary>
+        /// <returns> A list of image entries that require updating of the image quality score. </returns>
         public List<NRTrackingImageDatabaseEntry> GetDirtyQualityEntries()
         {
             var dirtyEntries = new List<NRTrackingImageDatabaseEntry>();
@@ -295,9 +295,11 @@ namespace NRKernal
 
             return dirtyEntries;
         }
-        /// @endcond
+        
 
-        /// @cond EXCLUDE_FROM_DOXYGEN
+        
+        /// <summary> Gets all entries. </summary>
+        /// <returns> all entries. </returns>
         public List<NRTrackingImageDatabaseEntry> GetAllEntries()
         {
             var allEntries = new List<NRTrackingImageDatabaseEntry>();
@@ -307,21 +309,20 @@ namespace NRKernal
             }
             return allEntries;
         }
-        /// @endcond
+        
 
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Finds the path to the command-line tool used to generate a database.
-        /// </summary>
-        /// <param name="path">The path to the command-line tool that will be set if a valid path was found.</param>
-        /// <returns><c>true</c> if a valid path was found, <c>false</c> otherwise.</returns>
+        
+        /// <summary> Finds the path to the command-line tool used to generate a database. </summary>
+        /// <param name="path"> [out] The path to the command-line tool that will be set if a valid path
+        ///                     was found.</param>
+        /// <returns> <c>true</c> if a valid path was found, <c>false</c> otherwise. </returns>
         public static bool FindCliBinaryPath(out string path)
         {
             var binaryName = NativeConstants.TrackingImageCliBinary;
             string[] cliBinaryGuid = AssetDatabase.FindAssets(binaryName);
             if (cliBinaryGuid.Length == 0)
             {
-                Debug.LogFormat("Could not find required tool for building TrackingImageDatabase: {0}. " +
+                NRDebugger.Info("Could not find required tool for building TrackingImageDatabase: {0}. " +
                     "Was it removed from the NRSDK?", binaryName);
                 path = string.Empty;
                 return false;
@@ -332,7 +333,7 @@ namespace NRKernal
             path = Path.Combine(projectPath, AssetDatabase.GUIDToAssetPath(cliBinaryGuid[0]));
             return !string.IsNullOrEmpty(path);
         }
-        /// @endcond
+        
 #endif
     }
 }

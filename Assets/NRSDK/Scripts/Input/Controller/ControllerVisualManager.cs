@@ -13,29 +13,39 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    
+    /// <summary> Manager for controller visuals. </summary>
     [DisallowMultipleComponent]
     public class ControllerVisualManager : MonoBehaviour
     {
+        /// <summary> The states. </summary>
         private ControllerState[] m_States;
+        /// <summary> The controller visuals. </summary>
         private IControllerVisual[] m_ControllerVisuals;
 
+        /// <summary> Executes the 'enable' action. </summary>
         private void OnEnable()
         {
             NRInput.OnControllerStatesUpdated += OnControllerStatesUpdated;
         }
 
+        /// <summary> Executes the 'disable' action. </summary>
         private void OnDisable()
         {
             NRInput.OnControllerStatesUpdated -= OnControllerStatesUpdated;
         }
 
+        /// <summary> Initializes this object. </summary>
+        /// <param name="states"> The states.</param>
         public void Init(ControllerState[] states)
         {
             this.m_States = states;
             m_ControllerVisuals = new IControllerVisual[states.Length];
         }
 
+        /// <summary> Change controller visual. </summary>
+        /// <param name="index">      Zero-based index of the.</param>
+        /// <param name="visualType"> Type of the visual.</param>
         public void ChangeControllerVisual(int index, ControllerVisualType visualType)
         {
             if (m_ControllerVisuals[index] != null)
@@ -43,11 +53,13 @@ namespace NRKernal
             CreateControllerVisual(index, visualType);
         }
 
+        /// <summary> Executes the 'controller states updated' action. </summary>
         private void OnControllerStatesUpdated()
         {
             UpdateAllVisuals();
         }
 
+        /// <summary> Updates all visuals. </summary>
         private void UpdateAllVisuals()
         {
             int availableCount = NRInput.GetAvailableControllersCount();
@@ -65,6 +77,9 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Updates the visual. </summary>
+        /// <param name="index"> Zero-based index of the.</param>
+        /// <param name="state"> The state.</param>
         private void UpdateVisual(int index, ControllerState state)
         {
             if (m_ControllerVisuals[index] == null && state.controllerType != ControllerType.CONTROLLER_TYPE_UNKNOWN)
@@ -79,6 +94,9 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Creates controller visual. </summary>
+        /// <param name="index">      Zero-based index of the.</param>
+        /// <param name="visualType"> Type of the visual.</param>
         private void CreateControllerVisual(int index, ControllerVisualType visualType)
         {
             GameObject visualGo = ControllerVisualFactory.CreateControllerVisualObject(visualType);
@@ -95,11 +113,13 @@ namespace NRKernal
             }
             else
             {
-                NRDebugger.LogError("The ControllerVisual prefab:" + visualGo.name + " does not contain IControllerVisual interface");
+                NRDebugger.Error("The ControllerVisual prefab:" + visualGo.name + " does not contain IControllerVisual interface");
                 Destroy(visualGo);
             }
         }
 
+        /// <summary> Destroys the visual described by index. </summary>
+        /// <param name="index"> Zero-based index of the.</param>
         private void DestroyVisual(int index)
         {
             if (m_ControllerVisuals[index] != null)
@@ -109,5 +129,5 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
+    
 }

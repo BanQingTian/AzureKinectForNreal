@@ -13,9 +13,13 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    
+    /// <summary> A controller visual factory. </summary>
     internal static class ControllerVisualFactory
     {
+        /// <summary> Creates controller visual object. </summary>
+        /// <param name="visualType"> Type of the visual.</param>
+        /// <returns> The new controller visual object. </returns>
         public static GameObject CreateControllerVisualObject(ControllerVisualType visualType)
         {
             GameObject visualObj = null;
@@ -33,7 +37,7 @@ namespace NRKernal
                     prefabPath = folderPath + "finch_shift_controller_visual";
                     break;
                 default:
-                    NRDebugger.LogError("Can not find controller visual for: " + visualType + ", set to default visual");
+                    NRDebugger.Error("Can not find controller visual for: " + visualType + ", set to default visual");
                     prefabPath = folderPath + "nreal_light_controller_visual";
                     break;
             }
@@ -44,10 +48,13 @@ namespace NRKernal
                     visualObj = GameObject.Instantiate(controllerPrefab);
             }
             if (visualObj == null)
-                NRDebugger.LogError("Create controller visual failed, prefab path:" + prefabPath);
+                NRDebugger.Error("Create controller visual failed, prefab path:" + prefabPath);
             return visualObj;
         }
 
+        /// <summary> Gets default visual type. </summary>
+        /// <param name="controllerType"> Type of the controller.</param>
+        /// <returns> The default visual type. </returns>
         public static ControllerVisualType GetDefaultVisualType(ControllerType controllerType)
         {
             switch (controllerType)
@@ -61,5 +68,5 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
+    
 }

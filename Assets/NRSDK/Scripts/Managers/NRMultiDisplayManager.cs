@@ -11,25 +11,34 @@ namespace NRKernal
 {
     using UnityEngine;
 
+    /// <summary> Manager for nr multi displays. </summary>
     [HelpURL("https://developer.nreal.ai/develop/unity/customize-phone-controller")]
     public class NRMultiDisplayManager : MonoBehaviour
     {
+        /// <summary> The default virtual displayer. </summary>
         [SerializeField]
         private GameObject m_DefaultVirtualDisplayer;
+        /// <summary> The virtual displayer. </summary>
         private NRVirtualDisplayer m_VirtualDisplayer;
 
+        /// <summary> Starts this object. </summary>
         private void Start()
         {
-            NRSessionManager.Instance.AfterInitialized(Init);
+            Init();
         }
 
+        /// <summary> Initializes this object. </summary>
         private void Init()
         {
             m_VirtualDisplayer = FindObjectOfType<NRVirtualDisplayer>();
-            if (m_VirtualDisplayer == null)
-            {
-                Instantiate(m_DefaultVirtualDisplayer);
-            }
+            if (m_VirtualDisplayer != null) return;
+
+#if UNITY_EDITOR
+            Instantiate(m_DefaultVirtualDisplayer);
+#else
+            var virtualDisplayer = new GameObject("NRVirtualDisplayer").AddComponent<NRVirtualDisplayer>();
+            GameObject.DontDestroyOnLoad(virtualDisplayer.gameObject);
+#endif
         }
     }
 }

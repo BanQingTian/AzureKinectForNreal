@@ -14,22 +14,33 @@ namespace NRKernal
     using UnityEngine.UI;
     using UnityEngine.EventSystems;
 
-    internal class NRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+    /// <summary> A nr button. </summary>
+    public class NRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
+        /// <summary> The image normal. </summary>
         public Sprite ImageNormal;
+        /// <summary> The image hover. </summary>
         public Sprite ImageHover;
+        /// <summary> The trigger event. </summary>
         public Action<string, GameObject, RaycastResult> TriggerEvent;
+        /// <summary> The enter. </summary>
         public const string Enter = "Enter";
+        /// <summary> The hover. </summary>
         public const string Hover = "Hover";
+        /// <summary> The exit. </summary>
         public const string Exit = "Exit";
 
+        /// <summary> The button image. </summary>
         private Image m_ButtonImage;
 
+        /// <summary> Starts this object. </summary>
         void Start()
         {
             m_ButtonImage = gameObject.GetComponent<Image>();
         }
 
+        /// <summary> <para></para> </summary>
+        /// <param name="eventData"> Current event data.</param>
         public void OnPointerDown(PointerEventData eventData)
         {
             if (TriggerEvent != null)
@@ -43,6 +54,8 @@ namespace NRKernal
             }
         }
 
+        /// <summary> <para></para> </summary>
+        /// <param name="eventData"> Current event data.</param>
         public void OnPointerUp(PointerEventData eventData)
         {
             if (TriggerEvent != null)
@@ -56,7 +69,8 @@ namespace NRKernal
             }
         }
 
-        // Get onhover by NRMultScrPointerRaycaster
+        /// <summary> Get onhover by NRMultScrPointerRaycaster. </summary>
+        /// <param name="racastResult"> The racast result.</param>
         public void OnHover(RaycastResult racastResult)
         {
             if (TriggerEvent != null && m_ButtonImage != null)

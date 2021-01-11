@@ -12,17 +12,24 @@ namespace NRKernal
     using UnityEngine;
     using UnityEngine.EventSystems;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    
+    /// <summary> An event camera raycaster. </summary>
     public abstract class EventCameraRaycaster : BaseRaycaster
     {
+        /// <summary> True if is destroying, false if not. </summary>
         private bool isDestroying = false;
+        /// <summary> The default camera. </summary>
         private Camera defaultCam;
 
+        /// <summary> The near distance. </summary>
         [SerializeField]
         private float nearDistance = 0f;
+        /// <summary> The far distance. </summary>
         [SerializeField]
         private float farDistance = 20f;
 
+        /// <summary> Gets or sets the near distance. </summary>
+        /// <value> The near distance. </value>
         public float NearDistance
         {
             get { return nearDistance; }
@@ -36,6 +43,8 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Gets or sets the far distance. </summary>
+        /// <value> The far distance. </value>
         public float FarDistance
         {
             get { return farDistance; }
@@ -49,6 +58,8 @@ namespace NRKernal
             }
         }
 
+        /// <summary> <para>The camera that will generate rays for this raycaster.</para> </summary>
+        /// <value> The event camera. </value>
         public override Camera eventCamera
         {
             get
@@ -84,6 +95,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> <para>See MonoBehaviour.OnDestroy.</para> </summary>
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -96,5 +108,5 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
+    
 }

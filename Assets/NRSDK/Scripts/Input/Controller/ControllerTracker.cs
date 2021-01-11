@@ -13,24 +13,40 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    
+    /// <summary> A controller tracker. </summary>
     public class ControllerTracker : MonoBehaviour {
+        /// <summary> The default hand enum. </summary>
         public ControllerHandEnum defaultHandEnum;
+        /// <summary> The raycaster. </summary>
         public NRPointerRaycaster raycaster;
+        /// <summary> The model anchor. </summary>
         public Transform modelAnchor;
 
+        /// <summary> The verify y coordinate angle. </summary>
         private float m_VerifyYAngle = 0f;
+        /// <summary> True if is enabled, false if not. </summary>
         private bool m_IsEnabled;
+        /// <summary> True if is 6dof, false if not. </summary>
         private bool m_Is6dof;
+        /// <summary> The default local offset. </summary>
         private Vector3 m_DefaultLocalOffset;
+        /// <summary> Target position. </summary>
         private Vector3 m_TargetPos = Vector3.zero;
+        /// <summary> True if is moving to target, false if not. </summary>
         private bool m_IsMovingToTarget;
+        /// <summary> The laser default local offset. </summary>
         private Vector3 m_LaserDefaultLocalOffset;
+        /// <summary> The model default local offset. </summary>
         private Vector3 m_ModelDefaultLocalOffset;
 
+        /// <summary> The track target speed. </summary>
         private const float TrackTargetSpeed = 6f;
+        /// <summary> The maximum distance from target. </summary>
         private const float MaxDistanceFromTarget = 0.12f;
 
+        /// <summary> Gets the camera center. </summary>
+        /// <value> The camera center. </value>
         private Transform CameraCenter
         {
             get
@@ -39,6 +55,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Awakes this object. </summary>
         private void Awake()
         {
             m_DefaultLocalOffset = transform.localPosition;
@@ -46,23 +63,27 @@ namespace NRKernal
             m_ModelDefaultLocalOffset = modelAnchor.localPosition;
         }
 
+        /// <summary> Executes the 'enable' action. </summary>
         private void OnEnable()
         {
             NRInput.OnControllerRecentering += OnRecentering;
             NRInput.OnControllerStatesUpdated += OnControllerStatesUpdated;
         }
 
+        /// <summary> Executes the 'disable' action. </summary>
         private void OnDisable()
         {
             NRInput.OnControllerRecentering -= OnRecentering;
             NRInput.OnControllerStatesUpdated -= OnControllerStatesUpdated;
         }
 
+        /// <summary> Executes the 'controller states updated' action. </summary>
         private void OnControllerStatesUpdated()
         {
             UpdateTracker();
         }
 
+        /// <summary> Updates the tracker. </summary>
         private void UpdateTracker()
         {
             if (CameraCenter == null)
@@ -74,6 +95,7 @@ namespace NRKernal
                 TrackPose();
         }
 
+        /// <summary> Track pose. </summary>
         private void TrackPose()
         {
             m_Is6dof = NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_POSITION)
@@ -93,17 +115,20 @@ namespace NRKernal
             UpdateRotation();
         }
 
+        /// <summary> Updates the position. </summary>
         private void UpdatePosition()
         {
             transform.position = NRInput.GetPosition(defaultHandEnum);
         }
 
+        /// <summary> Updates the rotation. </summary>
         private void UpdateRotation()
         {
             transform.localRotation = NRInput.GetRotation(defaultHandEnum);
             transform.Rotate(Vector3.up * m_VerifyYAngle, Space.World);
         }
 
+        /// <summary> Smooth track target position. </summary>
         private void SmoothTrackTargetPosition()
         {
             int sign = defaultHandEnum == ControllerHandEnum.Right ? 1 : -1;
@@ -123,11 +148,12 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Executes the 'recentering' action. </summary>
         private void OnRecentering()
         {
             Vector3 horizontalFoward = Vector3.ProjectOnPlane(CameraCenter.forward, Vector3.up);
             m_VerifyYAngle = Mathf.Sign(Vector3.Cross(Vector3.forward, horizontalFoward).y) * Vector3.Angle(horizontalFoward, Vector3.forward);
         }
     }
-    /// @endcond
+    
 }

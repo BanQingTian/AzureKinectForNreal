@@ -13,17 +13,29 @@ namespace NRKernal
     using System.Runtime.InteropServices;
     using UnityEngine;
 
+    /// <summary> A camera texture frame. </summary>
     public struct CameraTextureFrame
     {
+        /// <summary> The time stamp. </summary>
         public UInt64 timeStamp;
+        /// <summary> The texture. </summary>
         public Texture texture;
     }
 
+    /// <summary> A frame raw data. </summary>
     public partial struct FrameRawData
     {
+        /// <summary> The time stamp. </summary>
         public UInt64 timeStamp;
+        /// <summary> The data. </summary>
         public byte[] data;
 
+        /// <summary> Makes a safe. </summary>
+        /// <param name="textureptr"> The textureptr.</param>
+        /// <param name="size">       The size.</param>
+        /// <param name="timestamp">  The timestamp.</param>
+        /// <param name="frame">      [in,out] The frame.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public static bool MakeSafe(IntPtr textureptr, int size, UInt64 timestamp, ref FrameRawData frame)
         {
             if (textureptr == IntPtr.Zero || size <= 0)
@@ -39,6 +51,8 @@ namespace NRKernal
             return true;
         }
 
+        /// <summary> Convert this object into a string representation. </summary>
+        /// <returns> A string that represents this object. </returns>
         public override string ToString()
         {
             return string.Format("timestamp :{0} data size:{1}", timeStamp, data.Length);

@@ -12,16 +12,25 @@ namespace NRKernal
     using System.Runtime.InteropServices;
     using UnityEngine;
 
+    /// <summary> A native matrix 3f. </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct NativeMat3f
     {
+        /// <summary> The column 0. </summary>
         [MarshalAs(UnmanagedType.Struct)]
         public NativeVector3f column0;
+        /// <summary> The first column. </summary>
         [MarshalAs(UnmanagedType.Struct)]
         public NativeVector3f column1;
+        /// <summary> The second column. </summary>
         [MarshalAs(UnmanagedType.Struct)]
         public NativeVector3f column2;
 
+        /// <summary>
+        /// Indexer to get or set items within this collection using array index syntax. </summary>
+        /// <param name="i"> Zero-based index of the entry to access.</param>
+        /// <param name="j"> An int to process.</param>
+        /// <returns> The indexed item. </returns>
         public float this[int i, int j]
         {
             get
@@ -57,6 +66,10 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Constructor. </summary>
+        /// <param name="vec0"> The vector 0.</param>
+        /// <param name="vec1"> The first vector.</param>
+        /// <param name="vec2"> The second vector.</param>
         public NativeMat3f(Vector3 vec0, Vector3 vec1, Vector3 vec2)
         {
             column0 = new NativeVector3f(vec0);
@@ -64,6 +77,8 @@ namespace NRKernal
             column2 = new NativeVector3f(vec2);
         }
 
+        /// <summary> Gets the identity. </summary>
+        /// <value> The identity. </value>
         public static NativeMat3f identity
         {
             get
@@ -72,6 +87,12 @@ namespace NRKernal
             }
         }
 
+        /// <summary>
+        /// Indexer to get or set items within this collection using array index syntax. </summary>
+        /// <exception cref="IndexOutOfRangeException"> Thrown when the index is outside the required
+        ///                                             range.</exception>
+        /// <param name="index"> Zero-based index of the entry to access.</param>
+        /// <returns> The indexed item. </returns>
         public float this[int index]
         {
             get

@@ -12,9 +12,11 @@ namespace NRKernal
     using System;
     using UnityEditor;
 
+    /// <summary> Manager for script orders. </summary>
     [InitializeOnLoad]
     public class ScriptOrderManager
     {
+        /// <summary> Static constructor. </summary>
         static ScriptOrderManager()
         {
             foreach (MonoScript monoScript in MonoImporter.GetAllRuntimeMonoScripts())

@@ -11,8 +11,12 @@ namespace NRKernal
 {
     using UnityEditor;
 
+    /// <summary> A tracking image database preprocess build. </summary>
     internal class TrackingImageDatabasePreprocessBuild : PreprocessBuildBase
     {
+        /// <summary> Executes the 'preprocess build' action. </summary>
+        /// <param name="target"> Target for the.</param>
+        /// <param name="path">   Full pathname of the file.</param>
         public override void OnPreprocessBuild(BuildTarget target, string path)
         {
             var augmentedImageDatabaseGuids = AssetDatabase.FindAssets("t:NRTrackingImageDatabase");

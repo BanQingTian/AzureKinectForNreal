@@ -12,20 +12,20 @@ namespace NRKernal
     using System;
     using UnityEngine;
 
-    /// <summary>
-    /// A trackable image in the real world detected by NRInternel.
-    /// </summary>
+    /// <summary> A trackable image in the real world detected by NRInternel. </summary>
     public class NRTrackableImage : NRTrackable
     {
+        /// <summary> Constructor. </summary>
+        /// <param name="nativeHandle">    Handle of the native.</param>
+        /// <param name="nativeInterface"> The native interface.</param>
         internal NRTrackableImage(UInt64 nativeHandle, NativeInterface nativeInterface)
           : base(nativeHandle, nativeInterface)
         {
         }
 
         /// <summary>
-        /// Gets the position and orientation of the marker's center in Unity world space.
-        /// </summary>
-        /// <returns></returns>
+        /// Gets the position and orientation of the marker's center in Unity world space. </summary>
+        /// <returns> The center pose. </returns>
         public override Pose GetCenterPose()
         {
             if (NRFrame.SessionStatus != SessionState.Running)
@@ -35,9 +35,8 @@ namespace NRKernal
             return NativeInterface.NativeTrackableImage.GetCenterPose(TrackableNativeHandle);
         }
 
-        /// <summary>
-        /// Gets the width of marker.
-        /// </summary>
+        /// <summary> Gets the width of marker. </summary>
+        /// <value> The extent x coordinate. </value>
         public float ExtentX
         {
             get
@@ -46,9 +45,8 @@ namespace NRKernal
             }
         }
 
-        /// <summary>
-        /// Gets the height of marker.
-        /// </summary>
+        /// <summary> Gets the height of marker. </summary>
+        /// <value> The extent z coordinate. </value>
         public float ExtentZ
         {
             get
@@ -57,10 +55,8 @@ namespace NRKernal
             }
         }
 
-        /// <summary>
-        /// Get the size of trackable image.
-        /// size of trackable imag(width、height).
-        /// </summary>
+        /// <summary> Get the size of trackable image. size of trackable imag(width、height). </summary>
+        /// <value> The size. </value>
         public Vector2 Size
         {
             get

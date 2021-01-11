@@ -13,14 +13,20 @@ namespace NRKernal.NREditor
     using UnityEngine;
     using UnityEditor;
 
+    /// <summary> Editor for nr trackable image. </summary>
     [CanEditMultipleObjects, CustomEditor(typeof(NRTrackableImageBehaviour))]
     public class NRTrackableImageEditor : Editor
     {
+        /// <summary> The serialized object. </summary>
         private NRSerializedImageTarget m_SerializedObj;
+        /// <summary> The database. </summary>
         private static NRTrackingImageDatabase m_Database;
+        /// <summary> Name of the images. </summary>
         private static string[] m_ImagesName;
-        private int m_PreSelectOption = -1; // imageIndex;
+        /// <summary> imageIndex; </summary>
+        private int m_PreSelectOption = -1;
 
+        /// <summary> Executes the 'enable' action. </summary>
         private void OnEnable()
         {
             NRTrackableImageBehaviour itb = (NRTrackableImageBehaviour)target;
@@ -32,6 +38,7 @@ namespace NRKernal.NREditor
             EditorDatabase(itb, m_SerializedObj);
         }
 
+        /// <summary> <para>Implement this function to make a custom inspector.</para> </summary>
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -39,11 +46,12 @@ namespace NRKernal.NREditor
             serializedObject.ApplyModifiedProperties();
         }
 
+        /// <summary> Draw inspector graphical user interface. </summary>
         private void DrawInspectorGUI()
         {
             if (m_Database == null)
             {
-                Debug.LogError("NRKernalSessionConfig.TrackingImageDatabase is null");
+                NRDebugger.Error("NRKernalSessionConfig.TrackingImageDatabase is null");
                 return;
             }
             EditorGUI.BeginDisabledGroup(true);
@@ -92,6 +100,9 @@ namespace NRKernal.NREditor
 
         }
 
+        /// <summary> Editor database. </summary>
+        /// <param name="itb">           The itb.</param>
+        /// <param name="serializedObj"> The serialized object.</param>
         public void EditorDatabase(NRTrackableImageBehaviour itb, NRSerializedImageTarget serializedObj)
         {
             if (!NREditorSceneManager.Instance.SceneInitialized)
@@ -105,6 +116,8 @@ namespace NRKernal.NREditor
             }
         }
 
+        /// <summary> Updates the properties described by sit. </summary>
+        /// <param name="sit"> The sit.</param>
         private void UpdateProperties(NRSerializedImageTarget sit)
         {
             NRTrackableImageBehaviour itb = ((NRTrackableImageBehaviour)target);
@@ -113,6 +126,8 @@ namespace NRKernal.NREditor
             itb.DatabaseIndex = m_SerializedObj.DatabaseIndex;
         }
 
+        /// <summary> Updates the appearance described by serializedImageTarget. </summary>
+        /// <param name="serializedImageTarget"> The serialized image target.</param>
         private static void UpdateAppearance(NRSerializedImageTarget serializedImageTarget)
         {
             UpdateAspectRatio(serializedImageTarget);
@@ -120,6 +135,8 @@ namespace NRKernal.NREditor
             UpdateMaterial(serializedImageTarget);
         }
 
+        /// <summary> Updates the aspect ratio described by it. </summary>
+        /// <param name="it"> The iterator.</param>
         internal static void UpdateAspectRatio(NRSerializedImageTarget it)
         {
             Vector2 size = new Vector2(it.Width, it.Height);
@@ -133,6 +150,8 @@ namespace NRKernal.NREditor
             }
         }
 
+        /// <summary> Updates the scale described by it. </summary>
+        /// <param name="it"> The iterator.</param>
         internal static void UpdateScale(NRSerializedImageTarget it)
         {
             Vector2 size = new Vector2(it.Width, it.Height);
@@ -149,6 +168,8 @@ namespace NRKernal.NREditor
             }
         }
 
+        /// <summary> Updates the material described by sit. </summary>
+        /// <param name="sit"> The sit.</param>
         internal static void UpdateMaterial(NRSerializedImageTarget sit)
         {
             Material mat = sit.GetMaterial();
@@ -167,6 +188,9 @@ namespace NRKernal.NREditor
             sit.SetMaterial(mat);
         }
 
+        /// <summary> Updates the mesh. </summary>
+        /// <param name="itObj">       The iterator object.</param>
+        /// <param name="aspectRatio"> The aspect ratio.</param>
         internal static void UpdateMesh(GameObject itObj, float aspectRatio)
         {
             MeshFilter meshFilter = itObj.GetComponent<MeshFilter>();
@@ -205,6 +229,8 @@ namespace NRKernal.NREditor
             NREditorSceneManager.Instance.UnloadUnusedAssets();
         }
 
+        /// <summary> Check mesh. </summary>
+        /// <param name="serializedImageTarget"> The serialized image target.</param>
         private void CheckMesh(NRSerializedImageTarget serializedImageTarget)
         {
             using (List<NRTrackableImageBehaviour>.Enumerator enumerator = serializedImageTarget.GetBehaviours().GetEnumerator())
@@ -225,13 +251,15 @@ namespace NRKernal.NREditor
             }
         }
 
+        /// <summary> Loads the matrix. </summary>
+        /// <returns> The matrix. </returns>
         private static Material LoadMat()
         {
             string text = "Assets/NRSDK/Emulator/Materials/DefaultTarget.mat";
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(text);
             if (mat == null)
             {
-                Debug.LogError("Could not find reference material at " + text + " please reimport Unity package.");
+                NRDebugger.Error("Could not find reference material at " + text + " please reimport Unity package.");
             }
             return mat;
         }

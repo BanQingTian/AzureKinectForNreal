@@ -1,23 +1,40 @@
-﻿using System;
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
 using UnityEngine;
 
 namespace NRKernal.NRExamples
 {
+    /// <summary> Manager for applications. </summary>
     [DisallowMultipleComponent]
     [HelpURL("https://developer.nreal.ai/develop/discover/introduction-nrsdk")]
     public class AppManager : MonoBehaviour
     {
-        //If enable this, quick click app button for three times, a profiler bar would show.
+        /// <summary>
+        /// If enable this, quick click app button for three times, a profiler bar would show. </summary>
         public bool enableTriggerProfiler;
 
+        /// <summary> The last click time. </summary>
         private float m_LastClickTime = 0f;
+        /// <summary> The cumulative click number. </summary>
         private int m_CumulativeClickNum = 0;
+        /// <summary> True if is profiler opened, false if not. </summary>
         private bool m_IsProfilerOpened = false;
+        /// <summary> The button press timer. </summary>
         private float m_ButtonPressTimer;
 
+        /// <summary> Number of trigger profiler clicks. </summary>
         private const int TRIGGER_PROFILER_CLICK_COUNT = 3;
+        /// <summary> Duration of the button long press. </summary>
         private const float BUTTON_LONG_PRESS_DURATION = 1.2f;
 
+        /// <summary> Executes the 'enable' action. </summary>
         private void OnEnable()
         {
             NRInput.AddClickListener(ControllerHandEnum.Right, ControllerButton.HOME, OnHomeButtonClick);
@@ -26,6 +43,7 @@ namespace NRKernal.NRExamples
             NRInput.AddClickListener(ControllerHandEnum.Left, ControllerButton.APP, OnAppButtonClick);
         }
 
+        /// <summary> Executes the 'disable' action. </summary>
         private void OnDisable()
         {
             NRInput.RemoveClickListener(ControllerHandEnum.Right, ControllerButton.HOME, OnHomeButtonClick);
@@ -34,6 +52,7 @@ namespace NRKernal.NRExamples
             NRInput.RemoveClickListener(ControllerHandEnum.Left, ControllerButton.APP, OnAppButtonClick);
         }
 
+        /// <summary> Updates this object. </summary>
         private void Update()
         {
 #if UNITY_EDITOR
@@ -45,11 +64,13 @@ namespace NRKernal.NRExamples
             CheckButtonLongPress();
         }
 
+        /// <summary> Executes the 'home button click' action. </summary>
         private void OnHomeButtonClick()
         {
             NRHomeMenu.Hide();
         }
 
+        /// <summary> Executes the 'application button click' action. </summary>
         private void OnAppButtonClick()
         {
             if (enableTriggerProfiler)
@@ -58,6 +79,7 @@ namespace NRKernal.NRExamples
             }
         }
 
+        /// <summary> Check button long press. </summary>
         private void CheckButtonLongPress()
         {
             if (NRInput.GetButton(ControllerButton.HOME))
@@ -75,6 +97,7 @@ namespace NRKernal.NRExamples
             }
         }
 
+        /// <summary> Collect click event. </summary>
         private void CollectClickEvent()
         {
             if (Time.unscaledTime - m_LastClickTime < 0.2f)
@@ -96,9 +119,10 @@ namespace NRKernal.NRExamples
         }
 
 
+        /// <summary> Quit application. </summary>
         public static void QuitApplication()
         {
-            Application.Quit();
+            NRDevice.QuitApp();
         }
     }
 }

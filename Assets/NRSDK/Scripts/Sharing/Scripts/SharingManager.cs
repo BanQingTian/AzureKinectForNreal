@@ -128,19 +128,16 @@ namespace NRToolkit.Sharing
         private void OnNetClosed()
         {
             NetState = ConnectState.DisConnected;
-            NRDebugger.Log("OnNetClosed");
         }
 
         private void OnNetConnectError()
         {
             NetState = ConnectState.Error;
-            NRDebugger.LogError("OnNetConnectError");
         }
 
         private void OnNetConnected()
         {
             NetState = ConnectState.Connected;
-            NRDebugger.Log("OnNetConnected");
 
             if (Player != null)
             {

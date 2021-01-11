@@ -13,18 +13,25 @@ namespace NRKernal
     using System.Runtime.InteropServices;
     using UnityEngine;
 
+    /// <summary> A native matrix 4f. </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct NativeMat4f
     {
+        /// <summary> The column 0. </summary>
         [MarshalAs(UnmanagedType.Struct)]
         public NativeVector4f column0;
+        /// <summary> The first column. </summary>
         [MarshalAs(UnmanagedType.Struct)]
         public NativeVector4f column1;
+        /// <summary> The second column. </summary>
         [MarshalAs(UnmanagedType.Struct)]
         public NativeVector4f column2;
+        /// <summary> The third column. </summary>
         [MarshalAs(UnmanagedType.Struct)]
         public NativeVector4f column3;
 
+        /// <summary> Constructor. </summary>
+        /// <param name="m"> A Matrix4x4 to process.</param>
         public NativeMat4f(Matrix4x4 m)
         {
             column0 = new NativeVector4f(m.GetColumn(0));
@@ -33,6 +40,8 @@ namespace NRKernal
             column3 = new NativeVector4f(m.GetColumn(3));
         }
 
+        /// <summary> Converts this object to an unity matrix 4f. </summary>
+        /// <returns> This object as a Matrix4x4. </returns>
         public Matrix4x4 ToUnityMat4f()
         {
             Matrix4x4 m = new Matrix4x4();
@@ -43,6 +52,8 @@ namespace NRKernal
             return m;
         }
 
+        /// <summary> Gets the identity. </summary>
+        /// <value> The identity. </value>
         public static NativeMat4f identity
         {
             get
@@ -51,12 +62,19 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Convert this object into a string representation. </summary>
+        /// <returns> A string that represents this object. </returns>
         public override string ToString()
         {
             return string.Format("column0:{0}\ncolumn1:{1}\ncolumn2:{2}\ncolumn3:{3}\n",
                 column0.ToString(), column1.ToString(), column2.ToString(), column3.ToString());
         }
 
+        /// <summary>
+        /// Indexer to get or set items within this collection using array index syntax. </summary>
+        /// <param name="row">    The row.</param>
+        /// <param name="column"> The column.</param>
+        /// <returns> The indexed item. </returns>
         public float this[int row, int column]
         {
             get
@@ -69,6 +87,12 @@ namespace NRKernal
             }
         }
 
+        /// <summary>
+        /// Indexer to get or set items within this collection using array index syntax. </summary>
+        /// <exception cref="IndexOutOfRangeException"> Thrown when the index is outside the required
+        ///                                             range.</exception>
+        /// <param name="index"> Zero-based index of the entry to access.</param>
+        /// <returns> The indexed item. </returns>
         public float this[int index]
         {
             get

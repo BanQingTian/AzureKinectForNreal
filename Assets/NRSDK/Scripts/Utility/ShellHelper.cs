@@ -12,18 +12,14 @@ namespace NRKernal
     using System.Diagnostics;
     using System.Text;
 
-    /// <summary>
-    /// Misc helper methods for running shell commands.
-    /// </summary>
+    /// <summary> Misc helper methods for running shell commands. </summary>
     public static class ShellHelper
     {
-        /// <summary>
-        /// Run a shell command.
-        /// </summary>
-        /// <param name="fileName">File name for the executable.</param>
-        /// <param name="arguments">Command line arguments, space delimited.</param>
-        /// <param name="output">Filled out with the result as printed to stdout.</param>
-        /// <param name="error">Filled out with the result as printed to stderr.</param>
+        /// <summary> Run a shell command. </summary>
+        /// <param name="fileName">  File name for the executable.</param>
+        /// <param name="arguments"> Command line arguments, space delimited.</param>
+        /// <param name="output">    [out] Filled out with the result as printed to stdout.</param>
+        /// <param name="error">     [out] Filled out with the result as printed to stderr.</param>
         public static void RunCommand(string fileName, string arguments, out string output, out string error)
         {
             using (var process = new Process())
@@ -51,6 +47,9 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Run a shell command. </summary>
+        /// <param name="fileName">  File name for the executable.</param>
+        /// <param name="arguments"> Command line arguments, space delimited.</param>
         public static void RunCommand(string fileName, string arguments)
         {
             using (var process = new Process())

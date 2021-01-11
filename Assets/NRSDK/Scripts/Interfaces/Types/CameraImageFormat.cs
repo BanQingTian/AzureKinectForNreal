@@ -9,13 +9,11 @@
 
 namespace NRKernal
 {
-    /// <summary>
-    /// RGB Camera's image format.
-    /// </summary>
+    /// <summary> RGB Camera's image format. </summary>
     public enum CameraImageFormat
     {
         /// <summary>
-        /// YUV Not Supported now.
+        /// YUV 420 format.
         /// </summary>
         YUV_420_888 = 1,
 

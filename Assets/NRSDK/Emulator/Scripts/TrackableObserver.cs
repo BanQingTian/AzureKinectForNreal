@@ -3,31 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using NRKernal;
 
+/// <summary> A trackable observer. </summary>
 public class TrackableObserver : MonoBehaviour
 {
+    /// <summary> Tracking delegate. </summary>
+    /// <param name="pos"> The position.</param>
+    /// <param name="qua"> The qua.</param>
     public delegate void TrackingDelegate(Vector3 pos, Quaternion qua);
+    /// <summary> The found event. </summary>
     public TrackingDelegate FoundEvent;
+    /// <summary> The lost evnet. </summary>
     public Action LostEvnet;
 
+    /// <summary> Type of the target. </summary>
     public TrackableType TargetType;
 
+    /// <summary> The trackable behaviour. </summary>
     private NRTrackableBehaviour m_TrackableBehaviour;
+    /// <summary> The temporary tracking images. </summary>
     private List<NRTrackableImage> m_TempTrackingImages = new List<NRTrackableImage>();
+    /// <summary> The temporary tracking plane. </summary>
     private List<NRTrackablePlane> m_TempTrackingPlane = new List<NRTrackablePlane>();
 
+    /// <summary> Values that represent trackable types. </summary>
     public enum TrackableType
     {
+        /// <summary> An enum constant representing the trackable image option. </summary>
         TrackableImage,
+        /// <summary> An enum constant representing the trackable plane option. </summary>
         TrackablePlane,
     }
 
-    // Use this for initialization
+    /// <summary> Use this for initialization. </summary>
     void Start()
     {
         m_TrackableBehaviour = GetComponent<NRTrackableBehaviour>();
     }
 
-    // Update is called once per frame
+    /// <summary> Update is called once per frame. </summary>
     void Update()
     {
         if (TargetType == TrackableType.TrackableImage)

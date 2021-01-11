@@ -13,11 +13,12 @@ namespace NRKernal.Record
     using System.IO;
 
     /// <summary>
-    /// Capture a image from the MR world.
-    /// You can capture a RGB only,Virtual only or Blended image through this class.
-    /// </summary>
+    /// Capture a image from the MR world. You can capture a RGB only,Virtual only or Blended image
+    /// through this class. </summary>
     public class NRCaptureBehaviour : CaptureBehaviourBase
     {
+        /// <summary> Gets the image encoder. </summary>
+        /// <value> The image encoder. </value>
         private ImageEncoder ImageEncoder
         {
             get
@@ -26,6 +27,12 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> Does the given file. </summary>
+        /// <param name="width">   The width.</param>
+        /// <param name="height">  The height.</param>
+        /// <param name="format">  Describes the format to use.</param>
+        /// <param name="outpath"> The outpath.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public bool Do(int width, int height, PhotoCaptureFileOutputFormat format, string outpath)
         {
             var data = this.ImageEncoder.Encode(width, height, format);
@@ -38,6 +45,12 @@ namespace NRKernal.Record
             return true;
         }
 
+        /// <summary> Does the given file. </summary>
+        /// <param name="width">  The width.</param>
+        /// <param name="height"> The height.</param>
+        /// <param name="format"> Describes the format to use.</param>
+        /// <param name="data">   [in,out] The data.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public bool Do(int width, int height, PhotoCaptureFileOutputFormat format, ref byte[] data)
         {
             data = this.ImageEncoder.Encode(width, height, format);
@@ -50,9 +63,9 @@ namespace NRKernal.Record
         }
 
         /// <summary>
-        /// Capture a image Asyn.
-        /// if system supports AsyncGPUReadback, using AsyncGPUReadback to get the captured image, else getting the image by synchronization way.
-        /// </summary>
+        /// Capture a image Asyn. if system supports AsyncGPUReadback, using AsyncGPUReadback to get the
+        /// captured image, else getting the image by synchronization way. </summary>
+        /// <param name="task"> The task.</param>
         private void DoAsyn(CaptureTask task)
         {
             if (SystemInfo.supportsAsyncGPUReadback)
@@ -69,6 +82,10 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary>
+        /// Capture a image Asyn. if system supports AsyncGPUReadback, using AsyncGPUReadback to get the
+        /// captured image, else getting the image by synchronization way. </summary>
+        /// <param name="oncapturedcallback"> The oncapturedcallback.</param>
         public void DoAsyn(NRPhotoCapture.OnCapturedToMemoryCallback oncapturedcallback)
         {
             var captureTask = new CaptureTask();
@@ -91,6 +108,9 @@ namespace NRKernal.Record
             this.DoAsyn(captureTask);
         }
 
+        /// <summary> Does the given file. </summary>
+        /// <param name="filename">         Filename of the file.</param>
+        /// <param name="fileOutputFormat"> The file output format.</param>
         public void Do(string filename, PhotoCaptureFileOutputFormat fileOutputFormat)
         {
             var cameraParam = this.GetContext().RequestCameraParam();

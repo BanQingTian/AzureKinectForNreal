@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/FollowGame/Driver.unity
+    path: Assets/KinectGame/Driver.unity
     guid: 276d987ffc85a074ab29554fb2e0bcc9
   m_configObjects: {}

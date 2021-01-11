@@ -12,15 +12,20 @@ namespace NRKernal
     using System;
     using UnityEngine;
 
+    /// <summary> A nr tools. </summary>
     public class NRTools
     {
+        /// <summary> Full pathname of the persistent data file. </summary>
         private static string persistentDataPath;
 
+        /// <summary> Initializes this object. </summary>
         public static void Init()
         {
             persistentDataPath = Application.persistentDataPath;
         }
 
+        /// <summary> Gets streaming assets path. </summary>
+        /// <returns> The streaming assets path. </returns>
         public static string GetStreamingAssetsPath()
         {
             string path = Application.streamingAssetsPath;
@@ -34,6 +39,8 @@ namespace NRKernal
             return path;
         }
 
+        /// <summary> Gets sdcard path. </summary>
+        /// <returns> The sdcard path. </returns>
         public static string GetSdcardPath()
         {
             string path = null;
@@ -47,6 +54,8 @@ namespace NRKernal
             return path;
         }
 
+        /// <summary> Gets tracking image data generate path. </summary>
+        /// <returns> The tracking image data generate path. </returns>
         public static string GetTrackingImageDataGenPath()
         {
 #if UNITY_EDITOR
@@ -57,6 +66,9 @@ namespace NRKernal
             return path;
         }
 
+        /// <summary> Gets time by m seconds. </summary>
+        /// <param name="ms"> The milliseconds.</param>
+        /// <returns> The time by m seconds. </returns>
         public static string GetTimeByMSeconds(long ms)
         {
             int s = (int)ms / 1000;
@@ -66,6 +78,8 @@ namespace NRKernal
             return string.Format("{0}:{1}:{2}", h > 10 ? h.ToString() : "0" + h, m > 10 ? m.ToString() : "0" + m, s > 10 ? s.ToString() : "0" + s);
         }
 
+        /// <summary> Gets time stamp. </summary>
+        /// <returns> The time stamp. </returns>
         public static ulong GetTimeStamp()
         {
             TimeSpan ts = DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0);

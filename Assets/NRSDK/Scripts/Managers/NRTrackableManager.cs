@@ -11,32 +11,40 @@ namespace NRKernal
 {
     using System;
     using System.Collections.Generic;
-    using UnityEngine;
 
     /// <summary>
-    ///  Manages AR system state and handles the session lifecycle.
-    ///  this class, application can create a session, configure it, start/pause or stop it.
-    /// </summary>
-    internal class NRTrackableManager
+    /// Manages AR system state and handles the session lifecycle. this class, application can create
+    /// a session, configure it, start/pause or stop it. </summary>
+    public class NRTrackableManager
     {
+        /// <summary> Dictionary of trackables. </summary>
         private Dictionary<UInt64, NRTrackable> m_TrackableDict = new Dictionary<UInt64, NRTrackable>();
 
+        /// <summary> Dictionary of trackable types. </summary>
         private Dictionary<TrackableType, Dictionary<UInt64, NRTrackable>> m_TrackableTypeDict = new Dictionary<TrackableType, Dictionary<ulong, NRTrackable>>();
 
+        /// <summary> all trackables. </summary>
         private List<NRTrackable> m_AllTrackables = new List<NRTrackable>();
+        /// <summary> The new trackables. </summary>
         private List<NRTrackable> m_NewTrackables = new List<NRTrackable>();
 
+        /// <summary> The old trackables. </summary>
         private HashSet<NRTrackable> m_OldTrackables = new HashSet<NRTrackable>();
 
+        /// <summary> The native interface. </summary>
         private NativeInterface m_NativeInterface = null;
 
-        /// @cond EXCLUDE_FROM_DOXYGEN
+        /// <summary> Constructor. </summary>
+        /// <param name="nativeInterface"> The native interface.</param>
         public NRTrackableManager(NativeInterface nativeInterface)
         {
             m_NativeInterface = nativeInterface;
         }
-        /// @endcond
 
+        /// <summary> Creates a new NRTrackable. </summary>
+        /// <param name="trackable_handle"> Handle of the trackable.</param>
+        /// <param name="nativeInterface">  The native interface.</param>
+        /// <returns> A NRTrackable. </returns>
         private NRTrackable Create(UInt64 trackable_handle, NativeInterface nativeInterface)
         {
             if (trackable_handle == 0)
@@ -87,6 +95,8 @@ namespace NRKernal
             return result;
         }
 
+        /// <summary> Updates the trackables described by trackable_type. </summary>
+        /// <param name="trackable_type"> Type of the trackable.</param>
         private void UpdateTrackables(TrackableType trackable_type)
         {
             if (m_NativeInterface == null || m_NativeInterface.TrackingHandle == 0)
@@ -104,11 +114,11 @@ namespace NRKernal
             m_NativeInterface.NativeTrackable.DestroyTrackableList(trackablelist_handle);
         }
 
-        /// <summary>
-        /// Get the list of trackables with specified filter.
-        /// </summary>
-        /// <param name="trackables">trackableList A list where the returned trackable stored. The previous values will be cleared</param>
-        /// <param name="filter">Query filter</param>
+        /// <summary> Get the list of trackables with specified filter. </summary>
+        /// <typeparam name="T"> Generic type parameter.</typeparam>
+        /// <param name="trackables"> trackableList A list where the returned trackable stored. The
+        ///                           previous values will be cleared.</param>
+        /// <param name="filter">     Query filter.</param>
         public void GetTrackables<T>(List<T> trackables, NRTrackableQueryFilter filter) where T : NRTrackable
         {
             TrackableType t_type = GetTrackableType<T>();
@@ -146,6 +156,11 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Safe add. </summary>
+        /// <typeparam name="T"> Generic type parameter.</typeparam>
+        /// <param name="trackable">  The trackable.</param>
+        /// <param name="trackables"> trackableList A list where the returned trackable stored. The
+        ///                           previous values will be cleared.</param>
         private void SafeAdd<T>(NRTrackable trackable, List<T> trackables) where T : NRTrackable
         {
             if (trackable is T)
@@ -154,6 +169,9 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Gets trackable type. </summary>
+        /// <typeparam name="T"> Generic type parameter.</typeparam>
+        /// <returns> The trackable type. </returns>
         private TrackableType GetTrackableType<T>() where T : NRTrackable
         {
             if (typeof(NRTrackablePlane).Equals(typeof(T)))

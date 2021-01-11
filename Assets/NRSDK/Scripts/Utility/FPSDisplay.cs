@@ -3,9 +3,11 @@
     using UnityEngine;
     using UnityEngine.UI;
 
+    /// <summary> The FPS display. </summary>
     [RequireComponent(typeof(FPSCounter))]
     public class FPSDisplay : MonoBehaviour
     {
+        /// <summary> The strings from 00 to 99. </summary>
         static string[] stringsFrom00To99 = {
         "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
         "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
@@ -19,15 +21,20 @@
         "90", "91", "92", "93", "94", "95", "96", "97", "98", "99"
     };
 
+        /// <summary> Gets the lowest FPS label. </summary>
+        /// <value> The lowest FPS label. </value>
         public Text highestFPSLabel, averageFPSLabel, lowestFPSLabel;
 
+        /// <summary> The FPS counter. </summary>
         FPSCounter fpsCounter;
 
+        /// <summary> Awakes this object. </summary>
         void Awake()
         {
             fpsCounter = GetComponent<FPSCounter>();
         }
 
+        /// <summary> Updates this object. </summary>
         void Update()
         {
             highestFPSLabel.text =

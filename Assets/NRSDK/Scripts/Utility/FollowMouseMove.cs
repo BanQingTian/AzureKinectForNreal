@@ -11,15 +11,23 @@ namespace NRKernal
 {
     using UnityEngine;
 
+    /// <summary> A follow mouse move. </summary>
     public class FollowMouseMove : MonoBehaviour
     {
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN
+        /// <summary> The camera tran. </summary>
         [SerializeField] Transform m_CameraTran;
+        /// <summary> The move speed. </summary>
         [SerializeField] float m_MoveSpeed = 5.0f;
+        /// <summary> Gets the mouse y coordinate. </summary>
+        /// <value> The m mouse y coordinate. </value>
         private float m_MouseX, m_MouseY;
+        /// <summary> True to need update rotation. </summary>
         private bool m_NeedUpdateRotation = false;
+        /// <summary> True to need update position. </summary>
         private bool m_NeedUpdatePosition = false;
 
+        /// <summary> Updates this object. </summary>
         void Update()
         {
             if (Input.GetKeyUp(KeyCode.R))

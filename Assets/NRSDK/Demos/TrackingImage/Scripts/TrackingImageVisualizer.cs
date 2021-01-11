@@ -1,29 +1,42 @@
-﻿namespace NRKernal.NRExamples
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+namespace NRKernal.NRExamples
 {
     using UnityEngine;
 
-    /// <summary>
-    /// Uses 4 frame corner objects to visualize an TrackingImage.
-    /// </summary>
+    /// <summary> Uses 4 frame corner objects to visualize an TrackingImage. </summary>
     public class TrackingImageVisualizer : MonoBehaviour
     {
-        // The TrackingImage to visualize.
+        /// <summary> The TrackingImage to visualize. </summary>
         public NRTrackableImage Image;
 
-        // A model for the lower left corner of the frame to place when an image is detected.
+        /// <summary>
+        /// A model for the lower left corner of the frame to place when an image is detected. </summary>
         public GameObject FrameLowerLeft;
 
-        // A model for the lower right corner of the frame to place when an image is detected.
+        /// <summary>
+        /// A model for the lower right corner of the frame to place when an image is detected. </summary>
         public GameObject FrameLowerRight;
 
-        /// A model for the upper left corner of the frame to place when an image is detected.
+        /// <summary>
+        /// A model for the upper left corner of the frame to place when an image is detected. </summary>
         public GameObject FrameUpperLeft;
 
-        // A model for the upper right corner of the frame to place when an image is detected.
+        /// <summary>
+        /// A model for the upper right corner of the frame to place when an image is detected. </summary>
         public GameObject FrameUpperRight;
 
+        /// <summary> The axis. </summary>
         public GameObject Axis;
 
+        /// <summary> Updates this object. </summary>
         public void Update()
         {
             if (Image == null || Image.GetTrackingState() != TrackingState.Tracking)

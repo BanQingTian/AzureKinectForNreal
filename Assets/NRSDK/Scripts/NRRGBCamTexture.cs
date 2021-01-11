@@ -12,20 +12,31 @@ namespace NRKernal
     using System;
     using UnityEngine;
 
-    /// <summary>
-    /// Create a rgb camera texture.
-    /// </summary>
+    /// <summary> Create a rgb camera texture. </summary>
     public class NRRGBCamTexture : CameraModelView
     {
+        /// <summary> The on update. </summary>
         public Action<CameraTextureFrame> OnUpdate;
+        /// <summary> The current frame. </summary>
         public CameraTextureFrame CurrentFrame;
+        /// <summary> The texture. </summary>
         private Texture2D m_Texture;
 
+        /// <summary> Default constructor. </summary>
+        public NRRGBCamTexture():base(CameraImageFormat.RGB_888)
+        {
+            this.m_Texture = CreateTexture();
+        }
+
+        /// <summary> Creates the texture. </summary>
+        /// <returns> The new texture. </returns>
         private Texture2D CreateTexture()
         {
             return new Texture2D(Width, Height, TextureFormat.RGB24, false);
         }
 
+        /// <summary> Gets the texture. </summary>
+        /// <returns> The texture. </returns>
         public Texture2D GetTexture()
         {
             if (m_Texture == null)
@@ -35,11 +46,8 @@ namespace NRKernal
             return m_Texture;
         }
 
-        protected override void OnCreated()
-        {
-            this.m_Texture = CreateTexture();
-        }
-
+        /// <summary> Load raw texture data. </summary>
+        /// <param name="rgbRawDataFrame"> .</param>
         protected override void OnRawDataUpdate(FrameRawData rgbRawDataFrame)
         {
             m_Texture.LoadRawTextureData(rgbRawDataFrame.data);
@@ -51,6 +59,7 @@ namespace NRKernal
             OnUpdate?.Invoke(CurrentFrame);
         }
 
+        /// <summary> On texture stopped. </summary>
         protected override void OnStopped()
         {
             GameObject.Destroy(m_Texture);

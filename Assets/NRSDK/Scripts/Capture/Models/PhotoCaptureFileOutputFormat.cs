@@ -10,9 +10,7 @@
 
 namespace NRKernal.Record
 {
-    /// <summary>
-    /// Image Encoding Format.
-    /// </summary>
+    /// <summary> Image Encoding Format. </summary>
     public enum PhotoCaptureFileOutputFormat
     {
         /// <summary>

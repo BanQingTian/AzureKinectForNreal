@@ -10,16 +10,15 @@
 namespace NRKernal
 {
     using System.Collections.Generic;
-    using System.Threading;
-    using UnityEngine;
     using System;
+    using System.Threading.Tasks;
+    using System.Threading;
 
-    /// <summary>
-    /// Only works at Android runtime.
-    /// </summary>
+    /// <summary> Only works at Android runtime. </summary>
     public class AsyncTaskExecuter : SingleTon<AsyncTaskExecuter>
     {
-        public static Queue<Action> m_TaskQueue = new Queue<Action>();
+        /// <summary> Queue of tasks. </summary>
+        public Queue<Action> m_TaskQueue = new Queue<Action>();
 
 #if !UNITY_EDITOR
         public AsyncTaskExecuter()
@@ -46,7 +45,7 @@ namespace NRKernal
                         }
                         catch (Exception e)
                         {
-                            Debug.LogError("[AsyncTaskExecuter] Execute async task error:" + e.ToString());
+                            NRDebugger.Error("[AsyncTaskExecuter] Execute async task error:" + e.ToString());
                             throw;
                         }
                     }
@@ -55,7 +54,9 @@ namespace NRKernal
         }
 #endif
 
-        public void RunAction(Action task)
+        /// <summary> Executes the action. </summary>
+        /// <param name="task"> The task.</param>
+        internal void RunAction(Action task)
         {
             lock (m_TaskQueue)
             {
@@ -65,6 +66,50 @@ namespace NRKernal
                 task?.Invoke();
 #endif
             }
+        }
+
+        /// <summary> Executes a task witch has a timeout opration. </summary>
+        /// <param name="task">            The task.</param>
+        /// <param name="timeoutOpration"> The timeout opration.If the task does not time out, it is not
+        ///                                executed.</param>
+        /// <param name="delay">           The delay.</param>
+        internal void RunAction(Action task, Action timeoutOpration, float delay)
+        {
+            var cancleToken = new CancellationTokenSource();
+            if (delay > 0 && timeoutOpration != null)
+            {
+                Task.Factory.StartNew(async () =>
+                {
+                    await Task.Delay((int)(delay * 1000));
+                    if (cancleToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        NRDebugger.Info("[AsyncTaskExecuter] RunTimeout opration...");
+                        timeoutOpration?.Invoke();
+                    }
+                    catch (Exception e)
+                    {
+                        NRDebugger.Error("Run timeout opration exeption:" + e.ToString());
+                        throw;
+                    }
+                }, cancleToken.Token);
+            }
+
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    task?.Invoke();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                cancleToken.Cancel();
+            });
         }
     }
 }

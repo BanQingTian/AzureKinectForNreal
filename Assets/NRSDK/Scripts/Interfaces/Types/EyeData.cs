@@ -11,45 +11,29 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /// <summary>
-    /// Eye pose data.
-    /// </summary>
+    /// <summary> Eye pose data. </summary>
     public struct EyePoseData
     {
-        /// <summary>
-        /// Left eye pose.
-        /// </summary>
+        /// <summary> Left eye pose. </summary>
         public Pose LEyePose;
 
-        /// <summary>
-        /// Right eye pose.
-        /// </summary>
+        /// <summary> Right eye pose. </summary>
         public Pose REyePose;
 
-        /// <summary>
-        /// RGB eye pose.
-        /// </summary>
+        /// <summary> RGB eye pose. </summary>
         public Pose RGBEyePos;
     }
 
-    /// <summary>
-    /// Eye project matrix.
-    /// </summary>
+    /// <summary> Eye project matrix. </summary>
     public struct EyeProjectMatrixData
     {
-        /// <summary>
-        /// Left eye projectmatrix.
-        /// </summary>
+        /// <summary> Left eye projectmatrix. </summary>
         public Matrix4x4 LEyeMatrix;
 
-        /// <summary>
-        /// Right eye projectmatrix.
-        /// </summary>
+        /// <summary> Right eye projectmatrix. </summary>
         public Matrix4x4 REyeMatrix;
 
-        /// <summary>
-        /// RGB eye projectmatrix.
-        /// </summary>
+        /// <summary> RGB eye projectmatrix. </summary>
         public Matrix4x4 RGBEyeMatrix;
     }
 }

@@ -14,17 +14,23 @@ namespace NRKernal
     using System.Runtime.InteropServices;
     using System.Collections.Generic;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    
+    /// <summary> A controller state parse utility. </summary>
     public class ControllerStateParseUtility : MonoBehaviour
     {
+        /// <summary> The controller state parsers. </summary>
         private static IControllerStateParser[] m_ControllerStateParsers = new IControllerStateParser[NRInput.MAX_CONTROLLER_STATE_COUNT];
 
+        /// <summary> The default parser class type dictionary. </summary>
         private static Dictionary<ControllerType, System.Type> m_DefaultParserClassTypeDict = new Dictionary<ControllerType, System.Type>()
         {
             {ControllerType.CONTROLLER_TYPE_PHONE, typeof(NRPhoneControllerStateParser)},
             {ControllerType.CONTROLLER_TYPE_NREALLIGHT, typeof(NrealLightControllerStateParser)}
         };
 
+        /// <summary> Creates controller state parser. </summary>
+        /// <param name="parserType"> Type of the parser.</param>
+        /// <returns> The new controller state parser. </returns>
         private static IControllerStateParser CreateControllerStateParser(System.Type parserType)
         {
             if (parserType != null)
@@ -36,6 +42,9 @@ namespace NRKernal
             return null;
         }
 
+        /// <summary> Gets default controller state parser type. </summary>
+        /// <param name="controllerType"> Type of the controller.</param>
+        /// <returns> The default controller state parser type. </returns>
         private static System.Type GetDefaultControllerStateParserType(ControllerType controllerType)
         {
             if (m_DefaultParserClassTypeDict.ContainsKey(controllerType))
@@ -43,6 +52,10 @@ namespace NRKernal
             return null;
         }
 
+        /// <summary> Gets controller state parser. </summary>
+        /// <param name="controllerType"> Type of the controller.</param>
+        /// <param name="index">          Zero-based index of the.</param>
+        /// <returns> The controller state parser. </returns>
         public static IControllerStateParser GetControllerStateParser(ControllerType controllerType, int index)
         {
             System.Type parserType = GetDefaultControllerStateParserType(controllerType);
@@ -53,6 +66,9 @@ namespace NRKernal
             return m_ControllerStateParsers[index];
         }
 
+        /// <summary> Sets default controller state parser type. </summary>
+        /// <param name="controllerType"> Type of the controller.</param>
+        /// <param name="parserType">     Type of the parser.</param>
         public static void SetDefaultControllerStateParserType(ControllerType controllerType, System.Type parserType)
         {
             if (parserType == null && m_DefaultParserClassTypeDict.ContainsKey(controllerType))
@@ -66,5 +82,5 @@ namespace NRKernal
                 m_DefaultParserClassTypeDict.Add(controllerType, parserType);
         }
     }
-    /// @endcond
+    
 }

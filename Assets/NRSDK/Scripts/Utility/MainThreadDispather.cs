@@ -14,28 +14,40 @@ namespace NRKernal
     using System.Threading;
     using UnityEngine;
 
+    /// <summary> A main thread dispather. </summary>
     [ExecuteInEditMode]
     public class MainThreadDispather : MonoBehaviour
     {
+        /// <summary> A delayed queue item. </summary>
         public class DelayedQueueItem
         {
+            /// <summary> The time. </summary>
             public float time;
 
+            /// <summary> The action. </summary>
             public Action action;
         }
 
+        /// <summary> The current. </summary>
         private static MainThreadDispather _current;
 
+        /// <summary> Number of. </summary>
         private int _count;
 
+        /// <summary> True once initialization is complete. </summary>
         private static bool _initialized;
 
+        /// <summary> Identifier for the thread. </summary>
         private static int _threadId = -1;
 
+        /// <summary> The actions. </summary>
         private List<Action> _actions = new List<Action>();
 
+        /// <summary> The delayed. </summary>
         private List<MainThreadDispather.DelayedQueueItem> _delayed = new List<MainThreadDispather.DelayedQueueItem>();
 
+        /// <summary> Gets the current. </summary>
+        /// <value> The current. </value>
         public static MainThreadDispather Current
         {
             get
@@ -48,6 +60,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Initializes this object. </summary>
         public static void Initialize()
         {
             bool flag = !MainThreadDispather._initialized;
@@ -78,16 +91,22 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Executes the 'destroy' action. </summary>
         private void OnDestroy()
         {
             MainThreadDispather._initialized = false;
         }
 
+        /// <summary> Queue on main thread. </summary>
+        /// <param name="action"> The action.</param>
         public static void QueueOnMainThread(Action action)
         {
             MainThreadDispather.QueueOnMainThread(action, 0f);
         }
 
+        /// <summary> Queue on main thread. </summary>
+        /// <param name="action"> The action.</param>
+        /// <param name="time">   The time.</param>
         public static void QueueOnMainThread(Action action, float time)
         {
             if (time != 0f)
@@ -112,6 +131,8 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Executes the 'asynchronous' operation. </summary>
+        /// <param name="action"> The action.</param>
         public static void RunAsync(Action action)
         {
             new Thread(new ParameterizedThreadStart(MainThreadDispather.RunAction))
@@ -120,11 +141,14 @@ namespace NRKernal
             }.Start(action);
         }
 
+        /// <summary> Executes the action. </summary>
+        /// <param name="action"> The action.</param>
         private static void RunAction(object action)
         {
             ((Action)action)?.Invoke();
         }
 
+        /// <summary> Updates this object. </summary>
         private void Update()
         {
             List<Action> actions = this._actions;

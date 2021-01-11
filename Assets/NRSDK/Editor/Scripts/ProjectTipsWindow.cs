@@ -14,49 +14,67 @@ namespace NRKernal
     using System.IO;
     using UnityEngine.Rendering;
 
+    /// <summary> Form for viewing the project tips. </summary>
     [InitializeOnLoad]
     public class ProjectTipsWindow : EditorWindow
     {
+        /// <summary> A check. </summary>
         private abstract class Check
         {
+            /// <summary> The key. </summary>
             protected string key;
 
+            /// <summary> Ignores this object. </summary>
             public void Ignore()
             {
                 EditorPrefs.SetBool(ignorePrefix + key, true);
             }
 
+            /// <summary> Query if this object is ignored. </summary>
+            /// <returns> True if ignored, false if not. </returns>
             public bool IsIgnored()
             {
                 return EditorPrefs.HasKey(ignorePrefix + key);
             }
 
+            /// <summary> Deletes the ignore. </summary>
             public void DeleteIgnore()
             {
                 EditorPrefs.DeleteKey(ignorePrefix + key);
             }
 
+            /// <summary> Query if this object is valid. </summary>
+            /// <returns> True if valid, false if not. </returns>
             public abstract bool IsValid();
 
+            /// <summary> Draw graphical user interface. </summary>
             public abstract void DrawGUI();
 
+            /// <summary> Query if this object is fixable. </summary>
+            /// <returns> True if fixable, false if not. </returns>
             public abstract bool IsFixable();
 
+            /// <summary> Fixes this object. </summary>
             public abstract void Fix();
         }
 
+        /// <summary> A ckeck android vsyn. </summary>
         private class CkeckAndroidVsyn : Check
         {
+            /// <summary> Default constructor. </summary>
             public CkeckAndroidVsyn()
             {
                 key = this.GetType().Name;
             }
 
+            /// <summary> Query if this object is valid. </summary>
+            /// <returns> True if valid, false if not. </returns>
             public override bool IsValid()
             {
                 return QualitySettings.vSyncCount == 0;
             }
 
+            /// <summary> Draw graphical user interface. </summary>
             public override void DrawGUI()
             {
                 EditorGUILayout.HelpBox("vSyn is opened on Mobile Devices", MessageType.Error);
@@ -66,11 +84,14 @@ in dropdown list of Quality Settings > V Sync Count, choose 'Dont't Sync' for al
                 EditorGUILayout.LabelField(message, EditorStyles.textArea);
             }
 
+            /// <summary> Query if this object is fixable. </summary>
+            /// <returns> True if fixable, false if not. </returns>
             public override bool IsFixable()
             {
                 return true;
             }
 
+            /// <summary> Fixes this object. </summary>
             public override void Fix()
             {
                 if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android ||
@@ -82,13 +103,17 @@ in dropdown list of Quality Settings > V Sync Count, choose 'Dont't Sync' for al
             }
         }
 
+        /// <summary> Ckeck android SD card permission descriptor. </summary>
         private class CkeckAndroidSDCardPermission : Check
         {
+            /// <summary> Default constructor. </summary>
             public CkeckAndroidSDCardPermission()
             {
                 key = this.GetType().Name;
             }
 
+            /// <summary> Query if this object is valid. </summary>
+            /// <returns> True if valid, false if not. </returns>
             public override bool IsValid()
             {
                 if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
@@ -101,6 +126,7 @@ in dropdown list of Quality Settings > V Sync Count, choose 'Dont't Sync' for al
                 }
             }
 
+            /// <summary> Draw graphical user interface. </summary>
             public override void DrawGUI()
             {
                 EditorGUILayout.HelpBox("Sdcard permission not available", MessageType.Error);
@@ -110,11 +136,14 @@ in dropdown list of Player Settings > Other Settings > Write Permission, choose 
                 EditorGUILayout.LabelField(message, EditorStyles.textArea);
             }
 
+            /// <summary> Query if this object is fixable. </summary>
+            /// <returns> True if fixable, false if not. </returns>
             public override bool IsFixable()
             {
                 return true;
             }
 
+            /// <summary> Fixes this object. </summary>
             public override void Fix()
             {
                 if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
@@ -124,18 +153,23 @@ in dropdown list of Player Settings > Other Settings > Write Permission, choose 
             }
         }
 
+        /// <summary> A ckeck android orientation. </summary>
         private class CkeckAndroidOrientation : Check
         {
+            /// <summary> Default constructor. </summary>
             public CkeckAndroidOrientation()
             {
                 key = this.GetType().Name;
             }
 
+            /// <summary> Query if this object is valid. </summary>
+            /// <returns> True if valid, false if not. </returns>
             public override bool IsValid()
             {
                 return PlayerSettings.defaultInterfaceOrientation == UIOrientation.Portrait;
             }
 
+            /// <summary> Draw graphical user interface. </summary>
             public override void DrawGUI()
             {
                 EditorGUILayout.HelpBox("Orientation is not portrait", MessageType.Error);
@@ -145,11 +179,14 @@ in dropdown list of Player Settings > Resolution and Presentation > Default Orie
                 EditorGUILayout.LabelField(message, EditorStyles.textArea);
             }
 
+            /// <summary> Query if this object is fixable. </summary>
+            /// <returns> True if fixable, false if not. </returns>
             public override bool IsFixable()
             {
                 return true;
             }
 
+            /// <summary> Fixes this object. </summary>
             public override void Fix()
             {
                 if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
@@ -159,13 +196,17 @@ in dropdown list of Player Settings > Resolution and Presentation > Default Orie
             }
         }
 
+        /// <summary> A ckeck android graphics a pi. </summary>
         private class CkeckAndroidGraphicsAPI : Check
         {
+            /// <summary> Default constructor. </summary>
             public CkeckAndroidGraphicsAPI()
             {
                 key = this.GetType().Name;
             }
 
+            /// <summary> Query if this object is valid. </summary>
+            /// <returns> True if valid, false if not. </returns>
             public override bool IsValid()
             {
                 if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
@@ -184,6 +225,7 @@ in dropdown list of Player Settings > Resolution and Presentation > Default Orie
                 }
             }
 
+            /// <summary> Draw graphical user interface. </summary>
             public override void DrawGUI()
             {
                 EditorGUILayout.HelpBox("GraphicsAPIs is not OpenGLES3", MessageType.Error);
@@ -193,11 +235,14 @@ in dropdown list of Player Settings > Other Settings > Graphics APIs , choose 'O
                 EditorGUILayout.LabelField(message, EditorStyles.textArea);
             }
 
+            /// <summary> Query if this object is fixable. </summary>
+            /// <returns> True if fixable, false if not. </returns>
             public override bool IsFixable()
             {
                 return true;
             }
 
+            /// <summary> Fixes this object. </summary>
             public override void Fix()
             {
                 if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
@@ -207,18 +252,23 @@ in dropdown list of Player Settings > Other Settings > Graphics APIs , choose 'O
             }
         }
 
+        /// <summary> A ckeck color space. </summary>
         private class CkeckColorSpace : Check
         {
+            /// <summary> Default constructor. </summary>
             public CkeckColorSpace()
             {
                 key = this.GetType().Name;
             }
 
+            /// <summary> Query if this object is valid. </summary>
+            /// <returns> True if valid, false if not. </returns>
             public override bool IsValid()
             {
                 return PlayerSettings.colorSpace == ColorSpace.Linear;
             }
 
+            /// <summary> Draw graphical user interface. </summary>
             public override void DrawGUI()
             {
                 EditorGUILayout.HelpBox("ColorSpace is not Linear", MessageType.Warning);
@@ -228,11 +278,14 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
                 EditorGUILayout.LabelField(message, EditorStyles.textArea);
             }
 
+            /// <summary> Query if this object is fixable. </summary>
+            /// <returns> True if fixable, false if not. </returns>
             public override bool IsFixable()
             {
                 return true;
             }
 
+            /// <summary> Fixes this object. </summary>
             public override void Fix()
             {
                 if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
@@ -242,6 +295,7 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
             }
         }
 
+        /// <summary> The checks. </summary>
         private static Check[] checks = new Check[]
         {
             new CkeckAndroidVsyn(),
@@ -251,8 +305,11 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
             new CkeckColorSpace(),
         };
 
+        /// <summary> The window. </summary>
         private static ProjectTipsWindow m_Window;
+        /// <summary> The scroll position. </summary>
         private Vector2 m_ScrollPosition;
+        /// <summary> The ignore prefix. </summary>
         private const string ignorePrefix = "NRKernal.ignore";
 
         //static ProjectTipsWindow()
@@ -261,6 +318,7 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
         //    EditorApplication.update += Update;
         //}
 
+        /// <summary> Shows the window. </summary>
         [MenuItem("NRSDK/Project Tips", false, 50)]
         public static void ShowWindow()
         {
@@ -270,6 +328,7 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
             m_Window.titleContent = new GUIContent("NRSDK | Project Tips");
         }
 
+        /// <summary> Updates this object. </summary>
         private static void Update()
         {
             bool show = false;
@@ -290,6 +349,7 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
             //EditorApplication.update -= Update;
         }
 
+        /// <summary> Executes the 'graphical user interface' action. </summary>
         public void OnGUI()
         {
             var resourcePath = GetResourcePath();
@@ -446,6 +506,8 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
             GUILayout.EndHorizontal();
         }
 
+        /// <summary> Gets resource path. </summary>
+        /// <returns> The resource path. </returns>
         private string GetResourcePath()
         {
             var ms = MonoScript.FromScriptableObject(this);

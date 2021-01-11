@@ -16,19 +16,26 @@ namespace NRKernal
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    /// <summary> A nr multiply screen pointer raycaster. </summary>
     [DisallowMultipleComponent]
     public class NRMultScrPointerRaycaster : NRPointerRaycaster
     {
+        /// <summary> The mouse. </summary>
         public GameObject Mouse;
 
+        /// <summary> The camera. </summary>
         private Camera m_UICamera;
+        /// <summary> Width of the screen. </summary>
         private float m_ScreenWidth;
+        /// <summary> Height of the screen. </summary>
         private float m_ScreenHeight;
+        /// <summary> The last touch. </summary>
         private Vector3 m_LastTouch = m_FarAwayPos;
 
+        /// <summary> The far away position. </summary>
         private static Vector3 m_FarAwayPos = Vector3.one * 10000f;
 
+        /// <summary> <para>See MonoBehaviour.Start.</para> </summary>
         protected override void Start()
         {
             base.Start();
@@ -40,12 +47,15 @@ namespace NRKernal
             m_ScreenHeight = resolution.y;
         }
 
+        /// <summary> Updates the screen size described by size. </summary>
+        /// <param name="size"> The size.</param>
         public void UpdateScreenSize(Vector2 size)
         {
             m_ScreenWidth = size.x;
             m_ScreenHeight = size.y;
         }
 
+        /// <summary> Raycasts this object. </summary>
         public override void Raycast()
         {
             sortedRaycastResults.Clear();
@@ -58,14 +68,14 @@ namespace NRKernal
             RaycastResult firstHit = default(RaycastResult);
             distance = amountDistance;
 
-            var touch_x = MultiScreenController.SystemButtonState.originTouch.x;
-            var touch_y = MultiScreenController.SystemButtonState.originTouch.y;
+            var touch_x = NRVirtualDisplayer.SystemButtonState.originTouch.x;
+            var touch_y = NRVirtualDisplayer.SystemButtonState.originTouch.y;
             var realTouchPos = new Vector3((touch_x + 1) * m_ScreenWidth * 0.5f, (touch_y + 1) * m_ScreenHeight * 0.5f, 0f);
-            Vector3 touchpos = MultiScreenController.SystemButtonState.pressing ? realTouchPos : m_LastTouch;
-            m_LastTouch = MultiScreenController.SystemButtonState.pressing ? touchpos : m_FarAwayPos;
+            Vector3 touchpos = NRVirtualDisplayer.SystemButtonState.pressing ? realTouchPos : m_LastTouch;
+            m_LastTouch = NRVirtualDisplayer.SystemButtonState.pressing ? touchpos : m_FarAwayPos;
             touchpos = m_UICamera.ScreenToWorldPoint(touchpos);
 
-            //Debug.LogFormat("[PhoneDisplay] origin touch:{0} realTouchPos:{1} touchpos:{2} screenWidth:{3} screenHeight:{4}",
+            //NRDebugger.Info("[PhoneDisplay] origin touch:{0} realTouchPos:{1} touchpos:{2} screenWidth:{3} screenHeight:{4}",
             //    MultiScreenController.SystemButtonState.originTouch, realTouchPos, touchpos, m_ScreenWidth, m_ScreenHeight);
 
             if (Mouse)
@@ -101,6 +111,13 @@ namespace NRKernal
 #endif
         }
 
+        /// <summary> Graphic raycast. </summary>
+        /// <param name="canvas">                 The canvas.</param>
+        /// <param name="ignoreReversedGraphics"> True to ignore reversed graphics.</param>
+        /// <param name="ray">                    The ray.</param>
+        /// <param name="distance">               The distance.</param>
+        /// <param name="raycaster">              The raycaster.</param>
+        /// <param name="raycastResults">         The raycast results.</param>
         public override void GraphicRaycast(Canvas canvas, bool ignoreReversedGraphics, Ray ray, float distance, NRPointerRaycaster raycaster, List<RaycastResult> raycastResults)
         {
             if (canvas == null) { return; }
@@ -141,5 +158,5 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
+    
 }

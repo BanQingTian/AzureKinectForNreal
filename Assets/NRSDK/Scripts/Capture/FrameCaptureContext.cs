@@ -12,15 +12,24 @@ namespace NRKernal.Record
     using System;
     using UnityEngine;
 
+    /// <summary> A frame capture context. </summary>
     public class FrameCaptureContext
     {
+        /// <summary> The blender. </summary>
         private FrameBlender m_Blender;
+        /// <summary> The encoder. </summary>
         private IEncoder m_Encoder;
+        /// <summary> Options for controlling the camera. </summary>
         private CameraParameters m_CameraParameters;
+        /// <summary> The frame provider. </summary>
         private AbstractFrameProvider m_FrameProvider;
+        /// <summary> The capture behaviour. </summary>
         private CaptureBehaviourBase m_CaptureBehaviour;
+        /// <summary> True if is initialize, false if not. </summary>
         private bool m_IsInit = false;
 
+        /// <summary> Gets the preview texture. </summary>
+        /// <value> The preview texture. </value>
         public Texture PreviewTexture
         {
             get
@@ -29,36 +38,50 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> Gets the behaviour. </summary>
+        /// <returns> The behaviour. </returns>
         public CaptureBehaviourBase GetBehaviour()
         {
             return m_CaptureBehaviour;
         }
 
+        /// <summary> Gets frame provider. </summary>
+        /// <returns> The frame provider. </returns>
         public AbstractFrameProvider GetFrameProvider()
         {
             return m_FrameProvider;
         }
 
+        /// <summary> Gets the blender. </summary>
+        /// <returns> The blender. </returns>
         public FrameBlender GetBlender()
         {
             return m_Blender;
         }
 
+        /// <summary> Request camera parameter. </summary>
+        /// <returns> The CameraParameters. </returns>
         public CameraParameters RequestCameraParam()
         {
             return m_CameraParameters;
         }
 
+        /// <summary> Gets the encoder. </summary>
+        /// <returns> The encoder. </returns>
         public IEncoder GetEncoder()
         {
             return m_Encoder;
         }
 
+        /// <summary> Constructor. </summary>
+        /// <param name="provider"> The provider.</param>
         public FrameCaptureContext(AbstractFrameProvider provider)
         {
             this.m_FrameProvider = provider;
         }
 
+        /// <summary> Starts capture mode. </summary>
+        /// <param name="param"> The parameter.</param>
         public void StartCaptureMode(CameraParameters param)
         {
             if (m_IsInit)
@@ -76,6 +99,10 @@ namespace NRKernal.Record
             this.m_IsInit = true;
         }
 
+        /// <summary> Gets capture behaviour by mode. </summary>
+        /// <exception cref="Exception"> Thrown when an exception error condition occurs.</exception>
+        /// <param name="mode"> The mode.</param>
+        /// <returns> The capture behaviour by mode. </returns>
         private CaptureBehaviourBase GetCaptureBehaviourByMode(CamMode mode)
         {
             if (mode == CamMode.PhotoMode)
@@ -106,6 +133,10 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> Gets encoder by mode. </summary>
+        /// <exception cref="Exception"> Thrown when an exception error condition occurs.</exception>
+        /// <param name="mode"> The mode.</param>
+        /// <returns> The encoder by mode. </returns>
         private IEncoder GetEncoderByMode(CamMode mode)
         {
             if (mode == CamMode.PhotoMode)
@@ -122,11 +153,13 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> Stops capture mode. </summary>
         public void StopCaptureMode()
         {
             this.Release();
         }
 
+        /// <summary> Starts a capture. </summary>
         public void StartCapture()
         {
             if (!m_IsInit)
@@ -137,6 +170,7 @@ namespace NRKernal.Record
             m_FrameProvider?.Play();
         }
 
+        /// <summary> Stops a capture. </summary>
         public void StopCapture()
         {
             if (!m_IsInit)
@@ -147,6 +181,7 @@ namespace NRKernal.Record
             m_Encoder?.Stop();
         }
 
+        /// <summary> Releases this object. </summary>
         public void Release()
         {
             if (!m_IsInit)

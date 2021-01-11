@@ -12,18 +12,25 @@ namespace NRKernal
     using UnityEngine;
 
     /// <summary>
-    /// The class is to emulate controller with mouse and keyboard input in unity editor mode
-    /// </summary>
+    /// The class is to emulate controller with mouse and keyboard input in unity editor mode. </summary>
     public class EditorControllerProvider : ControllerProviderBase
     {
+        /// <summary> The mouse delta. </summary>
         private Vector2 mouseDelta = new Vector2();
 
+        /// <summary> The axis horizontal. </summary>
         private const string AXIS_HORIZONTAL = "Horizontal";
+        /// <summary> The axis vertical. </summary>
         private const string AXIS_VERTICAL = "Vertical";
+        /// <summary> The axis mouse x coordinate. </summary>
         private const string AXIS_MOUSE_X = "Mouse X";
+        /// <summary> The axis mouse y coordinate. </summary>
         private const string AXIS_MOUSE_Y = "Mouse Y";
+        /// <summary> The rotate sensitivity. </summary>
         private const float ROTATE_SENSITIVITY = 4;
 
+        /// <summary> Gets the number of controllers. </summary>
+        /// <value> The number of controllers. </value>
         public override int ControllerCount
         {
             get
@@ -32,21 +39,26 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Constructor. </summary>
+        /// <param name="states"> The states.</param>
         public EditorControllerProvider(ControllerState[] states) : base(states)
         {
             Inited = true;
         }
 
+        /// <summary> Executes the 'pause' action. </summary>
         public override void OnPause()
         {
 
         }
 
+        /// <summary> Executes the 'resume' action. </summary>
         public override void OnResume()
         {
 
         }
 
+        /// <summary> Updates this object. </summary>
         public override void Update()
         {
             if (!Inited)
@@ -54,11 +66,14 @@ namespace NRKernal
             UpdateControllerState(0);
         }
 
+        /// <summary> Executes the 'destroy' action. </summary>
         public override void OnDestroy()
         {
 
         }
 
+        /// <summary> Updates the controller state described by index. </summary>
+        /// <param name="index"> Zero-based index of the.</param>
         private void UpdateControllerState(int index)
         {
             states[index].controllerType = ControllerType.CONTROLLER_TYPE_EDITOR;
@@ -87,6 +102,8 @@ namespace NRKernal
             CheckRecenter(index);
         }
 
+        /// <summary> Updates the rotation described by index. </summary>
+        /// <param name="index"> Zero-based index of the.</param>
         private void UpdateRotation(int index)
         {
             if (Input.GetKey(KeyCode.LeftShift))
@@ -101,6 +118,8 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Check recenter. </summary>
+        /// <param name="index"> Zero-based index of the.</param>
         private void CheckRecenter(int index)
         {
             if (states[index].GetButtonDown(ControllerButton.APP))

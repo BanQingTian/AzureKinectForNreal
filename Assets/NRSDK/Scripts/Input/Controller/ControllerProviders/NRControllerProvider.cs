@@ -13,23 +13,33 @@ namespace NRKernal
     using UnityEngine;
 
     /// <summary>
-    /// This class obtains the runtime information of controller devices through a native controller plugin, and would use these info to update controller states.
-    /// </summary>
+    /// This class obtains the runtime information of controller devices through a native controller
+    /// plugin, and would use these info to update controller states. </summary>
     internal partial class NRControllerProvider : ControllerProviderBase
     {
+        /// <summary> The native controller. </summary>
         private NativeController m_NativeController;
+        /// <summary> The processed frame. </summary>
         private int m_ProcessedFrame;
+        /// <summary> True to need initialize. </summary>
         private bool m_NeedInit = true;
+        /// <summary> True to need recenter. </summary>
         private bool m_NeedRecenter;
+        /// <summary> Array of home pressing timers. </summary>
         private float[] homePressingTimerArr = new float[NRInput.MAX_CONTROLLER_STATE_COUNT];
 
+        /// <summary> The home long press time. </summary>
         private const float HOME_LONG_PRESS_TIME = 1.1f;
 
+        /// <summary> Constructor. </summary>
+        /// <param name="states"> The states.</param>
         public NRControllerProvider(ControllerState[] states) : base(states)
         {
 
         }
 
+        /// <summary> Gets the number of controllers. </summary>
+        /// <value> The number of controllers. </value>
         public override int ControllerCount
         {
             get
@@ -40,6 +50,9 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Gets a version. </summary>
+        /// <param name="index"> Zero-based index of the controller.</param>
+        /// <returns> The version. </returns>
         public string GetVersion(int index)
         {
             if (m_NativeController != null)
@@ -49,6 +62,7 @@ namespace NRKernal
             return string.Empty;
         }
 
+        /// <summary> Executes the 'pause' action. </summary>
         public override void OnPause()
         {
             if (m_NativeController != null)
@@ -57,6 +71,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Executes the 'resume' action. </summary>
         public override void OnResume()
         {
             if (m_NativeController != null)
@@ -65,6 +80,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Updates this object. </summary>
         public override void Update()
         {
             if (m_ProcessedFrame == Time.frameCount)
@@ -88,6 +104,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Executes the 'destroy' action. </summary>
         public override void OnDestroy()
         {
             if (m_NativeController != null)
@@ -97,6 +114,11 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Trigger haptic vibration. </summary>
+        /// <param name="index">           Zero-based index of the controller.</param>
+        /// <param name="durationSeconds"> (Optional) The duration in seconds.</param>
+        /// <param name="frequency">       (Optional) The frequency.</param>
+        /// <param name="amplitude">       (Optional) The amplitude.</param>
         public override void TriggerHapticVibration(int index, float durationSeconds = 0.1f, float frequency = 1000f, float amplitude = 0.5f)
         {
             if (!Inited)
@@ -115,32 +137,36 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Recenters this object. </summary>
         public override void Recenter()
         {
             base.Recenter();
             m_NeedRecenter = true;
         }
 
+        /// <summary> Initializes the native controller. </summary>
         private void InitNativeController()
         {
             m_NativeController = new NativeController();
             if (m_NativeController.Init())
             {
                 Inited = true;
-                NRDebugger.Log("NRControllerProvider Init Succeed");
+                NRDebugger.Info("[NRControllerProvider] Init Succeed");
             }
             else
             {
                 m_NativeController = null;
-                NRDebugger.LogError("NRControllerProvider Init Failed !!");
+                NRDebugger.Error("[NRControllerProvider] Init Failed !!");
             }
 
 #if !UNITY_EDITOR
-            NRDebugger.Log("[NRInput] version:" + GetVersion(0));
+            NRDebugger.Info("[NRInput] version:" + GetVersion(0));
 #endif
             m_NeedInit = false;
         }
 
+        /// <summary> Updates the controller state described by index. </summary>
+        /// <param name="index"> Zero-based index of the.</param>
         private void UpdateControllerState(int index)
         {
             m_NativeController.UpdateState(index);
@@ -186,6 +212,8 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Check recenter. </summary>
+        /// <param name="index"> Zero-based index of the.</param>
         private void CheckRecenter(int index)
         {
             if (states[index].GetButton(ControllerButton.APP))
@@ -203,6 +231,7 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Updates the head pose to controller. </summary>
         private void UpdateHeadPoseToController()
         {
             if (m_NativeController != null && NRInput.CameraCenter)

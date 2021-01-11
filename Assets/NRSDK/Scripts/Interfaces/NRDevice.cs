@@ -15,72 +15,102 @@ namespace NRKernal
     using System.Threading;
     using UnityEngine;
 
-    /// <summary>
-    /// Manage the HMD device and quit 
-    /// </summary>
-    public partial class NRDevice : SingleTon<NRDevice>
+    /// <summary> Manage the HMD device and quit. </summary>
+    public class NRDevice : SingleTon<NRDevice>
     {
+        /// <summary> Values that represent glasses event types. </summary>
         public enum GlassesEventType
         {
+            /// <summary> An enum constant representing the put on option. </summary>
             PutOn,
+            /// <summary> An enum constant representing the put off option. </summary>
             PutOff,
+            /// <summary> An enum constant representing the plug out option. </summary>
             PlugOut
         }
+        /// <summary> Glasses event. </summary>
+        /// <param name="eventtype"> The eventtype.</param>
         public delegate void GlassesEvent(GlassesEventType eventtype);
+        /// <summary> Glasses disconnect event. </summary>
+        /// <param name="reason"> The reason.</param>
         public delegate void GlassesDisconnectEvent(GlassesDisconnectReason reason);
+        /// <summary> Glassed temporary level changed. </summary>
+        /// <param name="level"> The level.</param>
         public delegate void GlassedTempLevelChanged(GlassesTemperatureLevel level);
+        /// <summary> Event queue for all listeners interested in OnGlassesStateChanged events. </summary>
         public static event GlassesEvent OnGlassesStateChanged;
+        /// <summary> Event queue for all listeners interested in OnGlassesDisconnect events. </summary>
         public static event GlassesDisconnectEvent OnGlassesDisconnect;
+        /// <summary>
+        /// Event queue for all listeners interested in OnGlassesTempLevelChanged events. </summary>
         public static event GlassedTempLevelChanged OnGlassesTempLevelChanged;
+        private const float SDK_RELEASE_TIMEOUT = 2f;
 
+        /// <summary> The native hmd. </summary>
         private NativeHMD m_NativeHMD;
+        /// <summary> Gets the native hmd. </summary>
+        /// <value> The native hmd. </value>
         public NativeHMD NativeHMD
         {
             get
             {
-                if (isGlassesPlugOut)
+                if (m_IsGlassesPlugOut)
                 {
                     return null;
-                }
-                if (!m_IsInit)
-                {
-                    this.Init();
                 }
                 return m_NativeHMD;
             }
         }
 
+        /// <summary> The lock. </summary>
         private readonly object m_Lock = new object();
+        /// <summary> The native glasses controller. </summary>
         private NativeGlassesController m_NativeGlassesController;
+        /// <summary> Gets the native glasses controller. </summary>
+        /// <value> The native glasses controller. </value>
         public NativeGlassesController NativeGlassesController
         {
             get
             {
-                if (isGlassesPlugOut)
+                if (m_IsGlassesPlugOut)
                 {
                     return null;
-                }
-                if (!m_IsInit)
-                {
-                    this.Init();
                 }
                 return m_NativeGlassesController;
             }
         }
 
+        /// <summary> True if is initialize, false if not. </summary>
         private bool m_IsInit = false;
-        private static bool isGlassesPlugOut = false;
+        /// <summary> True if is glasses plug out, false if not. </summary>
+        private static bool m_IsGlassesPlugOut = false;
+        /// <summary> Gets a value indicating whether this object is glasses plug out. </summary>
+        /// <value> True if this object is glasses plug out, false if not. </value>
+        public bool IsGlassesPlugOut
+        {
+            get
+            {
+                return IsGlassesPlugOut;
+            }
+        }
+
+        private Exception m_InitException = null;
+
 
 #if UNITY_ANDROID && !UNITY_EDITOR
         private static AndroidJavaObject m_UnityActivity;
 #endif
 
-        /// <summary>
-        /// Init HMD device.
-        /// </summary>
+        /// <summary> Init HMD device. </summary>
         public void Init()
         {
-            if (m_IsInit || isGlassesPlugOut)
+            // Keep the exception state.
+            if (m_InitException != null)
+            {
+                throw m_InitException;
+            }
+
+            if (m_IsInit || m_IsGlassesPlugOut)
             {
                 return;
             }
@@ -92,36 +122,39 @@ namespace NRKernal
             m_UnityActivity = cls_UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
             NativeApi.NRSDKInitSetAndroidActivity(m_UnityActivity.GetRawObject()); 
 #endif
-            CreateGlassesController();
-            CreateHMD();
+            try
+            {
+                CreateGlassesController();
+                CreateHMD();
+            }
+            catch (Exception e)
+            {
+                m_InitException = e;
+                throw e;
+            }
 
             m_IsInit = true;
         }
 
+        /// <summary> Pauses this object. </summary>
         public void Pause()
         {
-            if (isGlassesPlugOut)
-            {
-                return;
-            }
             PauseGlassesController();
             PauseHMD();
         }
 
+        /// <summary> Resumes this object. </summary>
         public void Resume()
         {
-            if (isGlassesPlugOut)
-            {
-                return;
-            }
             ResumeGlassesController();
             ResumeHMD();
         }
 
         #region HMD
+        /// <summary> Creates the hmd. </summary>
         private void CreateHMD()
         {
-            if (isGlassesPlugOut)
+            if (m_IsGlassesPlugOut)
             {
                 return;
             }
@@ -134,12 +167,9 @@ namespace NRKernal
 #endif
         }
 
+        /// <summary> Pause hmd. </summary>
         private void PauseHMD()
         {
-            if (isGlassesPlugOut)
-            {
-                return;
-            }
 #if !UNITY_EDITOR
             lock (m_Lock)
             {
@@ -148,12 +178,9 @@ namespace NRKernal
 #endif
         }
 
+        /// <summary> Resume hmd. </summary>
         private void ResumeHMD()
         {
-            if (isGlassesPlugOut)
-            {
-                return;
-            }
 #if !UNITY_EDITOR
             lock (m_Lock)
             {
@@ -162,6 +189,7 @@ namespace NRKernal
 #endif
         }
 
+        /// <summary> Destroys the hmd. </summary>
         private void DestroyHMD()
         {
 #if !UNITY_EDITOR
@@ -173,22 +201,32 @@ namespace NRKernal
 #endif
         }
 
+        /// <summary> Gets RGB camera resolution. </summary>
+        /// <exception cref="NRGlassesConnectError"> Raised when a NR Glasses Connect error condition
+        ///                                          occurs.</exception>
+        /// <returns> The RGB camera resolution. </returns>
         public NativeResolution GetRGBCameraResolution()
         {
+#if !UNITY_EDITOR
             if (NativeHMD == null)
             {
                 throw new NRGlassesConnectError("Init hmd device faild.");
             }
             return NativeHMD.GetEyeResolution((int)NativeEye.LEFT);
+#else
+            return new NativeResolution(1280, 720);
+#endif
         }
         #endregion
 
         #region Glasses Controller
+        /// <summary> Gets the temperature level. </summary>
+        /// <value> The temperature level. </value>
         public GlassesTemperatureLevel TemperatureLevel
         {
             get
             {
-                if (isGlassesPlugOut)
+                if (m_IsGlassesPlugOut)
                 {
                     return GlassesTemperatureLevel.TEMPERATURE_LEVEL_NORMAL;
                 }
@@ -201,9 +239,10 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Creates glasses controller. </summary>
         private void CreateGlassesController()
         {
-            if (isGlassesPlugOut)
+            if (m_IsGlassesPlugOut)
             {
                 return;
             }
@@ -226,12 +265,9 @@ namespace NRKernal
 #endif
         }
 
+        /// <summary> Pause glasses controller. </summary>
         private void PauseGlassesController()
         {
-            if (isGlassesPlugOut)
-            {
-                return;
-            }
 #if !UNITY_EDITOR
             lock (m_Lock)
             {
@@ -240,12 +276,9 @@ namespace NRKernal
 #endif
         }
 
+        /// <summary> Resume glasses controller. </summary>
         private void ResumeGlassesController()
         {
-            if (isGlassesPlugOut)
-            {
-                return;
-            }
 #if !UNITY_EDITOR
             lock (m_Lock)
             {
@@ -254,6 +287,7 @@ namespace NRKernal
 #endif
         }
 
+        /// <summary> Destroys the glasses controller. </summary>
         private void DestroyGlassesController()
         {
 #if !UNITY_EDITOR
@@ -266,79 +300,83 @@ namespace NRKernal
 #endif
         }
 
-        [MonoPInvokeCallback(typeof(NativeGlassesController.NRGlassesControlWearCallback))]
+        /// <summary> Executes the 'glasses wear' action. </summary>
+        /// <param name="glasses_control_handle"> Handle of the glasses control.</param>
+        /// <param name="wearing_status">         The wearing status.</param>
+        /// <param name="user_data">              Information describing the user.</param>
+        [MonoPInvokeCallback(typeof(NRGlassesControlWearCallback))]
         private static void OnGlassesWear(UInt64 glasses_control_handle, int wearing_status, UInt64 user_data)
         {
-            Debug.Log("[NRDevice] " + (wearing_status == 1 ? "Glasses put on" : "Glasses put off"));
+            NRDebugger.Info("[NRDevice] " + (wearing_status == 1 ? "Glasses put on" : "Glasses put off"));
             MainThreadDispather.QueueOnMainThread(() =>
             {
                 OnGlassesStateChanged?.Invoke(wearing_status == 1 ? GlassesEventType.PutOn : GlassesEventType.PutOff);
             });
         }
 
-        [MonoPInvokeCallback(typeof(NativeGlassesController.NRGlassesControlNotifyQuitAppCallback))]
+        /// <summary> Executes the 'glasses disconnect event' action. </summary>
+        /// <exception cref="Exception"> Thrown when an exception error condition occurs.</exception>
+        /// <param name="glasses_control_handle"> Handle of the glasses control.</param>
+        /// <param name="user_data">              Information describing the user.</param>
+        /// <param name="reason">                 The reason.</param>
+        [MonoPInvokeCallback(typeof(NRGlassesControlNotifyQuitAppCallback))]
         private static void OnGlassesDisconnectEvent(UInt64 glasses_control_handle, IntPtr user_data, GlassesDisconnectReason reason)
         {
-            if (isGlassesPlugOut)
+            if (m_IsGlassesPlugOut)
             {
                 return;
             }
-            isGlassesPlugOut = true;
+            m_IsGlassesPlugOut = true;
 
-            Debug.Log("[NRDevice] OnGlassesDisconnectEvent:" + reason.ToString());
+            NRDebugger.Info("[NRDevice] OnGlassesDisconnectEvent:" + reason.ToString());
             try
             {
                 OnGlassesDisconnect?.Invoke(reason);
             }
             catch (Exception e)
             {
-                Debug.Log("[NRDevice] Operate OnGlassesDisconnect event error:" + e.ToString());
+                NRDebugger.Info("[NRDevice] Operate OnGlassesDisconnect event error:" + e.ToString());
                 throw e;
             }
             finally
             {
-                if (NRSessionManager.Instance.SessionState == SessionState.Running)
-                {
-                    MainThreadDispather.QueueOnMainThread(() =>
-                    {
-                        Application.Quit();
-                    });
-                }
-                else
+                // If NRSDK release time out in 2 seconds, FoceKill the process.
+                AsyncTaskExecuter.Instance.RunAction(() =>
                 {
                     ForceKill(true);
-                }
+                }, () =>
+                {
+                    NRDebugger.Error("[NRDevice] Release sdk timeout, force kill the process!!!");
+                    ForceKill(false);
+                }, SDK_RELEASE_TIMEOUT);
             }
         }
         #endregion
 
         #region Quit
-        /// <summary>
-        /// Quit the app.
-        /// </summary>
+        /// <summary> Quit the app. </summary>
         public static void QuitApp()
         {
-            Debug.Log("[NRDevice] Start To Quit Application...");
+            NRDebugger.Info("[NRDevice] Start To Quit Application.");
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+            ForceKill();
 #endif
         }
 
-        /// <summary>
-        /// Force kill the app.
-        /// </summary>
-        public static void ForceKill(bool needrelease = false)
+        /// <summary> Force kill the app. Avoid timeout to pause UnityEngine. </summary>
+        /// <exception cref="Exception"> Thrown when an exception error condition occurs.</exception>
+        public static void ForceKill(bool needrelease = true)
         {
-            Debug.Log("[NRDevice] Start To ForceKill Application need release sdk?:" + needrelease);
+            NRDebugger.Info("[NRDevice] Start To ForceKill Application needrelease sdk:" + needrelease);
             try
             {
-                if (needrelease)
-                {
-                    NRInput.Destroy();
-                    NRSessionManager.Instance.DestroySession();
-                }
+                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
+                NRInput.Destroy();
+                NRSessionManager.Instance.DestroySession();
+                NRDebugger.Info("[NRDevice] release sdk cost:{0} ms", stopwatch.ElapsedMilliseconds);
             }
             catch (Exception e)
             {
@@ -348,6 +386,8 @@ namespace NRKernal
             {
 #if UNITY_ANDROID && !UNITY_EDITOR
                 AndroidJNI.AttachCurrentThread();
+                m_UnityActivity?.Call("finish");
+
                 AndroidJavaClass processClass = new AndroidJavaClass("android.os.Process");
                 int myPid = processClass.CallStatic<int>("myPid");
                 processClass.CallStatic("killProcess", myPid);
@@ -355,9 +395,7 @@ namespace NRKernal
             }
         }
 
-        /// <summary>
-        /// Destory HMD resource.
-        /// </summary>
+        /// <summary> Destory HMD resource. </summary>
         public void Destroy()
         {
             DestroyGlassesController();

@@ -10,8 +10,10 @@
 namespace NRKernal
 {
     using UnityEngine;
+    /// <summary> A nr trackable plane behaviour. </summary>
     public class NRTrackablePlaneBehaviour : NRTrackableBehaviour
     {
+        /// <summary> Starts this object. </summary>
         private void Start()
         {
 #if UNITY_EDITOR
@@ -28,6 +30,7 @@ namespace NRKernal
         }
 
 #if UNITY_EDITOR
+        /// <summary> Updates this object. </summary>
         private void Update()
         {
             float extent = transform.lossyScale.x * 1000;

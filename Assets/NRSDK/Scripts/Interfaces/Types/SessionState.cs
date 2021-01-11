@@ -9,9 +9,7 @@
 
 namespace NRKernal
 {
-    /// <summary>
-    /// Device Session State.
-    /// </summary>
+    /// <summary> Device Session State. </summary>
     public enum SessionState
     {
         /// <summary>

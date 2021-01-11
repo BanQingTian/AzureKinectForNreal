@@ -13,12 +13,17 @@ namespace NRKernal.Record
     using UnityEngine;
     using System.Collections;
 
+    /// <summary> An editor frame provider. </summary>
     public class EditorFrameProvider : AbstractFrameProvider
     {
+        /// <summary> The default texture. </summary>
         private Texture2D m_DefaultTexture;
+        /// <summary> The default frame. </summary>
         private CameraTextureFrame m_DefaultFrame;
+        /// <summary> True if is play, false if not. </summary>
         private bool m_IsPlay = false;
 
+        /// <summary> Default constructor. </summary>
         public EditorFrameProvider()
         {
             m_DefaultTexture = Resources.Load<Texture2D>("Record/Textures/captureDefault");
@@ -28,6 +33,8 @@ namespace NRKernal.Record
             NRKernalUpdater.Instance.StartCoroutine(UpdateFrame());
         }
 
+        /// <summary> Updates the frame. </summary>
+        /// <returns> An IEnumerator. </returns>
         public IEnumerator UpdateFrame()
         {
             while (true)
@@ -42,6 +49,8 @@ namespace NRKernal.Record
             }
         }
 
+        /// <summary> Gets frame information. </summary>
+        /// <returns> The frame information. </returns>
         public override Resolution GetFrameInfo()
         {
             Resolution resolution = new Resolution();
@@ -50,16 +59,19 @@ namespace NRKernal.Record
             return resolution;
         }
 
+        /// <summary> Plays this object. </summary>
         public override void Play()
         {
             m_IsPlay = true;
         }
 
+        /// <summary> Stops this object. </summary>
         public override void Stop()
         {
             m_IsPlay = false;
         }
 
+        /// <summary> Releases this object. </summary>
         public override void Release()
         {
             m_IsPlay = false;

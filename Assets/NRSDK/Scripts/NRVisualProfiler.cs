@@ -18,167 +18,235 @@ using Windows.System;
 #endif
 
     /// <summary>
-    /// ABOUT: The VisualProfiler provides a drop in, single file, solution for viewing 
-    /// your Nreal Unity application's frame rate and memory usage. Missed 
-    /// frames are displayed over time to visually find problem areas. Memory is reported 
-    /// as current, peak and max usage in a bar graph. 
+    /// ABOUT: The VisualProfiler provides a drop in, single file, solution for viewing your Nreal
+    /// Unity application's frame rate and memory usage. Missed frames are displayed over time to
+    /// visually find problem areas. Memory is reported as current, peak and max usage in a bar graph.
     /// 
-    /// USAGE: To use this profiler simply add this script as a component of any GameObject in 
-    /// your Unity scene. The profiler is initially active and visible (toggle-able via the 
-    /// IsVisible property), but can be toggled via the enabled/disable voice commands keywords.
-    ///
-    /// NOTE: For improved rendering performance you can optionally include the 
-    /// "Nreal/Instanced-Colored" shader in your project along with the VisualProfiler.
-    /// </summary>
+    /// USAGE: To use this profiler simply add this script as a component of any GameObject in your
+    /// Unity scene. The profiler is initially active and visible (toggle-able via the IsVisible
+    /// property), but can be toggled via the enabled/disable voice commands keywords.
+    /// 
+    /// NOTE: For improved rendering performance you can optionally include the "Nreal/Instanced-
+    /// Colored" shader in your project along with the VisualProfiler. </summary>
     public class NRVisualProfiler : MonoBehaviour
     {
+        /// <summary> The maximum length of the string. </summary>
         private static readonly int maxStringLength = 32;
+        /// <summary> The maximum target frame rate. </summary>
         private static readonly int maxTargetFrameRate = 120;
+        /// <summary> The maximum frame timings. </summary>
         private static readonly int maxFrameTimings = 128;
+        /// <summary> The frame range. </summary>
         private static readonly int frameRange = 30;
+        /// <summary> The default window rotation. </summary>
         private static readonly Vector2 defaultWindowRotation = new Vector2(10.0f, 20.0f);
+        /// <summary> The default window scale. </summary>
         private static readonly Vector3 defaultWindowScale = new Vector3(0.2f, 0.04f, 1.0f);
+        /// <summary> The used memory string. </summary>
         private static readonly string usedMemoryString = "Used: ";
+        /// <summary> The peak memory string. </summary>
         private static readonly string peakMemoryString = "Peak: ";
+        /// <summary> The limit memory string. </summary>
         private static readonly string limitMemoryString = "Limit: ";
 
+        /// <summary> Gets or sets the window parent. </summary>
+        /// <value> The window parent. </value>
         public Transform WindowParent { get; set; } = null;
 
+        /// <summary> True if is visible, false if not. </summary>
         [Header("Profiler Settings")]
         [SerializeField, Tooltip("Is the profiler currently visible.")]
         private bool isVisible = true;
 
+        /// <summary> Gets or sets a value indicating whether this object is visible. </summary>
+        /// <value> True if this object is visible, false if not. </value>
         public bool IsVisible
         {
             get { return isVisible; }
             set { isVisible = value; }
         }
 
+        /// <summary> The frame sample rate. </summary>
         [SerializeField, Tooltip("The amount of time, in seconds, to collect frames for frame rate calculation.")]
         private float frameSampleRate = 0.1f;
 
+        /// <summary> Gets or sets the frame sample rate. </summary>
+        /// <value> The frame sample rate. </value>
         public float FrameSampleRate
         {
             get { return frameSampleRate; }
             set { frameSampleRate = value; }
         }
 
+        /// <summary> The window anchor. </summary>
         [Header("Window Settings")]
         [SerializeField, Tooltip("What part of the view port to anchor the window to.")]
         private TextAnchor windowAnchor = TextAnchor.LowerCenter;
 
+        /// <summary> Gets or sets the window anchor. </summary>
+        /// <value> The window anchor. </value>
         public TextAnchor WindowAnchor
         {
             get { return windowAnchor; }
             set { windowAnchor = value; }
         }
 
+        /// <summary> The window offset. </summary>
         [SerializeField, Tooltip("The offset from the view port center applied based on the window anchor selection.")]
         private Vector2 windowOffset = new Vector2(0.1f, 0.1f);
 
+        /// <summary> Gets or sets the window offset. </summary>
+        /// <value> The window offset. </value>
         public Vector2 WindowOffset
         {
             get { return windowOffset; }
             set { windowOffset = value; }
         }
 
+        /// <summary> The window scale. </summary>
         [SerializeField, Range(0.5f, 5.0f), Tooltip("Use to scale the window size up or down, can simulate a zooming effect.")]
         private float windowScale = 1.0f;
 
+        /// <summary> Gets or sets the window scale. </summary>
+        /// <value> The window scale. </value>
         public float WindowScale
         {
             get { return windowScale; }
             set { windowScale = Mathf.Clamp(value, 0.5f, 5.0f); }
         }
 
+        /// <summary> The window follow speed. </summary>
         [SerializeField, Range(0.0f, 100.0f), Tooltip("How quickly to interpolate the window towards its target position and rotation.")]
         private float windowFollowSpeed = 5.0f;
 
+        /// <summary> Gets or sets the window follow speed. </summary>
+        /// <value> The window follow speed. </value>
         public float WindowFollowSpeed
         {
             get { return windowFollowSpeed; }
             set { windowFollowSpeed = Mathf.Abs(value); }
         }
 
+        /// <summary> The toggle keyworlds. </summary>
         [Header("UI Settings")]
         [SerializeField, Tooltip("Voice commands to toggle the profiler on and off.")]
         private string[] toggleKeyworlds = new string[] { "Profiler", "Toggle Profiler", "Show Profiler", "Hide Profiler" };
+        /// <summary> The displayed decimal digits. </summary>
         [SerializeField, Range(0, 3), Tooltip("How many decimal places to display on numeric strings.")]
         private int displayedDecimalDigits = 1;
+        /// <summary> The base color. </summary>
         [SerializeField, Tooltip("The color of the window backplate.")]
         private Color baseColor = new Color(80 / 256.0f, 80 / 256.0f, 80 / 256.0f, 1.0f);
+        /// <summary> The target frame rate color. </summary>
         [SerializeField, Tooltip("The color to display on frames which meet or exceed the target frame rate.")]
         private Color targetFrameRateColor = new Color(127 / 256.0f, 186 / 256.0f, 0 / 256.0f, 1.0f);
+        /// <summary> The missed frame rate color. </summary>
         [SerializeField, Tooltip("The color to display on frames which fall below the target frame rate.")]
         private Color missedFrameRateColor = new Color(242 / 256.0f, 80 / 256.0f, 34 / 256.0f, 1.0f);
+        /// <summary> The memory used color. </summary>
         [SerializeField, Tooltip("The color to display for current memory usage values.")]
         private Color memoryUsedColor = new Color(0 / 256.0f, 164 / 256.0f, 239 / 256.0f, 1.0f);
+        /// <summary> The memory peak color. </summary>
         [SerializeField, Tooltip("The color to display for peak (aka max) memory usage values.")]
         private Color memoryPeakColor = new Color(255 / 256.0f, 185 / 256.0f, 0 / 256.0f, 1.0f);
+        /// <summary> The memory limit color. </summary>
         [SerializeField, Tooltip("The color to display for the platforms memory usage limit.")]
         private Color memoryLimitColor = new Color(150 / 256.0f, 150 / 256.0f, 150 / 256.0f, 1.0f);
 
+        /// <summary> The window. </summary>
         private GameObject window;
+        /// <summary> The CPU frame rate text. </summary>
         private TextMesh cpuFrameRateText;
+        /// <summary> The GPU frame rate text. </summary>
         private TextMesh gpuFrameRateText;
+        /// <summary> The used memory text. </summary>
         private TextMesh usedMemoryText;
+        /// <summary> The peak memory text. </summary>
         private TextMesh peakMemoryText;
+        /// <summary> The limit memory text. </summary>
         private TextMesh limitMemoryText;
+        /// <summary> The used anchor. </summary>
         private Transform usedAnchor;
+        /// <summary> The peak anchor. </summary>
         private Transform peakAnchor;
+        /// <summary> The window horizontal rotation. </summary>
         private Quaternion windowHorizontalRotation;
+        /// <summary> The window horizontal rotation inverse. </summary>
         private Quaternion windowHorizontalRotationInverse;
+        /// <summary> The window vertical rotation. </summary>
         private Quaternion windowVerticalRotation;
+        /// <summary> The window vertical rotation inverse. </summary>
         private Quaternion windowVerticalRotationInverse;
 
+        /// <summary> The frame information matrices. </summary>
         private Matrix4x4[] frameInfoMatrices;
+        /// <summary> List of colors of the frame informations. </summary>
         private Vector4[] frameInfoColors;
+        /// <summary> The frame information property block. </summary>
         private MaterialPropertyBlock frameInfoPropertyBlock;
+        /// <summary> Identifier for the color. </summary>
         private int colorID;
+        /// <summary> Identifier for the parent matrix. </summary>
         private int parentMatrixID;
+        /// <summary> Number of frames. </summary>
         private int frameCount;
+        /// <summary> The stopwatch. </summary>
         private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+        /// <summary> The frame timings. </summary>
         private FrameTiming[] frameTimings = new FrameTiming[maxFrameTimings];
+        /// <summary> The CPU frame rate strings. </summary>
         private string[] cpuFrameRateStrings;
+        /// <summary> The GPU frame rate strings. </summary>
         private string[] gpuFrameRateStrings;
+        /// <summary> Buffer for string data. </summary>
         private char[] stringBuffer = new char[maxStringLength];
 
+        /// <summary> The memory usage. </summary>
         private ulong memoryUsage;
+        /// <summary> The peak memory usage. </summary>
         private ulong peakMemoryUsage;
+        /// <summary> The limit memory usage. </summary>
         private ulong limitMemoryUsage;
 
-        // Rendering resources.
+        /// <summary> Rendering resources. </summary>
         [SerializeField, HideInInspector]
         private Material defaultMaterial;
+        /// <summary> The default instanced material. </summary>
         [SerializeField, HideInInspector]
         private Material defaultInstancedMaterial;
+        /// <summary> The background material. </summary>
         private Material backgroundMaterial;
+        /// <summary> The foreground material. </summary>
         private Material foregroundMaterial;
+        /// <summary> The text material. </summary>
         private Material textMaterial;
+        /// <summary> The quad mesh. </summary>
         private Mesh quadMesh;
 
-        private Camera _MainCamera;
-        public Camera mainCamera
+        private Camera m_CenterCamera;
+        private Camera CenterCamera
         {
             get
             {
-                if (_MainCamera == null)
+                if (m_CenterCamera == null)
                 {
-                    if (Camera.main != null)
+                    if (NRSessionManager.Instance.CenterCameraAnchor != null)
                     {
-                        _MainCamera = Camera.main;
+                        m_CenterCamera = NRSessionManager.Instance.CenterCameraAnchor.GetComponent<Camera>();
                     }
-                    else if (NRSessionManager.Instance.NRHMDPoseTracker != null)
+                    else
                     {
-                        _MainCamera = NRSessionManager.Instance.NRHMDPoseTracker.centerCamera;
+                        m_CenterCamera = Camera.main;
                     }
                 }
-
-                return _MainCamera;
+                return m_CenterCamera;
             }
         }
 
+        /// <summary> The instance. </summary>
         private static NRVisualProfiler m_Instance = null;
+        /// <summary> Gets the instance. </summary>
+        /// <value> The instance. </value>
         public static NRVisualProfiler Instance
         {
             get
@@ -193,6 +261,7 @@ using Windows.System;
             }
         }
 
+        /// <summary> Awakes this object. </summary>
         void Awake()
         {
             if (m_Instance != null && m_Instance != this)
@@ -204,11 +273,14 @@ using Windows.System;
             m_Instance = this;
         }
 
+        /// <summary> Switches. </summary>
+        /// <param name="flag"> True to flag.</param>
         public void Switch(bool flag)
         {
             this.gameObject.SetActive(flag);
         }
 
+        /// <summary> Resets this object. </summary>
         private void Reset()
         {
             if (defaultMaterial == null)
@@ -270,6 +342,7 @@ using Windows.System;
             stopwatch.Start();
         }
 
+        /// <summary> Starts this object. </summary>
         private void Start()
         {
             Reset();
@@ -277,11 +350,13 @@ using Windows.System;
             BuildFrameRateStrings();
         }
 
+        /// <summary> Executes the 'destroy' action. </summary>
         private void OnDestroy()
         {
             Destroy(window);
         }
 
+        /// <summary> Late update. </summary>
         private void LateUpdate()
         {
             if (window == null)
@@ -290,11 +365,11 @@ using Windows.System;
             }
 
             // Update window transformation.
-            if (window.activeSelf && mainCamera != null)
+            if (window.activeSelf && CenterCamera != null)
             {
                 float t = Time.deltaTime * windowFollowSpeed;
-                window.transform.position = Vector3.Lerp(window.transform.position, CalculateWindowPosition(mainCamera.transform), t);
-                window.transform.rotation = Quaternion.Slerp(window.transform.rotation, CalculateWindowRotation(mainCamera.transform), t);
+                window.transform.position = Vector3.Lerp(window.transform.position, CalculateWindowPosition(CenterCamera.transform), t);
+                window.transform.rotation = Quaternion.Slerp(window.transform.rotation, CalculateWindowRotation(CenterCamera.transform), t);
                 window.transform.localScale = defaultWindowScale * windowScale;
             }
 
@@ -411,9 +486,12 @@ using Windows.System;
             window.SetActive(isVisible);
         }
 
+        /// <summary> Calculates the window position. </summary>
+        /// <param name="cameraTransform"> The camera transform.</param>
+        /// <returns> The calculated window position. </returns>
         private Vector3 CalculateWindowPosition(Transform cameraTransform)
         {
-            float windowDistance = Mathf.Max(16.0f / mainCamera.fieldOfView, mainCamera.nearClipPlane + 0.25f);
+            float windowDistance = Mathf.Max(16.0f / CenterCamera.fieldOfView, CenterCamera.nearClipPlane + 0.25f);
             Vector3 position = cameraTransform.position + (cameraTransform.forward * windowDistance);
             Vector3 horizontalOffset = cameraTransform.right * windowOffset.x;
             Vector3 verticalOffset = cameraTransform.up * windowOffset.y;
@@ -433,6 +511,9 @@ using Windows.System;
             return position;
         }
 
+        /// <summary> Calculates the window rotation. </summary>
+        /// <param name="cameraTransform"> The camera transform.</param>
+        /// <returns> The calculated window rotation. </returns>
         private Quaternion CalculateWindowRotation(Transform cameraTransform)
         {
             Quaternion rotation = cameraTransform.rotation;
@@ -452,6 +533,7 @@ using Windows.System;
             return rotation;
         }
 
+        /// <summary> Builds the window. </summary>
         private void BuildWindow()
         {
             // Initialize property block state.
@@ -524,6 +606,7 @@ using Windows.System;
             window.SetActive(isVisible);
         }
 
+        /// <summary> Builds frame rate strings. </summary>
         private void BuildFrameRateStrings()
         {
             cpuFrameRateStrings = new string[maxTargetFrameRate + 1];
@@ -547,6 +630,10 @@ using Windows.System;
             }
         }
 
+        /// <summary> Creates an anchor. </summary>
+        /// <param name="name">   The name.</param>
+        /// <param name="parent"> The parent.</param>
+        /// <returns> The new anchor. </returns>
         private static Transform CreateAnchor(string name, Transform parent)
         {
             Transform anchor = new GameObject(name).transform;
@@ -557,6 +644,10 @@ using Windows.System;
             return anchor;
         }
 
+        /// <summary> Creates a quad. </summary>
+        /// <param name="name">   The name.</param>
+        /// <param name="parent"> The parent.</param>
+        /// <returns> The new quad. </returns>
         private static GameObject CreateQuad(string name, Transform parent)
         {
             GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -567,6 +658,15 @@ using Windows.System;
             return quad;
         }
 
+        /// <summary> Creates a text. </summary>
+        /// <param name="name">     The name.</param>
+        /// <param name="position"> The position.</param>
+        /// <param name="parent">   The parent.</param>
+        /// <param name="anchor">   The anchor.</param>
+        /// <param name="material"> The material.</param>
+        /// <param name="color">    The color.</param>
+        /// <param name="text">     The text.</param>
+        /// <returns> The new text. </returns>
         private static TextMesh CreateText(string name, Vector3 position, Transform parent, TextAnchor anchor, Material material, Color color, string text)
         {
             GameObject obj = new GameObject(name);
@@ -588,6 +688,12 @@ using Windows.System;
             return textMesh;
         }
 
+        /// <summary> Initializes the renderer. </summary>
+        /// <param name="obj">      The object.</param>
+        /// <param name="material"> The material.</param>
+        /// <param name="colorID">  Identifier for the color.</param>
+        /// <param name="color">    The color.</param>
+        /// <returns> A Renderer. </returns>
         private static Renderer InitializeRenderer(GameObject obj, Material material, int colorID, Color color)
         {
             Renderer renderer = obj.GetComponent<Renderer>();
@@ -603,6 +709,8 @@ using Windows.System;
             return renderer;
         }
 
+        /// <summary> Optimize renderer. </summary>
+        /// <param name="renderer"> The renderer.</param>
         private static void OptimizeRenderer(Renderer renderer)
         {
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -613,6 +721,12 @@ using Windows.System;
             renderer.allowOcclusionWhenDynamic = false;
         }
 
+        /// <summary> Memory usage to string. </summary>
+        /// <param name="stringBuffer">           Buffer for string data.</param>
+        /// <param name="displayedDecimalDigits"> The displayed decimal digits.</param>
+        /// <param name="textMesh">               The text mesh.</param>
+        /// <param name="prefixString">           The prefix string.</param>
+        /// <param name="memoryUsage">            The memory usage.</param>
         private static void MemoryUsageToString(char[] stringBuffer, int displayedDecimalDigits, TextMesh textMesh, string prefixString, ulong memoryUsage)
         {
             // Using a custom number to string method to avoid the overhead, and allocations, of built in string.Format/StringBuilder methods.
@@ -647,6 +761,11 @@ using Windows.System;
             textMesh.text = new string(stringBuffer, 0, bufferIndex);
         }
 
+        /// <summary> Memory ito a. </summary>
+        /// <param name="value">        The value.</param>
+        /// <param name="stringBuffer"> Buffer for string data.</param>
+        /// <param name="bufferIndex">  Zero-based index of the buffer.</param>
+        /// <returns> An int. </returns>
         private static int MemoryItoA(int value, char[] stringBuffer, int bufferIndex)
         {
             int startIndex = bufferIndex;
@@ -667,6 +786,8 @@ using Windows.System;
             return bufferIndex;
         }
 
+        /// <summary> Gets the application frame rate. </summary>
+        /// <value> The application frame rate. </value>
         private static float AppFrameRate
         {
             get
@@ -678,6 +799,11 @@ using Windows.System;
             }
         }
 
+        /// <summary> Average frame timing. </summary>
+        /// <param name="frameTimings">      The frame timings.</param>
+        /// <param name="frameTimingsCount"> Number of frame timings.</param>
+        /// <param name="cpuFrameTime">      [out] The CPU frame time.</param>
+        /// <param name="gpuFrameTime">      [out] The GPU frame time.</param>
         private static void AverageFrameTiming(FrameTiming[] frameTimings, uint frameTimingsCount, out float cpuFrameTime, out float gpuFrameTime)
         {
             double cpuTime = 0.0f;
@@ -696,6 +822,8 @@ using Windows.System;
             gpuFrameTime = (float)(gpuTime * 0.001);
         }
 
+        /// <summary> Gets the application memory usage. </summary>
+        /// <value> The application memory usage. </value>
         private static ulong AppMemoryUsage
         {
             get
@@ -708,6 +836,8 @@ using Windows.System;
             }
         }
 
+        /// <summary> Gets the application memory usage limit. </summary>
+        /// <value> The application memory usage limit. </value>
         private static ulong AppMemoryUsageLimit
         {
             get
@@ -720,6 +850,11 @@ using Windows.System;
             }
         }
 
+        /// <summary> Will displayed memory usage differ. </summary>
+        /// <param name="oldUsage">               The old usage.</param>
+        /// <param name="newUsage">               The new usage.</param>
+        /// <param name="displayedDecimalDigits"> The displayed decimal digits.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         private static bool WillDisplayedMemoryUsageDiffer(ulong oldUsage, ulong newUsage, int displayedDecimalDigits)
         {
             float oldUsageMBs = ConvertBytesToMegabytes(oldUsage);
@@ -729,11 +864,17 @@ using Windows.System;
             return (int)(oldUsageMBs * decimalPower) != (int)(newUsageMBs * decimalPower);
         }
 
+        /// <summary> Convert megabytes to bytes. </summary>
+        /// <param name="megabytes"> The megabytes.</param>
+        /// <returns> The megabytes converted to bytes. </returns>
         private static ulong ConvertMegabytesToBytes(int megabytes)
         {
             return ((ulong)megabytes * 1024UL) * 1024UL;
         }
 
+        /// <summary> Convert bytes to megabytes. </summary>
+        /// <param name="bytes"> The bytes.</param>
+        /// <returns> The bytes converted to megabytes. </returns>
         private static float ConvertBytesToMegabytes(ulong bytes)
         {
             return (bytes / 1024.0f) / 1024.0f;

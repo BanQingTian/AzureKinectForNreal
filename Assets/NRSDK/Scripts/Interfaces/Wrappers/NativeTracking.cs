@@ -12,19 +12,23 @@ namespace NRKernal
     using System;
     using System.Runtime.InteropServices;
 
-    /// <summary>
-    /// Native Tracking API.
-    /// </summary>
-    internal partial class NativeTracking
+    /// <summary> Native Tracking API. </summary>
+    public partial class NativeTracking
     {
+        /// <summary> The native interface. </summary>
         private NativeInterface m_NativeInterface;
+        /// <summary> Handle of the tracking. </summary>
         private UInt64 m_TrackingHandle;
 
+        /// <summary> Constructor. </summary>
+        /// <param name="nativeInterface"> The native interface.</param>
         public NativeTracking(NativeInterface nativeInterface)
         {
             m_NativeInterface = nativeInterface;
         }
 
+        /// <summary> Creates a new bool. </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public bool Create()
         {
             NativeResult result = NativeApi.NRTrackingCreate(ref m_TrackingHandle);
@@ -33,6 +37,9 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
+        /// <summary> Sets tracking mode. </summary>
+        /// <param name="mode"> The mode.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public bool SetTrackingMode(TrackingMode mode)
         {
             if (m_TrackingHandle == 0)
@@ -44,6 +51,8 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
+        /// <summary> Starts this object. </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public bool Start()
         {
             if (m_TrackingHandle == 0)
@@ -55,6 +64,9 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
+        /// <summary> Switch tracking mode. </summary>
+        /// <param name="mode"> The mode.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public bool SwitchTrackingMode(TrackingMode mode)
         {
             NativeResult result = NativeApi.NRTrackingSetTrackingMode(m_TrackingHandle, mode);
@@ -62,6 +74,8 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
+        /// <summary> Pauses this object. </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public bool Pause()
         {
             if (m_TrackingHandle == 0)
@@ -73,6 +87,8 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
+        /// <summary> Resumes this object. </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public bool Resume()
         {
             if (m_TrackingHandle == 0)
@@ -84,7 +100,7 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
-        // only worked at 3dof mode
+        /// <summary> only worked at 3dof mode. </summary>
         public void Recenter()
         {
             if (m_TrackingHandle == 0)
@@ -95,6 +111,8 @@ namespace NRKernal
             NativeErrorListener.Check(result, this, "Recenter");
         }
 
+        /// <summary> Destroys this object. </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public bool Destroy()
         {
             if (m_TrackingHandle == 0)
@@ -108,6 +126,9 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
+        /// <summary> Updates the trackables. </summary>
+        /// <param name="trackable_list_handle"> Handle of the trackable list.</param>
+        /// <param name="trackable_type">        Type of the trackable.</param>
         public void UpdateTrackables(UInt64 trackable_list_handle, TrackableType trackable_type)
         {
             if (m_TrackingHandle == 0)
@@ -119,30 +140,61 @@ namespace NRKernal
 
         private partial struct NativeApi
         {
+            /// <summary> Nr tracking create. </summary>
+            /// <param name="out_tracking_handle"> [in,out] Handle of the out tracking.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingCreate(ref UInt64 out_tracking_handle);
 
+            /// <summary> Nr tracking initialize set tracking mode. </summary>
+            /// <param name="tracking_handle"> Handle of the tracking.</param>
+            /// <param name="tracking_mode">   The tracking mode.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingInitSetTrackingMode(UInt64 tracking_handle, TrackingMode tracking_mode);
 
+            /// <summary> Nr tracking start. </summary>
+            /// <param name="tracking_handle"> Handle of the tracking.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingStart(UInt64 tracking_handle);
 
+            /// <summary> Nr tracking set tracking mode. </summary>
+            /// <param name="tracking_handle"> Handle of the tracking.</param>
+            /// <param name="tracking_mode">   The tracking mode.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingSetTrackingMode(UInt64 tracking_handle, TrackingMode tracking_mode);
 
+            /// <summary> Nr tracking destroy. </summary>
+            /// <param name="tracking_handle"> Handle of the tracking.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingDestroy(UInt64 tracking_handle);
 
+            /// <summary> Nr tracking pause. </summary>
+            /// <param name="tracking_handle"> Handle of the tracking.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingPause(UInt64 tracking_handle);
 
+            /// <summary> Nr tracking resume. </summary>
+            /// <param name="tracking_handle"> Handle of the tracking.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingResume(UInt64 tracking_handle);
 
+            /// <summary> Nr tracking recenter. </summary>
+            /// <param name="tracking_handle"> Handle of the tracking.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingRecenter(UInt64 tracking_handle);
 
+            /// <summary> Nr tracking update trackables. </summary>
+            /// <param name="tracking_handle">           Handle of the tracking.</param>
+            /// <param name="trackable_type">            Type of the trackable.</param>
+            /// <param name="out_trackable_list_handle"> Handle of the out trackable list.</param>
+            /// <returns> A NativeResult. </returns>
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingUpdateTrackables(UInt64 tracking_handle,
                TrackableType trackable_type, UInt64 out_trackable_list_handle);

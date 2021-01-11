@@ -12,35 +12,32 @@ namespace NRKernal
     using System;
     using UnityEngine;
 
-    /// <summary>
-    /// Manages Android permissions for the Unity application.
-    /// </summary>
+    /// <summary> Manages Android permissions for the Unity application. </summary>
     public class NRAndroidPermissionsManager : AndroidJavaProxy, IAndroidPermissionsCheck
     {
+        /// <summary> The instance. </summary>
         private static NRAndroidPermissionsManager _instance;
+        /// <summary> The activity. </summary>
         private static AndroidJavaObject _activity;
+        /// <summary> The permission service. </summary>
         private static AndroidJavaObject _permissionService;
+        /// <summary> The current request. </summary>
         private static AsyncTask<AndroidPermissionsRequestResult> _currentRequest = null;
+        /// <summary> The on permissions request finished. </summary>
         private static Action<AndroidPermissionsRequestResult> _onPermissionsRequestFinished;
 
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Constructs a new AndroidPermissionsManager.
-        /// </summary>
+        /// <summary> Constructs a new AndroidPermissionsManager. </summary>
         public NRAndroidPermissionsManager() : base(
             "ai.nreal.sdk.UnityAndroidPermissions$IPermissionRequestResult")
         {
         }
 
-        /// @endcond
-
-        /// <summary>
-        /// Checks if an Android permission is granted to the application.
-        /// </summary>
-        /// <param name="permissionName">The full name of the Android permission to check (e.g.
-        /// android.permission.CAMERA).</param>
-        /// <returns><c>true</c> if <c>permissionName</c> is granted to the application, otherwise
-        /// <c>false</c>.</returns>
+        /// <summary> Checks if an Android permission is granted to the application. </summary>
+        /// <param name="permissionName"> The full name of the Android permission to check (e.g.
+        ///                               android.permission.CAMERA).</param>
+        /// <returns>
+        /// <c>true</c> if <c>permissionName</c> is granted to the application, otherwise
+        /// <c>false</c>. </returns>
         public static bool IsPermissionGranted(string permissionName)
         {
             if (Application.platform != RuntimePlatform.Android)
@@ -52,15 +49,13 @@ namespace NRKernal
                 "IsPermissionGranted", GetUnityActivity(), permissionName);
         }
 
-        /// <summary>
-        /// Requests an Android permission from the user.
-        /// </summary>
-        /// <param name="permissionName">The permission to be requested (e.g.
-        /// android.permission.CAMERA).</param>
-        /// <returns>An asynchronous task that completes when the user has accepted or rejected the
-        /// requested permission and yields a <see cref="AndroidPermissionsRequestResult"/> that
-        /// summarizes the result. If this method is called when another permissions request is
-        /// pending, <c>null</c> will be returned instead.</returns>
+        /// <summary> Requests an Android permission from the user. </summary>
+        /// <param name="permissionName"> The permission to be requested (e.g. android.permission.CAMERA).</param>
+        /// <returns>
+        /// An asynchronous task that completes when the user has accepted or rejected the requested
+        /// permission and yields a <see cref="AndroidPermissionsRequestResult"/> that summarizes the
+        /// result. If this method is called when another permissions request is pending, <c>null</c>
+        /// will be returned instead. </returns>
         public static AsyncTask<AndroidPermissionsRequestResult> RequestPermission(
             string permissionName)
         {
@@ -73,7 +68,7 @@ namespace NRKernal
 
             if (_currentRequest != null)
             {
-                Debug.LogError("Attempted to make simultaneous Android permissions requests.");
+                NRDebugger.Error("Attempted to make simultaneous Android permissions requests.");
                 return null;
             }
 
@@ -85,55 +80,43 @@ namespace NRKernal
             return _currentRequest;
         }
 
-        /// <summary>
-        /// Requests an Android permission from the user.
-        /// </summary>
-        /// <param name="permissionName">The permission to be requested (e.g.
-        /// android.permission.CAMERA).</param>
-        /// <returns>An asynchronous task that completes when the user has accepted or rejected the
-        /// requested permission and yields a <see cref="AndroidPermissionsRequestResult"/> that
-        /// summarizes the result. If this method is called when another permissions request is
-        /// pending, <c>null</c> will be returned instead.</returns>
+        /// <summary> Requests an Android permission from the user. </summary>
+        /// <param name="permissionName"> The permission to be requested (e.g. android.permission.CAMERA).</param>
+        /// <returns>
+        /// An asynchronous task that completes when the user has accepted or rejected the requested
+        /// permission and yields a <see cref="AndroidPermissionsRequestResult"/> that summarizes the
+        /// result. If this method is called when another permissions request is pending, <c>null</c>
+        /// will be returned instead. </returns>
         public AsyncTask<AndroidPermissionsRequestResult> RequestAndroidPermission(
             string permissionName)
         {
             return RequestPermission(permissionName);
         }
 
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Callback fired when a permission is granted.
-        /// </summary>
-        /// <param name="permissionName">The name of the permission that was granted.</param>
+        /// <summary> Callback fired when a permission is granted. </summary>
+        /// <param name="permissionName"> The name of the permission that was granted.</param>
         public virtual void OnPermissionGranted(string permissionName)
         {
             OnPermissionResult(permissionName, true);
         }
 
-        /// @endcond
-
-        /// @cond EXCLUDE_FROM_DOXYGEN
-        /// <summary>
-        /// Callback fired when a permission is denied.
-        /// </summary>
-        /// <param name="permissionName">The name of the permission that was denied.</param>
+        /// <summary> Callback fired when a permission is denied. </summary>
+        /// <param name="permissionName"> The name of the permission that was denied.</param>
         public virtual void OnPermissionDenied(string permissionName)
         {
             OnPermissionResult(permissionName, false);
         }
 
-        /// @endcond
-
-        /// @cond EXCLUDE_FROM_DOXYGEN
         /// <summary>
         /// Callback fired on an Android activity result (unused part of UnityAndroidPermissions
-        /// interface).
-        /// </summary>
+        /// interface). </summary>
         public virtual void OnActivityResult()
         {
         }
 
-        internal static NRAndroidPermissionsManager GetInstance()
+        /// <summary> Gets the instance. </summary>
+        /// <returns> The instance. </returns>
+        public static NRAndroidPermissionsManager GetInstance()
         {
             if (_instance == null)
             {
@@ -143,6 +126,8 @@ namespace NRKernal
             return _instance;
         }
 
+        /// <summary> Gets unity activity. </summary>
+        /// <returns> The unity activity. </returns>
         private static AndroidJavaObject GetUnityActivity()
         {
             if (_activity == null)
@@ -155,6 +140,8 @@ namespace NRKernal
             return _activity;
         }
 
+        /// <summary> Gets permissions service. </summary>
+        /// <returns> The permissions service. </returns>
         private static AndroidJavaObject GetPermissionsService()
         {
             if (_permissionService == null)
@@ -166,13 +153,9 @@ namespace NRKernal
             return _permissionService;
         }
 
-        /// @endcond
-
-        /// <summary>
-        /// Callback fired on an Android permission result.
-        /// </summary>
-        /// <param name="permissionName">The name of the permission.</param>
-        /// <param name="granted">If permission is granted or not.</param>
+        /// <summary> Callback fired on an Android permission result. </summary>
+        /// <param name="permissionName"> The name of the permission.</param>
+        /// <param name="granted">        If permission is granted or not.</param>
         private void OnPermissionResult(string permissionName, bool granted)
         {
             if (_onPermissionsRequestFinished == null)

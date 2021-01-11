@@ -13,22 +13,21 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /// <summary>
-    /// Update the transform of  a trackable.
-    /// </summary>
+    /// <summary> Update the transform of  a trackable. </summary>
     public partial class NRAnchor : MonoBehaviour
     {
+        /// <summary> Dictionary of anchors. </summary>
         private static Dictionary<Int64, NRAnchor> m_AnchorDict = new Dictionary<Int64, NRAnchor>();
 
+        /// <summary> The trackable. </summary>
         public NRTrackable Trackable;
 
+        /// <summary> True if is session destroyed, false if not. </summary>
         private bool m_IsSessionDestroyed;
 
-        /// <summary>
-        /// Create a anchor for the trackable object
-        /// </summary>
-        /// <param name="trackable">Instantiate a NRAnchor object which Update trackable pose every frame</param>
-        /// <returns>NRAnchor</returns>
+        /// <summary> Create a anchor for the trackable object. </summary>
+        /// <param name="trackable"> Instantiate a NRAnchor object which Update trackable pose every frame.</param>
+        /// <returns> NRAnchor. </returns>
         public static NRAnchor Factory(NRTrackable trackable)
         {
             if (trackable == null)
@@ -51,11 +50,12 @@ namespace NRKernal
 
         }
 
+        /// <summary> Updates this object. </summary>
         private void Update()
         {
             if (Trackable == null)
             {
-                NRDebugger.LogError("NRAnchor components instantiated outside of NRInternel are not supported. " +
+                NRDebugger.Error("NRAnchor components instantiated outside of NRInternel are not supported. " +
                     "Please use a 'Create' method within NRInternel to instantiate anchors.");
                 return;
             }
@@ -71,6 +71,7 @@ namespace NRKernal
 
         }
 
+        /// <summary> Executes the 'destroy' action. </summary>
         private void OnDestroy()
         {
             if (Trackable == null)
@@ -81,10 +82,8 @@ namespace NRKernal
             m_AnchorDict.Remove(Trackable.GetDataBaseIndex());
         }
 
-        /// <summary>
-        /// Check whether the session is already destroyed
-        /// </summary>
-        /// <returns></returns>
+        /// <summary> Check whether the session is already destroyed. </summary>
+        /// <returns> True if session destroyed, false if not. </returns>
         private bool IsSessionDestroyed()
         {
             if (!m_IsSessionDestroyed)

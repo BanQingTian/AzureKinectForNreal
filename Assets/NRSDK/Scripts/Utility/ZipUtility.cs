@@ -14,15 +14,24 @@ namespace NRKernal
     using ICSharpCode.SharpZipLib.Zip;
     using System;
 
+    /// <summary> A zip utility. </summary>
     public class ZipUtility
     {
         #region ZipCallback
+        /// <summary> A zip callback. </summary>
         public class ZipCallback
         {
+            /// <summary> The on pre zip callback. </summary>
             public Action<ZipEntry> OnPreZipCallback;
+            /// <summary> The on post zip callback. </summary>
             public Action<ZipEntry> OnPostZipCallback;
+            /// <summary> The on finished callback. </summary>
             public Action<bool> OnFinishedCallback;
 
+            /// <summary> Constructor. </summary>
+            /// <param name="onprezip">  The onprezip.</param>
+            /// <param name="onpostzip"> The onpostzip.</param>
+            /// <param name="onfinish">  The onfinish.</param>
             public ZipCallback(Action<ZipEntry> onprezip, Action<ZipEntry> onpostzip, Action<bool> onfinish)
             {
                 OnPreZipCallback = onprezip;
@@ -30,10 +39,15 @@ namespace NRKernal
                 OnFinishedCallback = onfinish;
             }
 
+            /// <summary> Constructor. </summary>
+            /// <param name="onfinish"> The onfinish.</param>
             public ZipCallback(Action<bool> onfinish) : this(null, null, onfinish)
             {
             }
 
+            /// <summary> Executes the 'pre zip' action. </summary>
+            /// <param name="_entry"> The entry.</param>
+            /// <returns> True if it succeeds, false if it fails. </returns>
             public virtual bool OnPreZip(ZipEntry _entry)
             {
                 if (OnPreZipCallback != null)
@@ -43,6 +57,8 @@ namespace NRKernal
                 return true;
             }
 
+            /// <summary> Executes the 'post zip' action. </summary>
+            /// <param name="_entry"> The entry.</param>
             public virtual void OnPostZip(ZipEntry _entry)
             {
                 if (OnPostZipCallback != null)
@@ -51,6 +67,8 @@ namespace NRKernal
                 }
             }
 
+            /// <summary> Executes the 'finished' action. </summary>
+            /// <param name="_result"> True to result.</param>
             public virtual void OnFinished(bool _result)
             {
                 if (OnFinishedCallback != null)
@@ -62,12 +80,20 @@ namespace NRKernal
         #endregion
 
         #region UnzipCallback
+        /// <summary> An unzip callback. </summary>
         public abstract class UnzipCallback
         {
+            /// <summary> The on pre zip callback. </summary>
             public Action<ZipEntry> OnPreZipCallback;
+            /// <summary> The on post zip callback. </summary>
             public Action<ZipEntry> OnPostZipCallback;
+            /// <summary> The on finished callback. </summary>
             public Action<bool> OnFinishedCallback;
 
+            /// <summary> Constructor. </summary>
+            /// <param name="onprezip">  The onprezip.</param>
+            /// <param name="onpostzip"> The onpostzip.</param>
+            /// <param name="onfinish">  The onfinish.</param>
             public UnzipCallback(Action<ZipEntry> onprezip, Action<ZipEntry> onpostzip, Action<bool> onfinish)
             {
                 OnPreZipCallback = onprezip;
@@ -75,10 +101,15 @@ namespace NRKernal
                 OnFinishedCallback = onfinish;
             }
 
+            /// <summary> Constructor. </summary>
+            /// <param name="onfinish"> The onfinish.</param>
             public UnzipCallback(Action<bool> onfinish) : this(null, null, onfinish)
             {
             }
 
+            /// <summary> Executes the 'pre unzip' action. </summary>
+            /// <param name="_entry"> The entry.</param>
+            /// <returns> True if it succeeds, false if it fails. </returns>
             public virtual bool OnPreUnzip(ZipEntry _entry)
             {
                 if (OnPreZipCallback != null)
@@ -88,6 +119,8 @@ namespace NRKernal
                 return true;
             }
 
+            /// <summary> Executes the 'post unzip' action. </summary>
+            /// <param name="_entry"> The entry.</param>
             public virtual void OnPostUnzip(ZipEntry _entry)
             {
                 if (OnPostZipCallback != null)
@@ -96,6 +129,8 @@ namespace NRKernal
                 }
             }
 
+            /// <summary> Executes the 'finished' action. </summary>
+            /// <param name="_result"> True to result.</param>
             public virtual void OnFinished(bool _result)
             {
                 if (OnFinishedCallback != null)
@@ -106,6 +141,12 @@ namespace NRKernal
         }
         #endregion
 
+        /// <summary> Zips. </summary>
+        /// <param name="_fileOrDirectoryArray"> Array of file or directories.</param>
+        /// <param name="_outputPathName">       Full pathname of the output file.</param>
+        /// <param name="_password">             (Optional) The password.</param>
+        /// <param name="_zipCallback">          (Optional) The zip callback.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public static bool Zip(string[] _fileOrDirectoryArray, string _outputPathName, string _password = null, ZipCallback _zipCallback = null)
         {
             if ((null == _fileOrDirectoryArray) || string.IsNullOrEmpty(_outputPathName))
@@ -148,6 +189,12 @@ namespace NRKernal
             return true;
         }
 
+        /// <summary> Unzip file. </summary>
+        /// <param name="_filePathName">  Full pathname of the file file.</param>
+        /// <param name="_outputPath">    Full pathname of the output file.</param>
+        /// <param name="_password">      (Optional) The password.</param>
+        /// <param name="_unzipCallback"> (Optional) The unzip callback.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public static bool UnzipFile(string _filePathName, string _outputPath, string _password = null, UnzipCallback _unzipCallback = null)
         {
             if (string.IsNullOrEmpty(_filePathName) || string.IsNullOrEmpty(_outputPath))
@@ -164,7 +211,7 @@ namespace NRKernal
             }
             catch (System.Exception _e)
             {
-                Debug.LogError("[ZipUtility.UnzipFile]: " + _e.ToString());
+                NRDebugger.Error("[ZipUtility.UnzipFile]: " + _e.ToString());
 
                 if (null != _unzipCallback)
                     _unzipCallback.OnFinished(false);
@@ -173,6 +220,12 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Unzip file. </summary>
+        /// <param name="_fileBytes">     The file in bytes.</param>
+        /// <param name="_outputPath">    Full pathname of the output file.</param>
+        /// <param name="_password">      (Optional) The password.</param>
+        /// <param name="_unzipCallback"> (Optional) The unzip callback.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public static bool UnzipFile(byte[] _fileBytes, string _outputPath, string _password = null, UnzipCallback _unzipCallback = null)
         {
             if ((null == _fileBytes) || string.IsNullOrEmpty(_outputPath))
@@ -193,6 +246,12 @@ namespace NRKernal
             return result;
         }
 
+        /// <summary> Unzip file. </summary>
+        /// <param name="_inputStream">   Stream to read data from.</param>
+        /// <param name="_outputPath">    Full pathname of the output file.</param>
+        /// <param name="_password">      (Optional) The password.</param>
+        /// <param name="_unzipCallback"> (Optional) The unzip callback.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         public static bool UnzipFile(Stream _inputStream, string _outputPath, string _password = null, UnzipCallback _unzipCallback = null)
         {
             if ((null == _inputStream) || string.IsNullOrEmpty(_outputPath))
@@ -254,7 +313,7 @@ namespace NRKernal
                     }
                     catch (System.Exception _e)
                     {
-                        Debug.LogError("[ZipUtility.UnzipFile]: " + _e.ToString());
+                        NRDebugger.Error("[ZipUtility.UnzipFile]: " + _e.ToString());
 
                         if (null != _unzipCallback)
                             _unzipCallback.OnFinished(false);
@@ -270,6 +329,12 @@ namespace NRKernal
             return true;
         }
 
+        /// <summary> Zip file. </summary>
+        /// <param name="_filePathName">    Full pathname of the file file.</param>
+        /// <param name="_parentRelPath">   Full pathname of the parent relative file.</param>
+        /// <param name="_zipOutputStream"> The zip output stream.</param>
+        /// <param name="_zipCallback">     (Optional) The zip callback.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         private static bool ZipFile(string _filePathName, string _parentRelPath, ZipOutputStream _zipOutputStream, ZipCallback _zipCallback = null)
         {
             //Crc32 crc32 = new Crc32();
@@ -300,7 +365,7 @@ namespace NRKernal
             }
             catch (System.Exception _e)
             {
-                Debug.LogError("[ZipUtility.ZipFile]: " + _e.ToString());
+                NRDebugger.Error("[ZipUtility.ZipFile]: " + _e.ToString());
                 return false;
             }
             finally
@@ -318,6 +383,12 @@ namespace NRKernal
             return true;
         }
 
+        /// <summary> Zip directory. </summary>
+        /// <param name="_path">            Full pathname of the file.</param>
+        /// <param name="_parentRelPath">   Full pathname of the parent relative file.</param>
+        /// <param name="_zipOutputStream"> The zip output stream.</param>
+        /// <param name="_zipCallback">     (Optional) The zip callback.</param>
+        /// <returns> True if it succeeds, false if it fails. </returns>
         private static bool ZipDirectory(string _path, string _parentRelPath, ZipOutputStream _zipOutputStream, ZipCallback _zipCallback = null)
         {
             ZipEntry entry = null;
@@ -340,7 +411,7 @@ namespace NRKernal
             }
             catch (System.Exception _e)
             {
-                Debug.LogError("[ZipUtility.ZipDirectory]: " + _e.ToString());
+                NRDebugger.Error("[ZipUtility.ZipDirectory]: " + _e.ToString());
                 return false;
             }
 

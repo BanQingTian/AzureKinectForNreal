@@ -75,19 +75,22 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
-        public bool DoRender(IntPtr left_eye_texture, IntPtr right_eye_texture, ref NativeMat4f head_pose)
+        public bool DoRender(IntPtr left_eye_texture, IntPtr right_eye_texture, ref NativeMat4f head_pose, ref NativeVector3f position, ref NativeVector3f normal)
         {
 #if !UNITY_EDITOR
+#if NRSDK_BETA
+            var result = NativeApi.NRRenderingDoRenderWithFocusPoint(m_RenderingHandle, left_eye_texture, right_eye_texture, ref head_pose,ref position,ref normal);
+#else
             var result = NativeApi.NRRenderingDoRender(m_RenderingHandle, left_eye_texture, right_eye_texture, ref head_pose);
+#endif
             return result == NativeResult.Success;
-#else   
+#else
             return true;
 #endif
         }
 
         public bool Destroy()
         {
-            Marshal.FreeHGlobal(FrameInfoPtr);
             NativeResult result = NativeApi.NRRenderingDestroy(m_RenderingHandle);
             NativeErrorListener.Check(result, this, "Destroy");
             return result == NativeResult.Success;
@@ -117,11 +120,17 @@ namespace NRKernal
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRRenderingInitSetAndroidSurface(
                 UInt64 rendering_handle, IntPtr android_surface);
+#endif
+
+#if NRSDK_BETA
+            [DllImport(NativeConstants.NRNativeLibrary)]
+            public static extern NativeResult NRRenderingDoRenderWithFocusPoint(UInt64 rendering_handle,
+                IntPtr left_eye_texture, IntPtr right_eye_texture, ref NativeMat4f head_pose, ref NativeVector3f position, ref NativeVector3f normal);
+#endif
 
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRRenderingDoRender(UInt64 rendering_handle,
                 IntPtr left_eye_texture, IntPtr right_eye_texture, ref NativeMat4f head_pose);
-#endif
         };
     }
 }

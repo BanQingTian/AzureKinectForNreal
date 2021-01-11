@@ -12,24 +12,33 @@ namespace NRKernal
     using System;
     using UnityEngine;
 
-    /// <summary>
-    /// Create a YUV camera texture.
-    /// </summary>
+    /// <summary> Create a YUV camera texture. </summary>
     public class NRRGBCamTextureYUV : CameraModelView
     {
+        /// <summary> The on update. </summary>
         public Action<YUVTextureFrame> OnUpdate;
+        /// <summary> A yuv texture frame. </summary>
         public struct YUVTextureFrame
         {
+            /// <summary> The time stamp. </summary>
             public UInt64 timeStamp;
+            /// <summary> The texture y coordinate. </summary>
             public Texture2D textureY;
+            /// <summary> The texture u. </summary>
             public Texture2D textureU;
+            /// <summary> The texture v. </summary>
             public Texture2D textureV;
+            /// <summary> The buffer. </summary>
             public byte[] YBuf;
+            /// <summary> The buffer. </summary>
             public byte[] UBuf;
+            /// <summary> The buffer. </summary>
             public byte[] VBuf;
         }
+        /// <summary> Information describing the frame. </summary>
         private YUVTextureFrame m_FrameData;
 
+        /// <summary> Creates the tex. </summary>
         private void CreateTex()
         {
             if (m_FrameData.textureY == null)
@@ -41,6 +50,8 @@ namespace NRKernal
             }
         }
 
+        /// <summary> Gets the texture. </summary>
+        /// <returns> The texture. </returns>
         public YUVTextureFrame GetTexture()
         {
             if (m_FrameData.textureY == null)
@@ -50,25 +61,27 @@ namespace NRKernal
             return m_FrameData;
         }
 
-        public NRRGBCamTextureYUV() : base(CameraImageFormat.YUV_420_888) { }
-
-        protected override void OnCreated()
+        /// <summary> Default constructor. </summary>
+        public NRRGBCamTextureYUV() : base(CameraImageFormat.YUV_420_888)
         {
-            base.OnCreated();
             CreateTex();
         }
 
+        /// <summary> Load raw texture data. </summary>
+        /// <param name="frame"> .</param>
         protected override void OnRawDataUpdate(FrameRawData frame)
         {
             LoadYUVTexture(frame);
             OnUpdate?.Invoke(m_FrameData);
         }
 
+        /// <summary> Loads yuv texture. </summary>
+        /// <param name="frame"> The frame.</param>
         private void LoadYUVTexture(FrameRawData frame)
         {
             if (frame.data == null || frame.data.Length == 0)
             {
-                Debug.LogError("[NRRGBCamTextureYUV] LoadYUVTexture error: frame is null");
+                NRDebugger.Error("[NRRGBCamTextureYUV] LoadYUVTexture error: frame is null");
                 return;
             }
 
@@ -98,6 +111,7 @@ namespace NRKernal
             m_FrameData.textureV.Apply();
         }
 
+        /// <summary> On texture stopped. </summary>
         protected override void OnStopped()
         {
             base.OnStopped();

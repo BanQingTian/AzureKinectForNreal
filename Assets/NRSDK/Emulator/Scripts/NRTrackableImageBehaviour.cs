@@ -11,20 +11,26 @@ namespace NRKernal
 {
     using UnityEngine;
 
+    /// <summary> A nr trackable image behaviour. </summary>
     public class NRTrackableImageBehaviour : NRTrackableBehaviour
     {
+        /// <summary> The aspect ratio. </summary>
         [HideInInspector, SerializeField]
         private float m_AspectRatio;
 
+        /// <summary> The width. </summary>
         [HideInInspector, SerializeField]
         private float m_Width;
 
+        /// <summary> The height. </summary>
         [HideInInspector, SerializeField]
         private float m_Height;
 
+        /// <summary> The tracking image database. </summary>
         [HideInInspector, SerializeField]
         private string m_TrackingImageDatabase;
 
+        /// <summary> Awakes this object. </summary>
         private void Awake()
         {
 #if !UNITY_EDITOR
@@ -36,6 +42,7 @@ namespace NRKernal
         }
 
 #if UNITY_EDITOR
+        /// <summary> Updates this object. </summary>
         private void Update()
         {
             float extent = transform.lossyScale.x * 1000;

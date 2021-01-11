@@ -10,8 +10,7 @@
 namespace NRKernal.Record
 {
     /// <summary>
-    /// The encoded image or video pixel format to use for PhotoCapture and VideoCapture.
-    /// </summary>
+    /// The encoded image or video pixel format to use for PhotoCapture and VideoCapture. </summary>
     public enum CapturePixelFormat
     {
         /// <summary>

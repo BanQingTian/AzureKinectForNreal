@@ -11,17 +11,13 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /// <summary>
-    /// Align the world coordinate to the pose.
-    /// </summary>
+    /// <summary> Align the world coordinate to the pose. </summary>
     public class UpdateWorldOrigin
     {
-        /// <summary>
-        /// Align the world coordinate to positon and rotation
-        /// </summary>
-        /// <param name="cameraRoot"></param>
-        /// <param name="position"></param>
-        /// <param name="rotation"></param>
+        /// <summary> Align the world coordinate to positon and rotation. </summary>
+        /// <param name="cameraRoot"> .</param>
+        /// <param name="position">   .</param>
+        /// <param name="rotation">   .</param>
         public static void AlignWorldCoordinate(Transform cameraRoot, Vector3 position, Quaternion rotation)
         {
             var marker_in_world = ConversionUtility.GetTMatrix(position, rotation);

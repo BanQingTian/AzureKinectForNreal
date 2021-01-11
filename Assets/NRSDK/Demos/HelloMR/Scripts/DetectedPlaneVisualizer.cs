@@ -1,15 +1,24 @@
-﻿namespace NRKernal.NRExamples
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+namespace NRKernal.NRExamples
 {
     using System.Collections.Generic;
     using UnityEngine;
 
-    /// <summary>
-    /// Visualizes a single DetectedPlane in the Unity scene.
-    /// </summary>
+    /// <summary> Visualizes a single DetectedPlane in the Unity scene. </summary>
     public class DetectedPlaneVisualizer : MonoBehaviour
     {
+        /// <summary> Number of planes. </summary>
         private static int s_PlaneCount = 0;
 
+        /// <summary> List of colors of the planes. </summary>
         private readonly Color[] k_PlaneColors = new Color[]
         {
             new Color(1.0f, 1.0f, 1.0f),
@@ -29,27 +38,36 @@
             new Color(1.0f, 0.756f, 0.027f)
         };
 
+        /// <summary> The detected plane. </summary>
         private NRTrackablePlane m_DetectedPlane;
 
-        // Keep previous frame's mesh polygon to avoid mesh update every frame.
+        /// <summary> Keep previous frame's mesh polygon to avoid mesh update every frame. </summary>
         private List<Vector3> m_PreviousFrameMeshVertices = new List<Vector3>();
+        /// <summary> The mesh vertices. </summary>
         private List<Vector3> m_MeshVertices = new List<Vector3>();
+        /// <summary> The plane center. </summary>
         private Vector3 m_PlaneCenter = new Vector3();
 
+        /// <summary> List of colors of the meshes. </summary>
         private List<Color> m_MeshColors = new List<Color>();
 
+        /// <summary> The mesh indices. </summary>
         private List<int> m_MeshIndices = new List<int>();
 
+        /// <summary> The mesh. </summary>
         private Mesh m_Mesh;
 
+        /// <summary> The mesh renderer. </summary>
         private MeshRenderer m_MeshRenderer;
 
+        /// <summary> Awakes this object. </summary>
         public void Awake()
         {
             m_Mesh = GetComponent<MeshFilter>().mesh;
             m_MeshRenderer = GetComponent<UnityEngine.MeshRenderer>();
         }
 
+        /// <summary> Updates this object. </summary>
         public void Update()
         {
             if (m_DetectedPlane == null)
@@ -67,10 +85,8 @@
             _UpdateMeshIfNeeded();
         }
 
-        /// <summary>
-        /// Initializes the DetectedPlaneVisualizer with a DetectedPlane.
-        /// </summary>
-        /// <param name="plane">The plane to vizualize.</param>
+        /// <summary> Initializes the DetectedPlaneVisualizer with a DetectedPlane. </summary>
+        /// <param name="plane"> The plane to vizualize.</param>
         public void Initialize(NRTrackablePlane plane)
         {
             m_DetectedPlane = plane;
@@ -80,9 +96,7 @@
             Update();
         }
 
-        /// <summary>
-        /// Update mesh with a list of Vector3 and plane's center position.
-        /// </summary>
+        /// <summary> Update mesh with a list of Vector3 and plane's center position. </summary>
         private void _UpdateMeshIfNeeded()
         {
             m_DetectedPlane.GetBoundaryPolygon(m_MeshVertices);
@@ -177,6 +191,10 @@
             m_Mesh.SetColors(m_MeshColors);
         }
 
+        /// <summary> Determine if we are vertices lists equal. </summary>
+        /// <param name="firstList">  List of firsts.</param>
+        /// <param name="secondList"> List of seconds.</param>
+        /// <returns> True if vertices lists equal, false if not. </returns>
         private bool _AreVerticesListsEqual(List<Vector3> firstList, List<Vector3> secondList)
         {
             if (firstList.Count != secondList.Count)
