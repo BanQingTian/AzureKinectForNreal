@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ZBaseBehaviour 
+public class ZBaseBehaviour
 {
     
 }

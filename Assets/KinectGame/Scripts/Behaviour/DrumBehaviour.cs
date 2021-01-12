@@ -12,7 +12,7 @@ public class DrumBehaviour : ZGameBehaviour
 
     public GameObject Drum;
 
-    public override void Start()
+    public override void ZStart()
     {
         HandLeft = GameObject.Find(HandLeftName);
         HandRight = GameObject.Find(HandRightName);
@@ -28,20 +28,14 @@ public class DrumBehaviour : ZGameBehaviour
             HandRight.AddComponent<ZCollision>();
         }
 
-        InitFootballComponent(true);
+        ZDisplay();
     }
 
-    public override void Release()
+    public override void ZDisplay(bool show = true)
     {
-        base.Release();
+        base.ZDisplay(show);
 
-        GameObject.Destroy(Drum.gameObject);
-    }
-
-
-    public void InitFootballComponent(bool open = true)
-    {
-        if (open)
+        if (show)
         {
             if (Drum == null)
             {
@@ -49,11 +43,17 @@ public class DrumBehaviour : ZGameBehaviour
             }
         }
 
-        Drum.SetActive(open);
+        Drum.SetActive(show);
 
-        HandLeft.GetComponent<Collider>().enabled = open;
-        HandRight.GetComponent<Collider>().enabled = open;
-
-
+        HandLeft.GetComponent<Collider>().enabled = show;
+        HandRight.GetComponent<Collider>().enabled = show;
     }
+
+    public override void ZRelease()
+    {
+        base.ZRelease();
+
+        GameObject.Destroy(Drum.gameObject);
+    }
+
 }

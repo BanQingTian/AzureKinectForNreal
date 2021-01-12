@@ -7,17 +7,22 @@ public class ZGameBehaviour : ZBaseBehaviour
 
     protected bool Initialize = false;
 
-    public virtual void Start()
+    public virtual void ZStart()
     {
 
     }
 
-    public virtual void Update()
+    public virtual void ZUpdate()
     {
 
     }
 
-    public virtual void Release()
+    public virtual void ZDisplay(bool show = true)
+    {
+
+    }
+
+    public virtual void ZRelease()
     {
 
     }

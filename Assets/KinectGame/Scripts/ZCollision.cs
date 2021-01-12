@@ -5,6 +5,50 @@ using UnityEngine;
 public class ZCollision : MonoBehaviour
 {
     protected bool ddd = true;
+    private Vector3 _lastPos;
+    private Vector3 _curPos;
+
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        switch (GameManager.Instance.CurGameMode)
+        {
+            case GameMode.Football:
+
+                Debug.Log(collision.collider.name);
+                if (!collision.collider.name.Contains("football")) return;
+
+                float power = (_curPos - _lastPos).magnitude * 4222;
+                //Vector3 dir = ((collision.transform.position - collision.contacts[0].point) - (_curPos - _lastPos)).normalized;
+
+                Vector3 dir = (collision.transform.position - collision.contacts[0].point).normalized;
+
+                dir = new Vector3(dir.x * 0.5f, 0.2f, Mathf.Abs(dir.z));
+
+                collision.rigidbody.AddForce(dir * power);
+
+                Debug.DrawRay(collision.contacts[0].point, dir * power * 0.004f, Color.yellow, 6);
+
+                StartCoroutine(ResetFootballPos(collision.transform.GetComponent<Football>()));
+
+                break;
+            case GameMode.Drum:
+                break;
+            default:
+                break;
+        }
+
+
+    }
+
+
+    private void FixedUpdate()
+    {
+        // update data
+        _lastPos = _curPos;
+        _curPos = transform.position;
+    }
+
 
     public void OnTriggerEnter(Collider other)
     {
@@ -12,20 +56,12 @@ public class ZCollision : MonoBehaviour
         {
             case GameMode.Football:
 
-                var fb = other.GetComponent<Football>();
-                if (fb != null)
-                {
-                    fb.Rig.isKinematic = false;
-                    fb.Rig.AddForce((fb.defaultPos - transform.position) * 1500);
-                    StartCoroutine(ResetFootballPos(fb));
-                }
-
                 break;
             case GameMode.Drum:
 
                 Debug.Log(other.name);
                 var piano = other.GetComponent<PianoKey>();
-                if(piano != null && ddd)
+                if (piano != null && ddd)
                 {
                     piano.Play();
                     ddd = false;
@@ -51,11 +87,17 @@ public class ZCollision : MonoBehaviour
         }
     }
 
+    bool isDoing = false;
     private IEnumerator ResetFootballPos(Football fb)
     {
-        yield return new WaitForSeconds(2);
+        if (isDoing) yield break;
+        isDoing = true;
+        yield return new WaitForSeconds(6);
+        isDoing = false;
         fb.transform.position = fb.defaultPos;
         fb.Rig.isKinematic = true;
+        fb.Rig.isKinematic = false;
+        fb.Rig.AddForce(new Vector3(1, 1, -0.5f));
     }
 
 }

@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        CurGameBehaviour.Update();
+        CurGameBehaviour.ZUpdate();
         if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
         {
             ChangeGameMode();
@@ -66,9 +66,10 @@ public class GameManager : MonoBehaviour
                 default:
                     break;
             }
+            GameTables.Add(CurGameMode, CurGameBehaviour);
         }
 
-        CurGameBehaviour.Start();
+        CurGameBehaviour.ZStart();
     }
 
     #endregion
@@ -78,7 +79,8 @@ public class GameManager : MonoBehaviour
     {
         if(CurGameBehaviour!= null)
         {
-            CurGameBehaviour.Release();
+            CurGameBehaviour.ZDisplay(false);
+           // CurGameBehaviour.ZRelease();
         }
         CurGameMode = CurGameMode == GameMode.Football ? GameMode.Drum : GameMode.Football;
         Debug.Log("ChangeGameMode.CurModel is "+ CurGameMode);
@@ -89,7 +91,7 @@ public class GameManager : MonoBehaviour
 
     private void S2C_UpdataPose(string param)
     {
-        Debug.Log(param);
+        //Debug.Log(param);
         ZPose zp = JsonUtility.FromJson<ZPose>(param);
         PoseHelper.UpdataPose(zp);
     }

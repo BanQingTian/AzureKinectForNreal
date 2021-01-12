@@ -11,9 +11,5 @@ public class Football : MonoBehaviour
         defaultPos = this.transform.position;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }
