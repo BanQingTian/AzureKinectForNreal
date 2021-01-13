@@ -4,8 +4,9 @@ using UnityEngine;
 
 public struct ZPose
 {
-    public void Set(int c)
+    public void Set(int c,PlayerRoleModel pm)
     {
+        role = pm;
         count = c;
         position = new Vector3[c];
         rotation = new Quaternion[c];
@@ -13,6 +14,7 @@ public struct ZPose
     public int count;
     public Vector3[] position;
     public Quaternion[] rotation;
+    public PlayerRoleModel role;
 }
 public class ZPoseHelper : MonoBehaviour
 {
@@ -23,26 +25,16 @@ public class ZPoseHelper : MonoBehaviour
 
     public ZPose PoseData;
 
-    #region Unity_Internal
 
-    private void Start()
+    public void Init(PlayerRoleModel pm)
     {
-        Init();
-    }
-
-
-
-    #endregion
-
-    public void Init()
-    {
-        if (m_Initialized) return;
-
         RootNode = transform;
+
+        ModelNodes.Clear();
 
         InitAllNodes(RootNode);
 
-        PoseData.Set(ModelNodes.Count);
+        PoseData.Set(ModelNodes.Count,pm);
     }
 
     private void InitAllNodes(Transform trans)
@@ -61,6 +53,12 @@ public class ZPoseHelper : MonoBehaviour
     {
         for (int i = 0; i < p.count; i++)
         {
+            //if(i >= ModelNodes.Count || ModelNodes[i]== null)
+            //{
+            //    //ModelNodes.Clear();
+            //    InitAllNodes(RootNode);
+            //    return;
+            //}
             ModelNodes[i].transform.localPosition = p.position[i];
             ModelNodes[i].transform.localRotation = p.rotation[i];
         }

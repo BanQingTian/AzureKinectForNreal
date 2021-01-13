@@ -12,3 +12,9 @@ public enum GameMode
     Football,
     Drum,
 }
+
+public enum PlayerRoleModel
+{
+    BlackGirl,
+    SpiderMan
+}

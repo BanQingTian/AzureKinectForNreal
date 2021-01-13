@@ -7,6 +7,8 @@ public class ZGameBehaviour : ZBaseBehaviour
 
     protected bool Initialize = false;
 
+    protected const string Dir = "Model";
+
     public virtual void ZStart()
     {
 

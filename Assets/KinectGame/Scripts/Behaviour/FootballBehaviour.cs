@@ -5,20 +5,14 @@ using UnityEngine;
 public class FootballBehaviour : ZGameBehaviour
 {
 
-    public const string LeftFootName = "FootLeftMesh";
-    public const string RightFootName = "FootRightMesh";
-
-    public const string LeftFootRootName = "FootLeft";
-    public const string RightFootRootName = "FootRight";
+    public const string LeftFootTag = "LeftFoot";
+    public const string RightFootTag = "RightFoot";
 
     public const string FootballFieldName = "FootballField";
 
 
-
     public GameObject LeftFoot = null;
     public GameObject RightFoot = null;
-    public GameObject LeftFootRoot = null;
-    public GameObject RightFootRoot = null;
 
     public Vector3 FootballPose;
     public GameObject Football;
@@ -30,14 +24,14 @@ public class FootballBehaviour : ZGameBehaviour
     {
         base.ZStart();
 
-        if (LeftFoot == null)
+        //if (LeftFoot == null)
         {
-            LeftFoot = GameObject.Instantiate(Resources.Load<GameObject>("model/FootLeftMesh"));
-            RightFoot = GameObject.Instantiate(Resources.Load<GameObject>("model/FootRightMesh"));
+            //LeftFoot = GameObject.Instantiate(Resources.Load<GameObject>(string.Format("{0}/{1}", Dir, LeftFootName)));
+            //RightFoot = GameObject.Instantiate(Resources.Load<GameObject>(string.Format("{0}/{1}", Dir, RightFootName)));
 
-            LeftFootRoot = GameObject.Find(LeftFootRootName);
-            RightFootRoot = GameObject.Find(RightFootRootName);
-            FootballField = GameObject.Instantiate(Resources.Load<GameObject>("model/FootballField"));
+            LeftFoot = GameObject.FindWithTag(LeftFootTag);
+            RightFoot = GameObject.FindWithTag(RightFootTag);
+            FootballField = GameObject.Instantiate(Resources.Load<GameObject>(string.Format("{0}/{1}", Dir, FootballFieldName)));
         }
 
         if (LeftFoot == null | RightFoot == null)
@@ -52,18 +46,16 @@ public class FootballBehaviour : ZGameBehaviour
             RightFoot.AddComponent<ZCollision>();
         }
 
-        //FootballPose = RightFoot.transform.position + new Vector3(0, 0.05f, -0.35f);
-
         ZDisplay(true);
     }
 
-    public override void ZUpdate()
-    {
-        base.ZUpdate();
+    //public override void ZUpdate()
+    //{
+    //    base.ZUpdate();
 
-        LeftFoot.transform.position = LeftFootRoot.transform.position;
-        RightFoot.transform.position = RightFootRoot.transform.position;
-    }
+    //    LeftFoot.transform.position = LeftFootRoot.transform.position;
+    //    RightFoot.transform.position = RightFootRoot.transform.position;
+    //}
 
     public override void ZDisplay(bool show = true)
     {
@@ -78,7 +70,7 @@ public class FootballBehaviour : ZGameBehaviour
         }
 
         Football.SetActive(show);
-        Football.GetComponent<Rigidbody>().AddForce(new Vector3(1,1,-0.5f));
+        Football.GetComponent<Rigidbody>().AddForce(new Vector3(1, 1, -0.5f));
         FootballField.SetActive(show);
         LeftFoot.GetComponent<Collider>().enabled = show;
         RightFoot.GetComponent<Collider>().enabled = show;
@@ -90,6 +82,7 @@ public class FootballBehaviour : ZGameBehaviour
         base.ZRelease();
 
         GameObject.Destroy(Football.gameObject);
+        GameObject.Destroy(FootballField.gameObject);
     }
 
 }

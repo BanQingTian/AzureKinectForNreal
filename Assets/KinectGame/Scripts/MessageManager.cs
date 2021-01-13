@@ -20,6 +20,7 @@ public class S2CFuncName
     public static string GameOver = "GameOver";
     public static string AddScore = "AddScore";
 
+    public static string ChangeRole = "ChangeRole";
     public static string ExitCurator = "ExitCurator";
     public static string ScanMaker = "ScanMaker";
     public static string PlayMiniGame = "PlayMiniGame";
@@ -90,7 +91,15 @@ public class MessageManager
         client.SendMsg(MsgId.Commond, Target.All, commond);
     }
 
-
+    public void SendChangeRole(int roleid)
+    {
+        CommondInfo commond = new CommondInfo()
+        {
+            func = S2CFuncName.ChangeRole,
+            param = roleid.ToString(),
+        };
+        client.SendMsg(MsgId.Commond, Target.All, commond);
+    }
 
     /*********----Unuseful----*******************/
 

@@ -8,14 +8,12 @@ public class ZCollision : MonoBehaviour
     private Vector3 _lastPos;
     private Vector3 _curPos;
 
-
     public void OnCollisionEnter(Collision collision)
     {
         switch (GameManager.Instance.CurGameMode)
         {
             case GameMode.Football:
 
-                Debug.Log(collision.collider.name);
                 if (!collision.collider.name.Contains("football")) return;
 
                 float power = (_curPos - _lastPos).magnitude * 4222;
@@ -27,6 +25,7 @@ public class ZCollision : MonoBehaviour
 
                 collision.rigidbody.AddForce(dir * power);
 
+                Debug.Log("a;fja;kdfs;lasfk;ls;fj");
                 Debug.DrawRay(collision.contacts[0].point, dir * power * 0.004f, Color.yellow, 6);
 
                 StartCoroutine(ResetFootballPos(collision.transform.GetComponent<Football>()));
@@ -37,8 +36,6 @@ public class ZCollision : MonoBehaviour
             default:
                 break;
         }
-
-
     }
 
 

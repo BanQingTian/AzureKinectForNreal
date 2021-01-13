@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class DrumBehaviour : ZGameBehaviour
 {
-    public const string HandLeftName = "HandLeft";
-    public const string HandRightName = "HandRight";
+    public const string HandLeftTagName = "LeftHand";
+    public const string HandRightTagName = "RightHand";
 
     public GameObject HandLeft = null;
     public GameObject HandRight = null;
 
     public GameObject Drum;
+    public GameObject DrumPlusScene;
 
     public override void ZStart()
     {
-        HandLeft = GameObject.Find(HandLeftName);
-        HandRight = GameObject.Find(HandRightName);
+        HandLeft = GameObject.FindWithTag(HandLeftTagName);
+        HandRight = GameObject.FindWithTag(HandRightTagName);
         if(HandLeft == null | HandRight == null)
         {
             Debug.LogError("Ex!!");
