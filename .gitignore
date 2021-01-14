@@ -24,6 +24,21 @@ UWP/
 *.svd
 *.pdb
 
+AzureKinectWin/*.csproj
+AzureKinectWin/*.unityproj
+AzureKinectWin/*.sln
+AzureKinectWin/*.suo
+AzureKinectWin/*.tmp
+AzureKinectWin/*.user
+AzureKinectWin/*.userprefs
+AzureKinectWin/*.pidb
+AzureKinectWin/*.booproj
+AzureKinectWin/*.svd
+AzureKinectWin/*.pdb
+AzureKinectWin/[Ll]ibrary/
+AzureKinectWin/[Tt]emp/
+AzureKinectWin/[Oo]bj/
+
 # Unity3D generated meta files
 *.pidb.meta
 
