@@ -27,18 +27,21 @@ public class GameManager : MonoBehaviour
     // 人物姿态获取api
     public ZPoseHelper PoseHelper;
 
+    public GameObject RoleBase;
+
     // 是否加入游戏
     public static bool Join = false;
 
-
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
-        Instance = this;
-        PoseHelper.Init(CurPlayerRoleModel);
         CurRole = PoseHelper.transform.GetChild(0).gameObject;
-        InitTables();
-        InitGameBehaviour();
+
+        LoadGame();
     }
 
     private void Update()
@@ -50,7 +53,7 @@ public class GameManager : MonoBehaviour
         {
             ChangeGameMode();
         }
-        if (Input.GetKeyDown(KeyCode.D) && Join)
+        if (Input.GetKeyDown(KeyCode.G) && Join)
         {
             ChangePlayerRole(CurPlayerRoleModel + 1);
         }
@@ -67,6 +70,19 @@ public class GameManager : MonoBehaviour
 #endif
 
     }
+
+    public void LoadGame()
+    {
+        // 加载人物节点
+        PoseHelper.Init(CurPlayerRoleModel);
+
+        // 加载网络和角色表
+        InitTables();
+
+        // 加载游戏场景
+        InitGameBehaviour();
+    }
+
 
     #region Init
 

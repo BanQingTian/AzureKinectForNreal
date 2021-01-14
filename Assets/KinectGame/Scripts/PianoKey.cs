@@ -10,7 +10,8 @@ public class PianoKey : MonoBehaviour
 
     void Start()
     {
-        DefaultPos = transform.position;
+        DefaultPos = transform.localPosition;
+        AS = GetComponent<AudioSource>();
     }
 
     public void Play()
@@ -29,11 +30,11 @@ public class PianoKey : MonoBehaviour
                 var x = Random.Range(-0.02f, 0.02f);
                 var y = Random.Range(-0.02f, 0.02f);
                 var z = Random.Range(-0.02f, 0.02f);
-                transform.position = new Vector3(x, y, z) + DefaultPos;
+                transform.localPosition = new Vector3(x, y, z) + DefaultPos;
             }
             else
             {
-                transform.position = DefaultPos;
+                transform.localPosition = DefaultPos;
                 yield break;
             }
             timer += Time.deltaTime;

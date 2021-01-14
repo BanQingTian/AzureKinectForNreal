@@ -40,7 +40,7 @@ public class DrumBehaviour : ZGameBehaviour
         {
             if (Drum == null)
             {
-                Drum = GameObject.Instantiate(Resources.Load<GameObject>("Model/drum"));
+                Drum = GameObject.Instantiate(Resources.Load<GameObject>("Model/DrumPlus"));
             }
         }
 

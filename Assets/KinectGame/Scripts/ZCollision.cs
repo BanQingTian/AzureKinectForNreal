@@ -56,7 +56,6 @@ public class ZCollision : MonoBehaviour
                 break;
             case GameMode.Drum:
 
-                Debug.Log(other.name);
                 var piano = other.GetComponent<PianoKey>();
                 if (piano != null && ddd)
                 {

@@ -24,15 +24,9 @@ public class FootballBehaviour : ZGameBehaviour
     {
         base.ZStart();
 
-        //if (LeftFoot == null)
-        {
-            //LeftFoot = GameObject.Instantiate(Resources.Load<GameObject>(string.Format("{0}/{1}", Dir, LeftFootName)));
-            //RightFoot = GameObject.Instantiate(Resources.Load<GameObject>(string.Format("{0}/{1}", Dir, RightFootName)));
-
-            LeftFoot = GameObject.FindWithTag(LeftFootTag);
-            RightFoot = GameObject.FindWithTag(RightFootTag);
-            FootballField = GameObject.Instantiate(Resources.Load<GameObject>(string.Format("{0}/{1}", Dir, FootballFieldName)));
-        }
+        LeftFoot = GameObject.FindWithTag(LeftFootTag);
+        RightFoot = GameObject.FindWithTag(RightFootTag);
+        FootballField = GameObject.Instantiate(Resources.Load<GameObject>(string.Format("{0}/{1}", Dir, FootballFieldName)));
 
         if (LeftFoot == null | RightFoot == null)
         {
@@ -69,6 +63,7 @@ public class FootballBehaviour : ZGameBehaviour
             }
         }
 
+        Football.transform.position = Football.GetComponent<Football>().defaultPos;
         Football.SetActive(show);
         Football.GetComponent<Rigidbody>().AddForce(new Vector3(1, 1, -0.5f));
         FootballField.SetActive(show);

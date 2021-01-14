@@ -8,7 +8,7 @@ public class Football : MonoBehaviour
     public Vector3 defaultPos;
     void Start()
     {
-        defaultPos = this.transform.position;
+        defaultPos = this.transform.localPosition;
     }
 
 
