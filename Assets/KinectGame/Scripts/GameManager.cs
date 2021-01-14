@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
         PoseHelper.Init(CurPlayerRoleModel);
+        CurRole = PoseHelper.transform.GetChild(0).gameObject;
         InitTables();
         InitGameBehaviour();
     }

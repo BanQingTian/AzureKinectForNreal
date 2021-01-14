@@ -33,7 +33,7 @@ public class ZPoseHelper : MonoBehaviour
         ModelNodes.Clear();
 
         InitAllNodes(RootNode);
-
+        Debug.Log(ModelNodes.Count);
         PoseData.Set(ModelNodes.Count,pm);
     }
 
@@ -41,7 +41,7 @@ public class ZPoseHelper : MonoBehaviour
     {
         foreach (Transform item in trans)
         {
-            if (item != null)
+            if (item != null && item.gameObject.activeInHierarchy)
             {
                 ModelNodes.Add(item.gameObject);
                 InitAllNodes(item);

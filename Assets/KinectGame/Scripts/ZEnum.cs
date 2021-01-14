@@ -16,5 +16,5 @@ public enum GameMode
 public enum PlayerRoleModel
 {
     BlackGirl,
-    SpiderMan
+    CodeMan,
 }
