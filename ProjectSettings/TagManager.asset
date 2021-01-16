@@ -8,6 +8,7 @@ TagManager:
   - RightFoot
   - LeftHand
   - RightHand
+  - Neck
   layers:
   - Default
   - TransparentFX

@@ -67,6 +67,7 @@ public class FootballBehaviour : ZGameBehaviour
         Football.SetActive(show);
         Football.GetComponent<Rigidbody>().AddForce(new Vector3(1, 1, -0.5f));
         FootballField.SetActive(show);
+
         LeftFoot.GetComponent<Collider>().enabled = show;
         RightFoot.GetComponent<Collider>().enabled = show;
 

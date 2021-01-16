@@ -49,6 +49,9 @@ public class MessageManager
     public Action ConnectSuccessEvent;
     public Action ConnectFaildEvent;
 
+    public Action JoinRoomSuccessEvent;
+    public Action JoinRoomFaildEvent;
+
     public void InitializeMessage(Action connectSuccessEvent = null)
     {
         if (m_Initialize) return;
@@ -98,7 +101,7 @@ public class MessageManager
             func = S2CFuncName.ChangeRole,
             param = roleid.ToString(),
         };
-        client.SendMsg(MsgId.Commond, Target.All, commond);
+        client.SendMsg(MsgId.Commond, Target.Other, commond);
     }
 
     /*********----Unuseful----*******************/
@@ -305,10 +308,12 @@ public class MessageManager
 
         if (result == ColyseusClientResult.Success)
         {
-
+            GameManager.Join = true;
+            JoinRoomSuccessEvent?.Invoke();
         }
         else
         {
+            JoinRoomFaildEvent?.Invoke();
         }
     }
 
@@ -332,7 +337,7 @@ public class MessageManager
         Debug.Log("[Server Response] OnCreateARoomResp --- " + obj);
         if (result == ColyseusClientResult.Success)
         {
-            GameManager.Join = true;
+            
         }
         else
         {

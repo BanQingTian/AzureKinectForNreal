@@ -44,13 +44,34 @@ public class ZCollision : MonoBehaviour
         // update data
         _lastPos = _curPos;
         _curPos = transform.position;
+
+            changeTime += Time.fixedDeltaTime;
     }
 
-
+    float changeTime = 2;
     public void OnTriggerEnter(Collider other)
     {
         switch (GameManager.Instance.CurGameMode)
         {
+            case GameMode.Prepare:
+
+                if (other.name == "C1")
+                {
+                    if (changeTime < 2f)
+                        return;
+                    changeTime = 0;
+                    GameManager.Instance.ChangePlayerRole(GameManager.Instance.CurPlayerRoleModel + 1);
+                }
+                else
+                {
+                    if (other.name == "C2")
+                    {
+                        GameManager.Instance.ChangeGameMode();
+                    }
+                }
+
+                break;
+
             case GameMode.Football:
 
                 break;

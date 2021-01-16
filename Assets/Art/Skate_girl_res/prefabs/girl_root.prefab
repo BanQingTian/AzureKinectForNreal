@@ -599,7 +599,7 @@ Animator:
   m_GameObject: {fileID: 1990588565792599271}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 8f457c18b3fbe664ea0faa14c6de0855, type: 3}
-  m_Controller: {fileID: 9100000, guid: 613c090a6509c2641950ba34de52b6ee, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -2226,7 +2226,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1990588565792370887}
-  - {fileID: 1990588567736509033}
+  - {fileID: 6603379908683840532}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2240,7 +2240,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1990588567736509033}
   m_Layer: 0
-  m_Name: stakeboard
+  m_Name: sb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2253,15 +2253,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1990588567736614473}
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 0.112, z: 0.24900007}
-  m_LocalScale: {x: -0.0074083656, y: -0.0074083745, z: -0.0074083656}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1990588567736509037}
   - {fileID: 1990588567736509039}
-  m_Father: {fileID: 1990588566904627968}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 180, y: 90, z: 0}
+  m_Father: {fileID: 6603379908683840532}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1990588567736614477
 GameObject:
   m_ObjectHideFlags: 0
@@ -2416,3 +2416,34 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &2254062353573160074
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6603379908683840532}
+  m_Layer: 0
+  m_Name: Stakeboard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6603379908683840532
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2254062353573160074}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 0.112, z: 0.24900007}
+  m_LocalScale: {x: -0.0074083693, y: -0.007408382, z: -0.0074083693}
+  m_Children:
+  - {fileID: 1990588567736509033}
+  m_Father: {fileID: 1990588566904627968}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

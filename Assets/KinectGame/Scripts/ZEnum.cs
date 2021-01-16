@@ -9,8 +9,9 @@ public class ZEnum
 }
 public enum GameMode
 {
-    Football,
+    Prepare,
     Drum,
+    Football,
 }
 
 public enum PlayerRoleModel

@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     // 游戏缓存
     public Dictionary<GameMode, ZGameBehaviour> GameTables = new Dictionary<GameMode, ZGameBehaviour>();
     // 当前游戏关卡
-    public GameMode CurGameMode = GameMode.Football;
+    public GameMode CurGameMode = GameMode.Prepare;
     // 当前游戏关卡对应的生命周期
     public ZGameBehaviour CurGameBehaviour = null;
 
@@ -22,31 +22,30 @@ public class GameManager : MonoBehaviour
     // 当前游戏角色
     public PlayerRoleModel CurPlayerRoleModel = PlayerRoleModel.BlackGirl;
     // 当前游戏角色实例
-    public GameObject CurRole = null;
+    [HideInInspector]public GameObject CurRole = null;
 
     // 人物姿态获取api
     public ZPoseHelper PoseHelper;
+    private Vector3 PoseHelperDefaultPose;
 
-    public GameObject RoleBase;
+    // 角色池缓存
+    public Transform RoleDatabase;
 
     // 是否加入游戏
     public static bool Join = false;
 
+    public bool InitFinish = false;
+
     private void Awake()
     {
         Instance = this;
-    }
-
-    void Start()
-    {
-        CurRole = PoseHelper.transform.GetChild(0).gameObject;
-
-        LoadGame();
+        //CurRole = PoseHelper.transform.GetChild(0).gameObject;
     }
 
     private void Update()
     {
-        CurGameBehaviour.ZUpdate();
+        if (InitFinish)
+            CurGameBehaviour.ZUpdate();
 
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.F))
@@ -71,8 +70,15 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void LoadGame()
+    #region Init
+
+    public void Init()
     {
+        if (InitFinish) return;
+
+        CurRole = PoseHelper.transform.GetChild(0).gameObject;
+
+
         // 加载人物节点
         PoseHelper.Init(CurPlayerRoleModel);
 
@@ -80,22 +86,21 @@ public class GameManager : MonoBehaviour
         InitTables();
 
         // 加载游戏场景
-        InitGameBehaviour();
+        LoadGameBehaviour();
+
+        InitFinish = true;
     }
-
-
-    #region Init
 
     public void InitTables()
     {
         S2CFuncTable.Add(S2CFuncName.PoseData, S2C_UpdataPose);
         S2CFuncTable.Add(S2CFuncName.ChangeRole, S2C_UpdatePlayerRole);
 
-        RoleTables.Add(CurPlayerRoleModel, CurRole);
+        RoleTables.Add(CurPlayerRoleModel, CurRole.gameObject);
     }
 
 
-    public void InitGameBehaviour()
+    public void LoadGameBehaviour()
     {
         ZGameBehaviour gb;
         if (GameTables.TryGetValue(CurGameMode, out gb))
@@ -106,6 +111,9 @@ public class GameManager : MonoBehaviour
         {
             switch (CurGameMode)
             {
+                case GameMode.Prepare:
+                    CurGameBehaviour = new PrepareBehaviour();
+                    break;
                 case GameMode.Football:
                     CurGameBehaviour = new FootballBehaviour();
                     break;
@@ -129,57 +137,64 @@ public class GameManager : MonoBehaviour
         if (CurGameBehaviour != null)
         {
             CurGameBehaviour.ZDisplay(false);
-            // CurGameBehaviour.ZRelease();
+            CurGameBehaviour.ZRelease();
         }
         CurGameMode = (int)CurGameMode + 1 >= System.Enum.GetNames(typeof(GameMode)).Length ? 0 : CurGameMode + 1;
 
-        InitGameBehaviour();
+        LoadGameBehaviour();
     }
 
     public void ChangePlayerRole(PlayerRoleModel pm)
     {
+        isWaitingToChangeRole = true;
         pm = (int)pm >= System.Enum.GetNames(typeof(PlayerRoleModel)).Length ? 0 : pm;
         MessageManager.Instance.SendChangeRole((int)pm);
     }
 
     #region S2C
 
+    bool isWaitingToChangeRole = false;
     private void S2C_UpdatePlayerRole(string param)
     {
         PlayerRoleModel role = (PlayerRoleModel)int.Parse(param);
 
-        if (CurRole != null)
-        {
-            GameObject.Destroy(CurRole.gameObject);
-        }
+        CurRole = null;
 
         GameObject model;
         if (RoleTables.TryGetValue(role, out model))
         {
-            CurRole = GameObject.Instantiate(Resources.Load<GameObject>("Model/" + role.ToString()));
+            CurRole = model;
             CurRole.SetActive(true);
         }
         else
         {
             CurRole = GameObject.Instantiate(Resources.Load<GameObject>("Model/" + role.ToString()));
             CurRole.SetActive(true);
+            RoleTables[role] = CurRole;
         }
 
-        RoleTables[role] = CurRole;
+        RoleTables[CurPlayerRoleModel].transform.SetParent(RoleDatabase);
+        RoleTables[CurPlayerRoleModel].SetActive(false);
 
+        CurPlayerRoleModel = role;
         CurRole.transform.SetParent(PoseHelper.transform);
         CurRole.transform.localPosition = Vector3.zero;
-        CurPlayerRoleModel = role;
+        CurRole.transform.localScale = Vector3.one;
 
         PoseHelper.Init(role);
+
+        // 变化角色完成
+        isWaitingToChangeRole = false;
     }
 
     private void S2C_UpdataPose(string param)
     {
+        if (isWaitingToChangeRole) return;
+
         //Debug.Log(param);
         ZPose zp = JsonUtility.FromJson<ZPose>(param);
         //if (zp.role == CurPlayerRoleModel)
-            PoseHelper.UpdataPose(zp);
+        PoseHelper.UpdataPose(zp);
     }
 
     #endregion

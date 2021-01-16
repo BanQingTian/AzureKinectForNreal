@@ -9,6 +9,11 @@ public class ZMain : MonoBehaviour
     {
         MessageManager.Instance.InitializeMessage();
         MessageManager.Instance.SendConnectServerMsg("192.168.68.187", "443");
+#if UNITY_EDITOR
+        GameManager.Instance.Init();
+#else
+        MessageManager.Instance.JoinRoomSuccessEvent += GameManager.Instance.Init;
+#endif
     }
 
     // Update is called once per frame

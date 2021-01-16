@@ -22,7 +22,6 @@ public class ZPoseHelper : MonoBehaviour
     protected Transform RootNode;
     public List<GameObject> ModelNodes;
 
-
     public ZPose PoseData;
 
 
@@ -53,12 +52,12 @@ public class ZPoseHelper : MonoBehaviour
     {
         for (int i = 0; i < p.count; i++)
         {
-            if (i >= ModelNodes.Count || ModelNodes[i] == null)
-            {
-                //ModelNodes.Clear();
-                InitAllNodes(RootNode);
-                return;
-            }
+            //if (i >= ModelNodes.Count || ModelNodes[i] == null)
+            //{
+            //    //ModelNodes.Clear();
+            //    InitAllNodes(RootNode);
+            //    return;
+            //}
             ModelNodes[i].transform.localPosition = p.position[i];
             ModelNodes[i].transform.localRotation = p.rotation[i];
         }
