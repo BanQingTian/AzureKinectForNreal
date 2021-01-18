@@ -8,11 +8,11 @@ public class DrumBehaviour : ZGameBehaviour
     private const string HandRightTagName = "RightHand";
     private const string FootLeftTagName = "LeftFoot";
     private const string FootRightTagName = "RightFoot";
-    private const string NeckTagName = "Neck";
-    private const string StakeboardName = "Stakeboard";
+    private const string StakeboardPosName = "StakeboardPos";
+    private const string StakeboardRotName = "StakeboardRot";
 
-    private const float neckMoveLimit = 1f; // 脖子移动多少触发滑板移动
-    private const float stakeboardMoveSpeed = 0.2f; // 滑板移动速度
+    private const float neckMoveLimit = 5f; // 脖子移动多少触发滑板移动
+    private const float stakeboardMoveSpeed = 0.03f; // 滑板移动速度
     private const float stakeboardMoveLimit = 0.7f; //滑板移动上限
 
     public GameObject HandLeft = null;
@@ -28,8 +28,10 @@ public class DrumBehaviour : ZGameBehaviour
     public GameObject Drum;
     public GameObject DrumPlusScene;
 
-    public GameObject Neck; // for judge Move
-    public GameObject Stakeboard;
+    public GameObject Head; // for judge Move
+    public GameObject Hip;
+    public GameObject StakeboardPos;
+    public GameObject StakeboardRot;
 
     private Vector3 DefaultPos;
 
@@ -37,10 +39,10 @@ public class DrumBehaviour : ZGameBehaviour
     {
         HandLeft = GameObject.FindWithTag(HandLeftTagName);
         HandRight = GameObject.FindWithTag(HandRightTagName);
-        Neck = GameObject.FindWithTag(NeckTagName);
+        Head = GameObject.Find("CenterCamera");
         FootLeft = GameObject.FindWithTag(FootLeftTagName);
         FootRight = GameObject.FindWithTag(FootRightTagName);
-        
+
 
         a3 = FootLeft.transform.parent;
         a2 = a3.parent;
@@ -70,7 +72,8 @@ public class DrumBehaviour : ZGameBehaviour
             if (Drum == null)
             {
                 Drum = GameObject.Instantiate(Resources.Load<GameObject>("Model/DrumPlus"));
-                Stakeboard = GameObject.Find(StakeboardName);
+                StakeboardPos = GameObject.Find(StakeboardPosName);
+                StakeboardRot = GameObject.Find(StakeboardRotName);
                 TempAnim = GameObject.Find("random_flying_cube").GetComponent<Animator>();
             }
         }
@@ -90,6 +93,7 @@ public class DrumBehaviour : ZGameBehaviour
         UpdateStakeboardDir();
 
         GetAngle();
+
     }
 
     public override void ZRelease()
@@ -101,45 +105,62 @@ public class DrumBehaviour : ZGameBehaviour
         GameManager.Instance.PoseHelper.transform.localPosition = Vector3.zero;
     }
 
-    float _neckX = 0;
+    float _headZ = 0;
     float _stakeboardX = 0;
     float moved = 0;
     private void StakeboardMove()
     {
-        _neckX = Neck.transform.localRotation.eulerAngles.z;
-        _neckX = _neckX > 300 ? _neckX - 360 : _neckX;
-        if (_neckX > neckMoveLimit || _neckX < -neckMoveLimit)
+        _headZ = Head.transform.rotation.eulerAngles.z;
+        _headZ = _headZ > 300 ? _headZ - 360 : _headZ;
+        moved = 0;
+        if (_headZ > neckMoveLimit)
         {
-            moved = (_neckX - neckMoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;// * (1 + Mathf.Abs(_neckX - neckMoveLimit));
+            moved = (_headZ - neckMoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
         }
-        _stakeboardX = Stakeboard.transform.localPosition.x - moved;
+        else if (_headZ < -neckMoveLimit)
+        {
+            moved = (_headZ + neckMoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+        }
 
+        moved *= Mathf.Clamp(1 + Mathf.Abs(_headZ) - neckMoveLimit, 1, 1.1f);
+
+        _stakeboardX = StakeboardPos.transform.position.x - moved;
         _stakeboardX = Mathf.Clamp(_stakeboardX, -stakeboardMoveLimit, stakeboardMoveLimit);
-
-        Stakeboard.transform.localPosition = new Vector3(_stakeboardX, Stakeboard.transform.localPosition.y, Stakeboard.transform.localPosition.z);
-
-        GameManager.Instance.PoseHelper.transform.position = new Vector3(Stakeboard.transform.position.x
-            , GameManager.Instance.PoseHelper.transform.position.y
-            , GameManager.Instance.PoseHelper.transform.position.z);
+        StakeboardPos.transform.position = new Vector3(_stakeboardX, StakeboardPos.transform.position.y, StakeboardPos.transform.position.z);
     }
 
+    Vector3 center;
+    Vector3 dir;
     private void UpdateStakeboardDir()
     {
-        Vector3 center = (FootLeft.transform.position + FootRight.transform.position) / 2;
-        Vector3 dir = (FootLeft.transform.position - FootRight.transform.position).normalized;
+        center = (FootLeft.transform.position + FootRight.transform.position) / 2;
+        dir = FootLeft.transform.position - FootRight.transform.position;
         Debug.DrawLine(FootLeft.transform.position, FootRight.transform.position, Color.yellow);
-        Stakeboard.transform.position = new Vector3(Stakeboard.transform.position.x, FootLeft.transform.position.y - 0.01f, Stakeboard.transform.position.z);
-        Stakeboard.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
-        Vector3 angle = Stakeboard.transform.rotation.eulerAngles;
-        Stakeboard.transform.rotation = Quaternion.Euler(0, angle.y - 90, 0);
+        GameManager.Instance.PoseHelper.transform.position = StakeboardRot.transform.position;// center;// new Vector3(Stakeboard.transform.position.x, FootLeft.transform.position.y - 0.01f, Stakeboard.transform.position.z);
+        StakeboardRot.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
+
+        StakeboardRot.transform.localPosition = new Vector3(0, StakeboardRot.transform.localPosition.y, StakeboardRot.transform.localPosition.z);
+        //StakeboardRot.transform.position = new Vector3(StakeboardRot.transform.position.x, StakeboardRot.transform.position.y, center.z);
+
     }
 
     private void GetAngle()
     {
         float angle = Vector3.Angle(a3.position - a2.position, a1.position - a2.position);
         angle = Mathf.Clamp(angle, 80, 170);
-        Debug.Log(angle);
         float rate = (170 - angle) / 90;
         TempAnim.speed = 1 + rate;
+    }
+    Vector3 GetVerticalDir(Vector3 _dir)
+    {
+        //（_dir.x,_dir.z）与（？，1）垂直，则_dir.x * ？ + _dir.z * 1 = 0
+        if (_dir.z == 0)
+        {
+            return new Vector3(0, 0, -1);
+        }
+        else
+        {
+            return new Vector3(-_dir.z / _dir.x, 0, 1).normalized;
+        }
     }
 }

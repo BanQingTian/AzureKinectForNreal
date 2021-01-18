@@ -335,6 +335,7 @@ public class MessageManager
     {
         // obj is Room<State>
         Debug.Log("[Server Response] OnCreateARoomResp --- " + obj);
+
         if (result == ColyseusClientResult.Success)
         {
             
