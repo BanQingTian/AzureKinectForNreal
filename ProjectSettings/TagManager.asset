@@ -8,6 +8,7 @@ TagManager:
   - RightFoot
   - LeftHand
   - RightHand
+  - Hip
   layers:
   - Default
   - TransparentFX

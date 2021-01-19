@@ -14,6 +14,8 @@ public class ZMain : MonoBehaviour
 #else
         MessageManager.Instance.JoinRoomSuccessEvent += GameManager.Instance.Init;
 #endif
+
+        ZCoroutiner.SetCoroutiner(this);
     }
 
     // Update is called once per frame

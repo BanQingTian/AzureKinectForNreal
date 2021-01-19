@@ -131,7 +131,6 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-
     public void ChangeGameMode()
     {
         if (CurGameBehaviour != null)
