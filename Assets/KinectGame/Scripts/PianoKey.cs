@@ -7,7 +7,6 @@ public class PianoKey : MonoBehaviour
     public AudioSource AS;
     public Vector3 DefaultPos;
 
-
     void Start()
     {
         DefaultPos = transform.localPosition;
@@ -17,7 +16,7 @@ public class PianoKey : MonoBehaviour
     public void Play()
     {
         AS.Play();
-        StartCoroutine(keyShake());
+        //StartCoroutine(keyShake());
     }
 
     private IEnumerator keyShake()

@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     // 当前游戏角色
     public PlayerRoleModel CurPlayerRoleModel = PlayerRoleModel.BlackGirl;
     // 当前游戏角色实例
-    [HideInInspector]public GameObject CurRole = null;
+    [HideInInspector] public GameObject CurRole = null;
 
     // 人物姿态获取api
     public ZPoseHelper PoseHelper;
@@ -88,6 +88,7 @@ public class GameManager : MonoBehaviour
         // 加载游戏场景
         LoadGameBehaviour();
 
+
         InitFinish = true;
     }
 
@@ -129,7 +130,28 @@ public class GameManager : MonoBehaviour
         CurGameBehaviour.ZStart();
     }
 
+    Vector3 modelForward; // 模型正方向
+    Vector3 cameraForward; // 启动正方向
+    bool resetOnce = false;
+    public void ResetPositiveDir()
+    {
+        modelForward = GameObject.FindWithTag("Hip").transform.forward;
+        cameraForward = Camera.main.transform.forward;
+
+        float angle = Mathf.Acos(Vector3.Dot(cameraForward, modelForward)) * Mathf.Rad2Deg;
+        Debug.Log(angle + "----------123-  ");
+
+        if (Vector3.Dot(cameraForward - modelForward, Camera.main.transform.right) < 0)
+        {
+            angle = -angle;
+        }
+
+        Vector3 v3 = PoseHelper.transform.rotation.eulerAngles;
+        PoseHelper.transform.parent.rotation = Quaternion.Euler(v3.x, v3.y + angle, v3.z);
+    }
+
     #endregion
+
 
     public void ChangeGameMode()
     {
@@ -194,6 +216,13 @@ public class GameManager : MonoBehaviour
         ZPose zp = JsonUtility.FromJson<ZPose>(param);
         //if (zp.role == CurPlayerRoleModel)
         PoseHelper.UpdataPose(zp);
+
+        if (!resetOnce)
+        {
+            resetOnce = true;
+            ResetPositiveDir();
+        }
+
     }
 
     #endregion

@@ -17,8 +17,10 @@ public class DrumBehaviour : ZGameBehaviour
     private const float stakeboardMoveSpeed = 0.04f; // 滑板移动速度
     private const float stakeboardMoveLimit = 0.7f; //滑板移动上限
     private const float stopSpeed = 1f; // 障碍物停止的速度
+    private const float frontMoveSpeed = 1.1f; //先前倾斜的速度
+    private const float backMoveSpeed = 1.1f; // 向后倾斜的速度
 
-    private const float head_hip_ratio = 0.5f; // 头和躯干造成移动的权重
+    private const float head_hip_ratio = 0.7f; // 头和躯干造成移动的权重
 
     public GameObject HandLeft = null;
     public GameObject HandRight = null;
@@ -26,7 +28,7 @@ public class DrumBehaviour : ZGameBehaviour
     public GameObject FootLeft = null;
     public GameObject FootRight = null;
 
-    private Transform a1, a2, a3; // for  a2->a1 与 a2->a3 的夹角
+    private Transform a1, a2, a3; // for  a2->a1 与 a2->a3 的夹角,for 膝盖弯曲
 
     private Animator TempAnim;
 
@@ -54,7 +56,6 @@ public class DrumBehaviour : ZGameBehaviour
         Debug.Log(Hip.name + "-----------");
         FootLeft = GameObject.FindWithTag(FootLeftTagName);
         FootRight = GameObject.FindWithTag(FootRightTagName);
-
 
         a3 = FootLeft.transform.parent;
         a2 = a3.parent;
@@ -107,7 +108,6 @@ public class DrumBehaviour : ZGameBehaviour
         StopMove();
 
         GetKneeAngle();
-
     }
 
     public override void ZRelease()
@@ -115,7 +115,6 @@ public class DrumBehaviour : ZGameBehaviour
         base.ZRelease();
 
         GameObject.Destroy(Drum.gameObject);
-
         GameManager.Instance.PoseHelper.transform.localPosition = Vector3.zero;
     }
 
@@ -125,38 +124,49 @@ public class DrumBehaviour : ZGameBehaviour
     float moved = 0; // 权重计算之后的偏移量
     float moved_head = 0; // 头部的偏移量
     float moved_hip = 0; // 胯躯干的偏移量
+    float leftOrRight_front = 0; // 大于0 left在前 反之
     private void StakeboardMove()
     {
+        leftOrRight_front = FootLeft.transform.position.z - FootLeft.transform.position.z;
+
+        // 头部倾斜计算
         _headZ = Head.transform.rotation.eulerAngles.z;
         _headZ = _headZ > 300 ? _headZ - 360 : _headZ;
         moved_head = 0;
         if (_headZ > MoveLimit)
         {
             moved_head = (_headZ - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
         }
         else if (_headZ < -MoveLimit)
         {
             moved_head = (_headZ + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
         }
-        moved_head *= Mathf.Clamp(1 + Mathf.Abs(_headZ) - MoveLimit, 1, 1.1f);
+        moved_head *= Mathf.Clamp(1 + Mathf.Abs(_headZ) - MoveLimit, 1, 1.2f);
 
+
+        // 身体倾斜计算
         _hipZ = Hip.transform.rotation.eulerAngles.z;
-        Debug.Log(_hipZ);
         _hipZ = _hipZ > 300 ? _hipZ - 360 : _hipZ;
         moved_hip = 0;
         if (_hipZ > MoveLimit)
         {
             moved_hip = (_hipZ - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
         }
         else if (_hipZ < -MoveLimit)
         {
             moved_hip = (_hipZ + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
         }
         moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipZ) - MoveLimit, 1, 1.1f);
 
 
+        // 综合权重
         moved = moved_head * head_hip_ratio + moved_hip * (1 - head_hip_ratio);
 
+        // 通过移动人父物体移动，后续让滑板跟随人的位置
         _stakeboardX = GameManager.Instance.PoseHelper.transform.position.x - moved;
         _stakeboardX = Mathf.Clamp(_stakeboardX, -stakeboardMoveLimit, stakeboardMoveLimit);
 
@@ -193,7 +203,6 @@ public class DrumBehaviour : ZGameBehaviour
         {
             if (!beginStopMove)
             {
-                Debug.Log(2222222);
                 cor = ZCoroutiner.StartCoroutine(stopMoveCor());
                 beginStopMove = true;
             }
@@ -217,14 +226,16 @@ public class DrumBehaviour : ZGameBehaviour
             yield return null;
         }
         TempAnim.speed = 0;
-        Debug.Log(3333333);
-
     }
 
     private void GetKneeAngle()
     {
         if (beginStopMove) return;
 
+        if (TempAnim.speed < 1)
+        {
+            TempAnim.speed += stopSpeed * Time.fixedDeltaTime;
+        }
         float angle = Vector3.Angle(a3.position - a2.position, a1.position - a2.position);
         angle = Mathf.Clamp(angle, 80, 170);
         float rate = (170 - angle) / 90;

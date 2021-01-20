@@ -8,6 +8,8 @@ public class ZCollision : MonoBehaviour
     private Vector3 _lastPos;
     private Vector3 _curPos;
 
+    public GameObject DelayGO;
+
     public void OnCollisionEnter(Collision collision)
     {
         switch (GameManager.Instance.CurGameMode)
@@ -25,7 +27,6 @@ public class ZCollision : MonoBehaviour
 
                 collision.rigidbody.AddForce(dir * power);
 
-                Debug.Log("a;fja;kdfs;lasfk;ls;fj");
                 Debug.DrawRay(collision.contacts[0].point, dir * power * 0.004f, Color.yellow, 6);
 
                 StartCoroutine(ResetFootballPos(collision.transform.GetComponent<Football>()));
@@ -45,7 +46,22 @@ public class ZCollision : MonoBehaviour
         _lastPos = _curPos;
         _curPos = transform.position;
 
-            changeTime += Time.fixedDeltaTime;
+        changeTime += Time.fixedDeltaTime;
+
+        if (cubeFollow)
+        {
+            if (/*Vector3.Distance(curFollower.transform.position, DelayGO.transform.position) > 0.2f && */curFollower.transform.position.z-DelayGO.transform.position.z>0.15f)
+            {
+                cubeFollow = false;
+                curFollower.AddComponent<ShootForward>();
+                curFollower = null;
+
+            }
+        }
+        if (follow)
+        {
+            delayFollow();
+        }
     }
 
     float changeTime = 2;
@@ -82,6 +98,15 @@ public class ZCollision : MonoBehaviour
                 {
                     piano.Play();
                     ddd = false;
+                    if (!cubeFollow)
+                    {
+                        cubeFollow = true;
+                        piano.transform.SetParent(transform);
+                        piano.transform.localPosition = Vector3.zero;
+                        piano.GetComponent<Collider>().enabled = false;
+                        ResetDelayFollow();
+                        curFollower = piano.gameObject;
+                    }
                 }
 
                 break;
@@ -89,6 +114,9 @@ public class ZCollision : MonoBehaviour
                 break;
         }
     }
+
+    bool cubeFollow = false;
+    GameObject curFollower = null;
 
     public void OnTriggerExit(Collider other)
     {
@@ -117,4 +145,18 @@ public class ZCollision : MonoBehaviour
         fb.Rig.AddForce(new Vector3(1, 1, -0.5f));
     }
 
+    bool follow = false;
+    private void ResetDelayFollow()
+    {
+        if (DelayGO == null)
+        {
+            DelayGO = new GameObject("delay_go");
+        }
+        DelayGO.transform.position = transform.position;
+        follow = true;
+    }
+    private void delayFollow()
+    {
+        DelayGO.transform.position = Vector3.MoveTowards(DelayGO.transform.position, transform.position, 0.2f*Time.deltaTime);
+    }
 }
