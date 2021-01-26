@@ -24,8 +24,10 @@ public class PrepareBehaviour : ZGameBehaviour
 
         if (HandLeft.GetComponent<ZCollision>() == null)
         {
-            HandLeft.AddComponent<ZCollision>();
-            HandRight.AddComponent<ZCollision>();
+            var zc1 = HandLeft.AddComponent<ZCollision>();
+            var zc2 = HandRight.AddComponent<ZCollision>();
+            zc1.Init(CollisionTypeEnum.Hand);
+            zc2.Init(CollisionTypeEnum.Hand);
         }
 
         ZDisplay();

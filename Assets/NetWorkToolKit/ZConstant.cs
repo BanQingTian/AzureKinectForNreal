@@ -4,6 +4,56 @@ using UnityEngine;
 
 public static class ZConstant
 {
+
+    /// <summary>
+    /// 碰到障碍物减分
+    /// </summary>
+    public const int BarrierScore = -1;
+    /// <summary>
+    /// 金币得分
+    /// </summary>
+    public const int IconScore = 1;
+    /// <summary>
+    /// hand得分
+    /// </summary>
+    public const int HandScore = 2;
+    /// <summary>
+    /// 摧毁障碍墙得分
+    /// </summary>
+    public const int DestroyWallScore = 3;
+    /// <summary>
+    /// 碰到墙得分
+    /// </summary>
+    public const int DotnDestroyWallScore = -3;
+    /// <summary>
+    /// 保持姿势时间
+    /// </summary>
+    public const float HoldTime = 3;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*---------------------------------------------------------------------------*/
+
+
+
     /// <summary>
     /// 第一个进入房间的玩家将在25s后创建房间
     /// </summary>

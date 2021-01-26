@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NRKernal;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,11 @@ public class GameManager : MonoBehaviour
 
     public delegate void S2CFuncAction<T>(T info);
     public Dictionary<string, S2CFuncAction<string>> S2CFuncTable = new Dictionary<string, S2CFuncAction<string>>();
+
+    /// <summary>
+    /// 总分数
+    /// </summary>
+    protected int totalScore = 100;
 
     // 游戏缓存
     public Dictionary<GameMode, ZGameBehaviour> GameTables = new Dictionary<GameMode, ZGameBehaviour>();
@@ -27,6 +33,19 @@ public class GameManager : MonoBehaviour
     // 人物姿态获取api
     public ZPoseHelper PoseHelper;
     private Vector3 PoseHelperDefaultPose;
+
+
+    public AudioSource BGSound;
+
+    /// <summary>
+    /// No.1 action
+    /// </summary>
+    public GameObject Action1;
+    public bool A1Hover = false;
+    public bool A2Hover = false;
+
+    //public ZBarrierManager BarrierMananger;
+
 
     // 角色池缓存
     public Transform RoleDatabase;
@@ -57,16 +76,18 @@ public class GameManager : MonoBehaviour
             ChangePlayerRole(CurPlayerRoleModel + 1);
         }
 #else
-        if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
-        {
-            ChangeGameMode();
-        }
-        if (NRInput.GetButtonDown(ControllerButton.APP) && Join)
-        {
-            ChangePlayerRole(CurPlayerRoleModel + 1);
-        }
+        //if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
+        //{
+        //    ChangeGameMode();
+        //}
+        //if (NRInput.GetButtonDown(ControllerButton.APP) && Join)
+        //{
+        //    ChangePlayerRole(CurPlayerRoleModel + 1);
+        //}
 
 #endif
+
+        UpdateActionTrigger();
 
     }
 
@@ -92,6 +113,12 @@ public class GameManager : MonoBehaviour
         InitFinish = true;
     }
 
+
+    public void InitBarrierManager()
+    {
+        //BarrierMananger.InitBarrierConfig();
+    }
+
     public void InitTables()
     {
         S2CFuncTable.Add(S2CFuncName.PoseData, S2C_UpdataPose);
@@ -115,9 +142,9 @@ public class GameManager : MonoBehaviour
                 case GameMode.Prepare:
                     CurGameBehaviour = new PrepareBehaviour();
                     break;
-                case GameMode.Football:
-                    CurGameBehaviour = new FootballBehaviour();
-                    break;
+                //case GameMode.Football:
+                //    CurGameBehaviour = new FootballBehaviour();
+                //    break;
                 case GameMode.Drum:
                     CurGameBehaviour = new DrumBehaviour();
                     break;
@@ -139,7 +166,6 @@ public class GameManager : MonoBehaviour
         cameraForward = Camera.main.transform.forward;
 
         float angle = Mathf.Acos(Vector3.Dot(cameraForward, modelForward)) * Mathf.Rad2Deg;
-        Debug.Log(angle + "----------123-  ");
 
         if (Vector3.Dot(cameraForward - modelForward, Camera.main.transform.right) < 0)
         {
@@ -153,24 +179,125 @@ public class GameManager : MonoBehaviour
     #endregion
 
 
+    #region Game Relevant
+
+    bool guidance = false;
     public void ChangeGameMode()
     {
-        if (CurGameBehaviour != null)
+        StartCoroutine(PlayGuidance(() =>
         {
-            CurGameBehaviour.ZDisplay(false);
-            CurGameBehaviour.ZRelease();
-        }
-        CurGameMode = (int)CurGameMode + 1 >= System.Enum.GetNames(typeof(GameMode)).Length ? 0 : CurGameMode + 1;
+            //play guidance anim;
 
-        LoadGameBehaviour();
+
+            Debug.Log("Play Guidance Animation");
+
+        }, 1,
+        () =>
+        {
+            if (CurGameBehaviour != null)
+            {
+                CurGameBehaviour.ZDisplay(false);
+                CurGameBehaviour.ZRelease();
+            }
+            CurGameMode = (int)CurGameMode + 1 >= System.Enum.GetNames(typeof(GameMode)).Length ? 0 : CurGameMode + 1;
+
+            LoadGameBehaviour();
+        }));
     }
 
+    private IEnumerator PlayGuidance(Action guidanceEvent = null, float time = 1, Action finishEvent = null)
+    {
+        if (!guidance)
+        {
+            guidanceEvent?.Invoke();
+            yield return new WaitForSeconds(time);
+        }
+        yield return null;
+        finishEvent?.Invoke();
+    }
+
+    /// <summary>
+    /// 切换角色模型
+    /// </summary>
+    /// <param name="pm"></param>
     public void ChangePlayerRole(PlayerRoleModel pm)
     {
         isWaitingToChangeRole = true;
         pm = (int)pm >= System.Enum.GetNames(typeof(PlayerRoleModel)).Length ? 0 : pm;
         MessageManager.Instance.SendChangeRole((int)pm);
+
+        // 切换人之后，加载开始游戏的button
+        AddActionTrigger(CurPlayerRoleModel);
+
     }
+
+    /// <summary>
+    /// 切换背景音乐
+    /// </summary>
+    /// <param name="clip"></param>
+    public void  ChangeBgSound(AudioClip clip)
+    {
+        BGSound.clip = clip;
+        BGSound.Play();
+
+        Debug.Log("change to : " + clip.name);
+    }
+
+    public void ShowUI()
+    {
+        SetScore(totalScore);
+    }
+
+    /// <summary>
+    /// 修改分数
+    /// </summary>
+    /// <param name="v"></param>
+    public void SetScore(int v)
+    {
+        totalScore += v;
+
+        UIManager.Instance.UpdateScore(totalScore);
+    }
+
+
+    public void AddActionTrigger(PlayerRoleModel prm)
+    {
+        switch (prm)
+        {
+            case PlayerRoleModel.BlackGirl:
+
+                Action1.SetActive(true);
+
+                break;
+            case PlayerRoleModel.CodeMan:
+                break;
+            default:
+                break;
+        }
+    }
+
+    float actionTriggerTime = 0;
+    public void UpdateActionTrigger()
+    {
+        if(A1Hover && A2Hover)
+        {
+            actionTriggerTime += Time.fixedDeltaTime;
+            Debug.Log(actionTriggerTime);
+            if(actionTriggerTime >= ZConstant.HoldTime)
+            {
+                ChangeGameMode();
+                actionTriggerTime = 0;
+            }
+        }
+        else
+        {
+            actionTriggerTime = 0;
+        }
+    }
+
+    #endregion
+
+
 
     #region S2C
 

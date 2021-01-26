@@ -36,8 +36,10 @@ public class FootballBehaviour : ZGameBehaviour
 
         if (!LeftFoot.GetComponent<ZCollision>())
         {
-            LeftFoot.AddComponent<ZCollision>();
-            RightFoot.AddComponent<ZCollision>();
+            var zc1 = LeftFoot.AddComponent<ZCollision>();
+            zc1.Init(CollisionTypeEnum.Foot);
+            var zc2 = RightFoot.AddComponent<ZCollision>();
+            zc2.Init(CollisionTypeEnum.Foot);
         }
 
         ZDisplay(true);

@@ -10,34 +10,41 @@ public class ZCollision : MonoBehaviour
 
     public GameObject DelayGO;
 
-    public void OnCollisionEnter(Collision collision)
+    public CollisionTypeEnum CollisionType;
+
+    public void Init(CollisionTypeEnum ct)
     {
-        switch (GameManager.Instance.CurGameMode)
-        {
-            case GameMode.Football:
-
-                if (!collision.collider.name.Contains("football")) return;
-
-                float power = (_curPos - _lastPos).magnitude * 4222;
-                //Vector3 dir = ((collision.transform.position - collision.contacts[0].point) - (_curPos - _lastPos)).normalized;
-
-                Vector3 dir = (collision.transform.position - collision.contacts[0].point).normalized;
-
-                dir = new Vector3(dir.x * 0.5f, 0.2f, Mathf.Abs(dir.z));
-
-                collision.rigidbody.AddForce(dir * power);
-
-                Debug.DrawRay(collision.contacts[0].point, dir * power * 0.004f, Color.yellow, 6);
-
-                StartCoroutine(ResetFootballPos(collision.transform.GetComponent<Football>()));
-
-                break;
-            case GameMode.Drum:
-                break;
-            default:
-                break;
-        }
+        CollisionType = ct;
     }
+
+    //public void OnCollisionEnter(Collision collision)
+    //{
+    //    switch (GameManager.Instance.CurGameMode)
+    //    {
+    //        case GameMode.Football:
+
+    //            if (!collision.collider.name.Contains("football")) return;
+
+    //            float power = (_curPos - _lastPos).magnitude * 4222;
+    //            //Vector3 dir = ((collision.transform.position - collision.contacts[0].point) - (_curPos - _lastPos)).normalized;
+
+    //            Vector3 dir = (collision.transform.position - collision.contacts[0].point).normalized;
+
+    //            dir = new Vector3(dir.x * 0.5f, 0.2f, Mathf.Abs(dir.z));
+
+    //            collision.rigidbody.AddForce(dir * power);
+
+    //            Debug.DrawRay(collision.contacts[0].point, dir * power * 0.004f, Color.yellow, 6);
+
+    //            StartCoroutine(ResetFootballPos(collision.transform.GetComponent<Football>()));
+
+    //            break;
+    //        case GameMode.Drum:
+    //            break;
+    //        default:
+    //            break;
+    //    }
+    //}
 
 
     private void FixedUpdate()
@@ -46,13 +53,15 @@ public class ZCollision : MonoBehaviour
         _lastPos = _curPos;
         _curPos = transform.position;
 
-        changeTime += Time.fixedDeltaTime;
+        changeBGSoundWaitingTime += Time.fixedDeltaTime;
+        changeRoleWaitingTime += Time.fixedDeltaTime;
 
-        if (cubeFollow)
+        // 扔出物体
+        if (Pickuped)
         {
-            if (/*Vector3.Distance(curFollower.transform.position, DelayGO.transform.position) > 0.2f && */curFollower.transform.position.z-DelayGO.transform.position.z>0.15f)
+            if (curFollower.transform.position.z - DelayGO.transform.position.z > 0.15f)
             {
-                cubeFollow = false;
+                Pickuped = false;
                 curFollower.AddComponent<ShootForward>();
                 curFollower = null;
 
@@ -64,50 +73,43 @@ public class ZCollision : MonoBehaviour
         }
     }
 
-    float changeTime = 2;
+    float changeRoleWaitingTime = 1.5f;
+    float changeBGSoundWaitingTime = 1.5f;
+    ZRole curRole;
+    ZSound mainsound;
     public void OnTriggerEnter(Collider other)
     {
         switch (GameManager.Instance.CurGameMode)
         {
             case GameMode.Prepare:
 
-                if (other.name == "C1")
+                if ((curRole = other.GetComponent<ZRole>()) != null) // model1
                 {
-                    if (changeTime < 2f)
+                    if (changeRoleWaitingTime < 1.5f)
                         return;
-                    changeTime = 0;
-                    GameManager.Instance.ChangePlayerRole(GameManager.Instance.CurPlayerRoleModel + 1);
+                    changeRoleWaitingTime = 0;
+
+                    GameManager.Instance.ChangePlayerRole(curRole.roleModel);
                 }
-                else
+                else if ((mainsound = other.GetComponent<ZSound>()) != null)
                 {
-                    if (other.name == "C2")
-                    {
-                        GameManager.Instance.ChangeGameMode();
-                    }
+                    if (changeBGSoundWaitingTime < 1.5f)
+                        return;
+                    changeBGSoundWaitingTime = 0;
+
+                    GameManager.Instance.ChangeBgSound(mainsound.clip);
                 }
 
-                break;
-
-            case GameMode.Football:
+                ActionTriggerEnter(other);
 
                 break;
+
+            //case GameMode.Football:
+
+            //    break;
             case GameMode.Drum:
 
-                var piano = other.GetComponent<PianoKey>();
-                if (piano != null && ddd)
-                {
-                    piano.Play();
-                    ddd = false;
-                    if (!cubeFollow)
-                    {
-                        cubeFollow = true;
-                        piano.transform.SetParent(transform);
-                        piano.transform.localPosition = Vector3.zero;
-                        piano.GetComponent<Collider>().enabled = false;
-                        ResetDelayFollow();
-                        curFollower = piano.gameObject;
-                    }
-                }
+                barrierDetection(other);
 
                 break;
             default:
@@ -115,15 +117,78 @@ public class ZCollision : MonoBehaviour
         }
     }
 
-    bool cubeFollow = false;
+    private void barrierDetection(Collider other)
+    {
+        var barrier = other.GetComponent<Barrier>();
+        if (barrier != null && ddd)
+        {
+            switch (barrier.BarrierType)
+            {
+                case BarrierTypeEnum.Barrier:
+                    barrier.Play();
+                    GameManager.Instance.SetScore(ZConstant.BarrierScore);
+                    break;
+
+                case BarrierTypeEnum.Icon:
+                    barrier.Play();
+                    GameManager.Instance.SetScore(ZConstant.BarrierScore);
+                    break;
+
+                case BarrierTypeEnum.LeftHand:
+                    barrier.Play();
+                    GameManager.Instance.SetScore(ZConstant.HandScore);
+                    break;
+
+                case BarrierTypeEnum.RightHand:
+                    barrier.Play();
+                    GameManager.Instance.SetScore(ZConstant.HandScore);
+                    break;
+
+                case BarrierTypeEnum.NeedDestroy:
+                    GameManager.Instance.SetScore(ZConstant.DotnDestroyWallScore);
+                    break;
+
+                case BarrierTypeEnum.CanPickUp:
+
+                    if (CollisionType != CollisionTypeEnum.Hand) return;
+
+                    if (!Pickuped)
+                    {
+                        Pickuped = true;
+                        barrier.transform.SetParent(transform);
+                        barrier.transform.localPosition = Vector3.zero;
+                        barrier.GetComponent<Collider>().enabled = false;
+                        ResetDelayFollow();
+                        curFollower = barrier.gameObject;
+                    }
+
+                    break;
+
+                default:
+                    break;
+            }
+
+
+            ddd = false;
+
+        }
+    }
+
+
+
+
+    bool Pickuped = false;
     GameObject curFollower = null;
 
     public void OnTriggerExit(Collider other)
     {
         switch (GameManager.Instance.CurGameMode)
         {
-            case GameMode.Football:
+            case GameMode.Prepare:
+                ActionTriggerExit(other);
                 break;
+            //case GameMode.Football:
+            //    break;
             case GameMode.Drum:
                 ddd = true;
                 break;
@@ -131,6 +196,57 @@ public class ZCollision : MonoBehaviour
                 break;
         }
     }
+
+
+    private void ActionTriggerEnter(Collider other)
+    {
+        switch (CollisionType)
+        {
+            case CollisionTypeEnum.Foot:
+                break;
+            case CollisionTypeEnum.Hand:
+                if (other.name.Equals("A1"))
+                {
+                    GameManager.Instance.A1Hover = true;
+                    Debug.Log("GameManager.Instance.A1Hover = true;");
+                }
+                if (other.name.Equals("A2"))
+                {
+                    GameManager.Instance.A2Hover = true;
+                    Debug.Log("GameManager.Instance.A2Hover = true;");
+                }
+                break;
+            case CollisionTypeEnum.Hip:
+                break;
+            default:
+                break;
+        }
+    }
+    private void ActionTriggerExit(Collider other)
+    {
+        switch (CollisionType)
+        {
+            case CollisionTypeEnum.Foot:
+                break;
+            case CollisionTypeEnum.Hand:
+                if (other.name.Equals("A1"))
+                {
+                    GameManager.Instance.A1Hover = false;
+                    Debug.Log("GameManager.Instance.A1Hover = false;");
+                }
+                if (other.name.Equals("A2"))
+                {
+                    GameManager.Instance.A2Hover = false;
+                    Debug.Log("GameManager.Instance.A2Hover = false;");
+                }
+                break;
+            case CollisionTypeEnum.Hip:
+                break;
+            default:
+                break;
+        }
+    }
+
 
     bool isDoing = false;
     private IEnumerator ResetFootballPos(Football fb)
@@ -157,6 +273,6 @@ public class ZCollision : MonoBehaviour
     }
     private void delayFollow()
     {
-        DelayGO.transform.position = Vector3.MoveTowards(DelayGO.transform.position, transform.position, 0.2f*Time.deltaTime);
+        DelayGO.transform.position = Vector3.MoveTowards(DelayGO.transform.position, transform.position, 0.2f * Time.deltaTime);
     }
 }

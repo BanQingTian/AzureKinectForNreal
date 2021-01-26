@@ -16,6 +16,7 @@ public class DrumBehaviour : ZGameBehaviour
     private const float MoveLimit = 2f; // 脖子移动多少触发滑板移动
     private const float stakeboardMoveSpeed = 0.04f; // 滑板移动速度
     private const float stakeboardMoveLimit = 0.7f; //滑板移动上限
+    private const float BarrierMoveSpeed = 1; // 障碍物移动速度
     private const float stopSpeed = 1f; // 障碍物停止的速度
     private const float frontMoveSpeed = 1.1f; //先前倾斜的速度
     private const float backMoveSpeed = 1.1f; // 向后倾斜的速度
@@ -69,8 +70,10 @@ public class DrumBehaviour : ZGameBehaviour
 
         if (HandLeft.GetComponent<ZCollision>() == null)
         {
-            HandLeft.AddComponent<ZCollision>();
-            HandRight.AddComponent<ZCollision>();
+            var zc1 = HandLeft.AddComponent<ZCollision>();
+            zc1.Init(CollisionTypeEnum.Hand);
+            var zc2 = HandRight.AddComponent<ZCollision>();
+            zc2.Init(CollisionTypeEnum.Hand);
         }
 
         ZDisplay();
@@ -87,7 +90,7 @@ public class DrumBehaviour : ZGameBehaviour
                 Drum = GameObject.Instantiate(Resources.Load<GameObject>("Model/DrumPlus"));
                 StakeboardPos = GameObject.Find(StakeboardPosName);
                 StakeboardRot = GameObject.Find(StakeboardRotName);
-                TempAnim = GameObject.Find("random_flying_cube").GetComponent<Animator>();
+                TempAnim = GameObject.Find("BarrierPart").GetComponent<Animator>();
             }
         }
 
@@ -222,7 +225,7 @@ public class DrumBehaviour : ZGameBehaviour
     {
         while (TempAnim.speed > 0)
         {
-            TempAnim.speed -= stopSpeed * Time.fixedDeltaTime;
+            TempAnim.speed = BarrierMoveSpeed - stopSpeed * Time.fixedDeltaTime;
             yield return null;
         }
         TempAnim.speed = 0;
@@ -239,7 +242,7 @@ public class DrumBehaviour : ZGameBehaviour
         float angle = Vector3.Angle(a3.position - a2.position, a1.position - a2.position);
         angle = Mathf.Clamp(angle, 80, 170);
         float rate = (170 - angle) / 90;
-        TempAnim.speed = 1 + rate;
+        TempAnim.speed = BarrierMoveSpeed + rate;
     }
 
 }

@@ -21,6 +21,13 @@ public class ZMain : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            Time.timeScale = 5;
+        }
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            Time.timeScale = 1;
+        }
     }
 }

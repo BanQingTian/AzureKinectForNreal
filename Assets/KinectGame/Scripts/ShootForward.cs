@@ -10,6 +10,13 @@ public class ShootForward : MonoBehaviour
         Destroy(gameObject, 2);
         transform.rotation = Quaternion.identity;
         transform.parent = null;
+
+        Collider collider = GetComponent<Collider>();
+        if (collider == null)
+        {
+            collider = gameObject.AddComponent<Collider>();
+        }
+        collider.isTrigger = true;
     }
 
     float cur = 1.4f;
@@ -21,10 +28,26 @@ public class ShootForward : MonoBehaviour
         time += Time.deltaTime;
         if (time > 1)
         {
-            cur += g ;
+            cur += g;
             time = 0;
         }
         cur += g * Time.deltaTime;
         transform.position += new Vector3(0, cur * Time.fixedDeltaTime, 20 * Time.deltaTime);
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log(other.name);
+        Barrier b = other.GetComponent<Barrier>();
+        if (b != null)
+        {
+            if (b.BarrierType == BarrierTypeEnum.NeedDestroy)
+            {
+                b.Play();
+                gameObject.SetActive(false);
+                Destroy(this);
+            }
+        }
     }
 }
