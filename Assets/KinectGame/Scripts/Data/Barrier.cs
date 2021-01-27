@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Barrier : MonoBehaviour
 {
-    public Vector3 DefalutPos;
+    public bool isHold = false;
+
+    public Vector3 DefalutScale;
 
     //public int Index;
     // 障碍物类型
@@ -18,7 +20,7 @@ public class Barrier : MonoBehaviour
 
     private void OnEnable()
     {
-        DefalutPos = transform.localPosition;
+        DefalutScale = transform.lossyScale;
     }
 
     /// <summary>
@@ -26,36 +28,38 @@ public class Barrier : MonoBehaviour
     /// </summary>
     public void Play()
     {
+        gameObject.SetActive(false);
 
         switch (BarrierType)
         {
             case BarrierTypeEnum.Barrier:
                 break;
             case BarrierTypeEnum.Icon:
-                gameObject.SetActive(false);
                 break;
 
             case BarrierTypeEnum.LeftHand:
-                gameObject.SetActive(false);
                 break;
 
             case BarrierTypeEnum.RightHand:
-                gameObject.SetActive(false);
                 break;
 
             case BarrierTypeEnum.NeedDestroy:
-                gameObject.SetActive(false);
                 break;
 
             case BarrierTypeEnum.CanPickUp:
-                gameObject.SetActive(false);
 
                 break;
             default:
                 break;
         }
+       
         // load from Res,,, todo
         Debug.Log("Play Eff");
+        var eff = GameResConfig.Instance.GetSpecialEff(SpecialEff);
+        eff.transform.position = gameObject.transform.position;
+        eff.transform.rotation = transform.rotation;
+
+        //GameResConfig.Instance.GetAudioEff(SoundEff);
     }
 
 

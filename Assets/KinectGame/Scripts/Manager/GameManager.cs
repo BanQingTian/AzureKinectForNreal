@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     protected int totalScore = 100;
 
+    public bool SyncData = true;
+
     // 游戏缓存
     public Dictionary<GameMode, ZGameBehaviour> GameTables = new Dictionary<GameMode, ZGameBehaviour>();
     // 当前游戏关卡
@@ -41,8 +43,14 @@ public class GameManager : MonoBehaviour
     /// No.1 action
     /// </summary>
     public GameObject Action1;
+    public GameObject Action2;
     public bool A1Hover = false;
     public bool A2Hover = false;
+
+    /// <summary>
+    /// tmp 资源过大，不做正常的加载
+    /// </summary>
+    public GameObject GameScene;
 
     //public ZBarrierManager BarrierMananger;
 
@@ -69,7 +77,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.F))
         {
-            ChangeGameMode();
+            ChangeGameMode(GameMode.Drum);
         }
         if (Input.GetKeyDown(KeyCode.G) && Join)
         {
@@ -182,37 +190,56 @@ public class GameManager : MonoBehaviour
     #region Game Relevant
 
     bool guidance = false;
-    public void ChangeGameMode()
+    public void ChangeGameMode(GameMode gm)
     {
-        StartCoroutine(PlayGuidance(() =>
+        if (CurGameBehaviour != null)
         {
-            //play guidance anim;
+            CurGameBehaviour.ZDisplay(false);
+            CurGameBehaviour.ZRelease();
+        }
+        CurGameMode = (int)gm >= System.Enum.GetNames(typeof(GameMode)).Length ? 0 : gm;
+
+        HideActionTrigger();
+
+        StartCoroutine(PlayReadyAndGuidance(() => 
+        {
+            // 播放过场&转身动画
+            Debug.Log("Play Ready Animation");
+            SyncData = false;
+
+        }
+        ,() =>
+        {
+            // 加载完游戏场景开始等到新手引导
+            LoadGameBehaviour();
+            SyncData = true;
 
 
-            Debug.Log("Play Guidance Animation");
+            // 新手引导
+            // todo
+            Debug.Log("Play Guidance");
 
-        }, 1,
+        }, 2,
         () =>
         {
-            if (CurGameBehaviour != null)
-            {
-                CurGameBehaviour.ZDisplay(false);
-                CurGameBehaviour.ZRelease();
-            }
-            CurGameMode = (int)CurGameMode + 1 >= System.Enum.GetNames(typeof(GameMode)).Length ? 0 : CurGameMode + 1;
-
-            LoadGameBehaviour();
+            // 开始游戏
+            CurGameBehaviour.ZPlay();
+            UIManager.Instance.UpdateScore(totalScore);
         }));
     }
 
-    private IEnumerator PlayGuidance(Action guidanceEvent = null, float time = 1, Action finishEvent = null)
+    private IEnumerator PlayReadyAndGuidance(Action ReadyPlayEvent = null,Action guidanceEvent = null, float time = 2, Action finishEvent = null)
     {
+
+        yield return null;
+        ReadyPlayEvent?.Invoke();
+
         if (!guidance)
         {
             guidanceEvent?.Invoke();
             yield return new WaitForSeconds(time);
         }
-        yield return null;
+
         finishEvent?.Invoke();
     }
 
@@ -235,7 +262,7 @@ public class GameManager : MonoBehaviour
     /// 切换背景音乐
     /// </summary>
     /// <param name="clip"></param>
-    public void  ChangeBgSound(AudioClip clip)
+    public void ChangeBgSound(AudioClip clip)
     {
         BGSound.clip = clip;
         BGSound.Play();
@@ -243,10 +270,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("change to : " + clip.name);
     }
 
-    public void ShowUI()
-    {
-        SetScore(totalScore);
-    }
 
     /// <summary>
     /// 修改分数
@@ -267,25 +290,37 @@ public class GameManager : MonoBehaviour
             case PlayerRoleModel.BlackGirl:
 
                 Action1.SetActive(true);
-
+                Action2.SetActive(false);
                 break;
             case PlayerRoleModel.CodeMan:
+
+                Action1.SetActive(false);
+                Action2.SetActive(true);
+
                 break;
             default:
                 break;
         }
     }
 
+    public void HideActionTrigger()
+    {
+        Action1.SetActive(false);
+        Action2.SetActive(false);
+    }
+
     float actionTriggerTime = 0;
     public void UpdateActionTrigger()
     {
-        if(A1Hover && A2Hover)
+        if (A1Hover && A2Hover)
         {
             actionTriggerTime += Time.fixedDeltaTime;
-            Debug.Log(actionTriggerTime);
-            if(actionTriggerTime >= ZConstant.HoldTime)
+            if (actionTriggerTime >= ZConstant.HoldTime)
             {
-                ChangeGameMode();
+                ChangeGameMode(GameMode.Drum);
+
+                A1Hover = false;
+                A2Hover = false;
                 actionTriggerTime = 0;
             }
         }
@@ -337,7 +372,7 @@ public class GameManager : MonoBehaviour
 
     private void S2C_UpdataPose(string param)
     {
-        if (isWaitingToChangeRole) return;
+        if (isWaitingToChangeRole || !SyncData) return;
 
         //Debug.Log(param);
         ZPose zp = JsonUtility.FromJson<ZPose>(param);

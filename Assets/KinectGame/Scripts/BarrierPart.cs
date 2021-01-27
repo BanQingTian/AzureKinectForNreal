@@ -72,9 +72,9 @@ public class BarrierPart : MonoBehaviour
 
     public void Inverse()
     {
-        Part1.transform.localScale = new Vector3(-1, 1, 1);
-        Part2.transform.localScale = new Vector3(-1, 1, 1);
-        Part3.transform.localScale = new Vector3(-1, 1, 1);
+        //Part1.transform.localScale = new Vector3(-1, 1, 1);
+        //Part2.transform.localScale = new Vector3(-1, 1, 1);
+        //Part3.transform.localScale = new Vector3(-1, 1, 1);
     }
 
     #endregion

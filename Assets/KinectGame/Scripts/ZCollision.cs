@@ -122,6 +122,8 @@ public class ZCollision : MonoBehaviour
         var barrier = other.GetComponent<Barrier>();
         if (barrier != null && ddd)
         {
+            if (barrier.isHold) return;
+            ddd = true;
             switch (barrier.BarrierType)
             {
                 case BarrierTypeEnum.Barrier:
@@ -135,31 +137,49 @@ public class ZCollision : MonoBehaviour
                     break;
 
                 case BarrierTypeEnum.LeftHand:
+                    if (CollisionType == CollisionTypeEnum.Hand)
+                    {
+                        GameManager.Instance.SetScore(ZConstant.HandScore);
+                    }
                     barrier.Play();
-                    GameManager.Instance.SetScore(ZConstant.HandScore);
                     break;
 
                 case BarrierTypeEnum.RightHand:
                     barrier.Play();
-                    GameManager.Instance.SetScore(ZConstant.HandScore);
+                    if (CollisionType == CollisionTypeEnum.Hand)
+                        GameManager.Instance.SetScore(ZConstant.HandScore);
                     break;
 
                 case BarrierTypeEnum.NeedDestroy:
+                    barrier.Play();
                     GameManager.Instance.SetScore(ZConstant.DotnDestroyWallScore);
                     break;
 
                 case BarrierTypeEnum.CanPickUp:
 
-                    if (CollisionType != CollisionTypeEnum.Hand) return;
+                    if (CollisionType != CollisionTypeEnum.Hand)
+                    {
+                        barrier.Play();
+                        return;
+                    }
 
                     if (!Pickuped)
                     {
                         Pickuped = true;
-                        barrier.transform.SetParent(transform);
-                        barrier.transform.localPosition = Vector3.zero;
-                        barrier.GetComponent<Collider>().enabled = false;
+
+                        //barrier.transform.SetParent(transform);
+                        //barrier.transform.localPosition = Vector3.zero;
+                        //barrier.GetComponent<Collider>().enabled = false;
+                        barrier.Play();
+                        var follower = Instantiate<GameObject>(barrier.gameObject);
+                        var r = follower.AddComponent<Rigidbody>();
+                        r.useGravity = false;
+                        r.isKinematic = true;
+                        follower.transform.position = transform.position;
+                        follower.transform.SetParent(transform);
+                        follower.SetActive(true);
                         ResetDelayFollow();
-                        curFollower = barrier.gameObject;
+                        curFollower = follower;
                     }
 
                     break;
@@ -167,10 +187,6 @@ public class ZCollision : MonoBehaviour
                 default:
                     break;
             }
-
-
-            ddd = false;
-
         }
     }
 

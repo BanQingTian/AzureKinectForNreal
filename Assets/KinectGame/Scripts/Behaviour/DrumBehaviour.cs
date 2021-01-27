@@ -54,7 +54,6 @@ public class DrumBehaviour : ZGameBehaviour
         Head = GameObject.Find("CenterCamera");
 #endif
         Hip = GameObject.FindWithTag(HipTagName);
-        Debug.Log(Hip.name + "-----------");
         FootLeft = GameObject.FindWithTag(FootLeftTagName);
         FootRight = GameObject.FindWithTag(FootRightTagName);
 
@@ -87,10 +86,12 @@ public class DrumBehaviour : ZGameBehaviour
         {
             if (Drum == null)
             {
-                Drum = GameObject.Instantiate(Resources.Load<GameObject>("Model/DrumPlus"));
+                Drum = GameManager.Instance.GameScene;//GameObject.Instantiate(Resources.Load<GameObject>("Model/DrumPlus"));
+                Drum.SetActive(true);
                 StakeboardPos = GameObject.Find(StakeboardPosName);
                 StakeboardRot = GameObject.Find(StakeboardRotName);
                 TempAnim = GameObject.Find("BarrierPart").GetComponent<Animator>();
+                TempAnim.gameObject.SetActive(false);
             }
         }
 
@@ -99,6 +100,14 @@ public class DrumBehaviour : ZGameBehaviour
         HandLeft.GetComponent<Collider>().enabled = show;
         HandRight.GetComponent<Collider>().enabled = show;
     }
+
+    public override void ZPlay()
+    {
+        base.ZPlay();
+
+        TempAnim.gameObject.SetActive(true);
+    }
+
 
     public override void ZUpdate()
     {
@@ -117,7 +126,7 @@ public class DrumBehaviour : ZGameBehaviour
     {
         base.ZRelease();
 
-        GameObject.Destroy(Drum.gameObject);
+        Drum.SetActive(false);//GameObject.Destroy(Drum.gameObject);
         GameManager.Instance.PoseHelper.transform.localPosition = Vector3.zero;
     }
 

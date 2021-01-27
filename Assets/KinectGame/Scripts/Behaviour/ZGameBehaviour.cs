@@ -24,6 +24,11 @@ public class ZGameBehaviour : ZBaseBehaviour
 
     }
 
+    public virtual void ZPlay()
+    {
+
+    }
+
     public virtual void ZRelease()
     {
 

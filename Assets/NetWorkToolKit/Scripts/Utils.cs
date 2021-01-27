@@ -30,7 +30,6 @@ namespace NetWorkToolkit
         {
             var macAdress = "";
             NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
-            var i = 0;
             foreach (var adapter in nics)
             {
                 var address = adapter.GetPhysicalAddress();

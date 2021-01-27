@@ -38,15 +38,18 @@ public class ShootForward : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name);
+        Debug.Log("=======" + other.name);
         Barrier b = other.GetComponent<Barrier>();
         if (b != null)
         {
+            Debug.Log("=======" + b.BarrierType);
+
             if (b.BarrierType == BarrierTypeEnum.NeedDestroy)
             {
                 b.Play();
+                GameManager.Instance.SetScore(ZConstant.DestroyWallScore);
                 gameObject.SetActive(false);
-                Destroy(this);
+                Destroy(gameObject);
             }
         }
     }
