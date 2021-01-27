@@ -713,6 +713,12 @@ Transform:
   m_Father: {fileID: 867939863}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &705960187 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1333052250, guid: 3c781b9c1bc787e418bb4aab28fb077f,
+    type: 3}
+  m_PrefabInstance: {fileID: 342043633}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &761095517
 GameObject:
   m_ObjectHideFlags: 0
@@ -863,6 +869,7 @@ MonoBehaviour:
   A1Hover: 0
   A2Hover: 0
   GameScene: {fileID: 1457017646}
+  GameAnim: {fileID: 705960187}
   RoleDatabase: {fileID: 1560395940}
   InitFinish: 0
 --- !u!114 &867939865

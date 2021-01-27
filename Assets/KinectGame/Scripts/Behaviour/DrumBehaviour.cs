@@ -30,6 +30,7 @@ public class DrumBehaviour : ZGameBehaviour
     public GameObject FootRight = null;
 
     private Transform a1, a2, a3; // for  a2->a1 与 a2->a3 的夹角,for 膝盖弯曲
+    private Transform b1, b2, b3; // ditto
 
     private Animator TempAnim;
 
@@ -61,6 +62,10 @@ public class DrumBehaviour : ZGameBehaviour
         a2 = a3.parent;
         a1 = a2.parent;
 
+        b3 = FootRight.transform.parent;
+        b2 = b3.parent;
+        b1 = b2.parent;
+
         if (HandLeft == null | HandRight == null)
         {
             Debug.LogError("Ex!!");
@@ -90,7 +95,7 @@ public class DrumBehaviour : ZGameBehaviour
                 Drum.SetActive(true);
                 StakeboardPos = GameObject.Find(StakeboardPosName);
                 StakeboardRot = GameObject.Find(StakeboardRotName);
-                TempAnim = GameObject.Find("BarrierPart").GetComponent<Animator>();
+                TempAnim = GameManager.Instance.GameAnim;//GameObject.Find("BarrierPart").GetComponent<Animator>();
                 TempAnim.gameObject.SetActive(false);
             }
         }
@@ -120,6 +125,8 @@ public class DrumBehaviour : ZGameBehaviour
         StopMove();
 
         GetKneeAngle();
+
+        jumpDetection();
     }
 
     public override void ZRelease()
@@ -229,12 +236,13 @@ public class DrumBehaviour : ZGameBehaviour
         }
     }
 
-
+    float curAnimSpeed;
     private IEnumerator stopMoveCor()
     {
+        curAnimSpeed = TempAnim.speed;
         while (TempAnim.speed > 0)
         {
-            TempAnim.speed = BarrierMoveSpeed - stopSpeed * Time.fixedDeltaTime;
+            TempAnim.speed -= stopSpeed * Time.fixedDeltaTime * BarrierMoveSpeed;
             yield return null;
         }
         TempAnim.speed = 0;
@@ -244,14 +252,79 @@ public class DrumBehaviour : ZGameBehaviour
     {
         if (beginStopMove) return;
 
-        if (TempAnim.speed < 1)
+        if (TempAnim.speed < curAnimSpeed)
         {
             TempAnim.speed += stopSpeed * Time.fixedDeltaTime;
         }
-        float angle = Vector3.Angle(a3.position - a2.position, a1.position - a2.position);
-        angle = Mathf.Clamp(angle, 80, 170);
+        float angle = GetLeftAngle();
         float rate = (170 - angle) / 90;
         TempAnim.speed = BarrierMoveSpeed + rate;
     }
 
+    /// <summary>
+    /// 跳跃检测
+    /// </summary>
+    float _curLeft;
+    float _lastLeft;
+    float _curRight;
+    float _lastRight;
+    float _countdown = 0;
+    bool detectioning = false;
+    bool jumpSuccess = false;
+
+    float startCurveAngle = 120;// 开始计算弯曲的角度
+    float curveAngle = 30; // 弯曲有效的时间
+    float curveValidTime = 0.3f; // 弯曲时间
+    private void jumpDetection()
+    {
+        // left
+        if (GetLeftAngle() < startCurveAngle && GetRightAngle() < startCurveAngle) // 正在弯曲膝盖
+        {
+            _lastLeft = GetLeftAngle();
+            _lastRight = GetRightAngle();
+            detectioning = true;
+            _countdown = 0;
+        }
+        if (detectioning)
+        {
+            _countdown += Time.fixedDeltaTime;
+            if (_countdown > curveValidTime)
+            {
+                _curLeft = GetLeftAngle();
+                _curRight = GetRightAngle();
+                if (_curLeft - _lastLeft > curveAngle && _curRight-_lastRight > curveAngle)
+                {
+                    Debug.Log("jump");
+                    var j = GameManager.Instance.PoseHelper.GetComponent<RoleJump>();
+                    if(j == null)
+                    {
+                        j = GameManager.Instance.PoseHelper.gameObject.AddComponent<RoleJump>();
+                    }
+                    j.Init();
+                }
+                detectioning = false;
+                _countdown = 0;
+            }
+
+        }
+
+    }
+
+
+    private void Jump()
+    {
+
+    }
+
+    private float GetLeftAngle()
+    {
+        float angle = Vector3.Angle(a3.position - a2.position, a1.position - a2.position);
+        return Mathf.Clamp(angle, 80, 170);
+    }
+
+    private float GetRightAngle()
+    {
+        float angle = Vector3.Angle(b3.position - b2.position, b1.position - b2.position);
+        return Mathf.Clamp(angle, 80, 170);
+    }
 }

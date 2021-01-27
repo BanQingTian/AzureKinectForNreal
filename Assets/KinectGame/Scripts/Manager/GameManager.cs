@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
     /// tmp 资源过大，不做正常的加载
     /// </summary>
     public GameObject GameScene;
+    public Animator GameAnim;
 
     //public ZBarrierManager BarrierMananger;
 
@@ -84,15 +85,14 @@ public class GameManager : MonoBehaviour
             ChangePlayerRole(CurPlayerRoleModel + 1);
         }
 #else
-        //if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
-        //{
-        //    ChangeGameMode();
-        //}
-        //if (NRInput.GetButtonDown(ControllerButton.APP) && Join)
-        //{
-        //    ChangePlayerRole(CurPlayerRoleModel + 1);
-        //}
-
+        if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
+        {
+            ChangeGameMode(GameMode.Drum);
+        }
+        if (NRInput.GetButtonDown(ControllerButton.APP) && Join)
+        {
+            ChangePlayerRole(CurPlayerRoleModel + 1);
+        }
 #endif
 
         UpdateActionTrigger();
@@ -253,9 +253,7 @@ public class GameManager : MonoBehaviour
         pm = (int)pm >= System.Enum.GetNames(typeof(PlayerRoleModel)).Length ? 0 : pm;
         MessageManager.Instance.SendChangeRole((int)pm);
 
-        // 切换人之后，加载开始游戏的button
-        AddActionTrigger(CurPlayerRoleModel);
-
+      
     }
 
     /// <summary>
@@ -368,6 +366,10 @@ public class GameManager : MonoBehaviour
 
         // 变化角色完成
         isWaitingToChangeRole = false;
+
+        // 切换人之后，加载开始游戏的button
+        AddActionTrigger(CurPlayerRoleModel);
+
     }
 
     private void S2C_UpdataPose(string param)
