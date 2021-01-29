@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     public bool A2Hover = false;
 
     /// <summary>
-    /// tmp 资源过大，不做正常的加载
+    /// tmp 资源过大，不做正常的加载,直接甩到场景中
     /// </summary>
     public GameObject GameScene;
     public Animator GameAnim;
@@ -182,6 +182,31 @@ public class GameManager : MonoBehaviour
 
         Vector3 v3 = PoseHelper.transform.rotation.eulerAngles;
         PoseHelper.transform.parent.rotation = Quaternion.Euler(v3.x, v3.y + angle, v3.z);
+
+        ResetFaceToFace(true);
+
+    }
+
+    bool once = false;
+    public void ResetFaceToFace(bool face = true)
+    {
+
+        float rotaY;
+        float scaleX;
+        if (face)
+        {
+            rotaY = 180;
+            scaleX = -1;
+        }
+        else
+        {
+            rotaY = -180;
+            scaleX = -1;
+        }
+        Vector3 v3 = PoseHelper.transform.rotation.eulerAngles;
+        PoseHelper.transform.parent.rotation = Quaternion.Euler(v3.x, v3.y + rotaY, v3.z);
+        v3 = PoseHelper.transform.parent.localScale;
+        PoseHelper.transform.parent.localScale = new Vector3(v3.x * scaleX, v3.y, v3.z);
     }
 
     #endregion
@@ -207,8 +232,12 @@ public class GameManager : MonoBehaviour
             Debug.Log("Play Ready Animation");
             SyncData = false;
 
+
+
+            ResetFaceToFace(true);
+
         }
-        ,() =>
+        , () =>
         {
             // 加载完游戏场景开始等到新手引导
             LoadGameBehaviour();

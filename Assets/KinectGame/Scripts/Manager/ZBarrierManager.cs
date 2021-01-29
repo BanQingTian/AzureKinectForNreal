@@ -119,7 +119,7 @@
 //    /// </summary>
 //    public void BarrierCreator()
 //    {
-        
+
 //        StartCoroutine(BarrierCreatorCor());
 //    }
 
@@ -147,7 +147,7 @@
 //            curBarrier = BarrierList[curIndex];
 //            CurBarrierQueue.Enqueue(curBarrier);
 //            curBarrier.Init(totalIndex);
-//            BarrierPoseCreator(curBarrier);
+//            BarrierPoseCreator(curBarrier);           
 //            curBarrier.Move();
 
 //            curIndex++;
@@ -197,6 +197,6 @@
 
 //    public void BarrierMove()
 //    {
-
+            
 //    }
 //}

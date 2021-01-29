@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class ZMain : MonoBehaviour
@@ -8,7 +9,10 @@ public class ZMain : MonoBehaviour
     void Start()
     {
         MessageManager.Instance.InitializeMessage();
-        MessageManager.Instance.SendConnectServerMsg("192.168.68.187", "443");
+        string ip = "192.168.68.187";
+        ip = GetLocalIP(ip);
+        MessageManager.Instance.SendConnectServerMsg(ip, "443");
+
 #if UNITY_EDITOR
         GameManager.Instance.Init();
 #else
@@ -21,7 +25,7 @@ public class ZMain : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             Time.timeScale = 5;
         }
@@ -29,5 +33,22 @@ public class ZMain : MonoBehaviour
         {
             Time.timeScale = 1;
         }
+    }
+
+
+    public static string GetLocalIP(string ip)
+    {
+        string path;
+#if UNITY_EDITOR
+        path = Directory.GetParent(Application.dataPath).FullName + "/IPAddress.txt";
+#elif UNITY_ANDROID
+        //path = "/storage/emulated/0/ABRes";
+        path = Application.persistentDataPath + "/IPAddress.txt";
+#endif
+        if (File.Exists(path))
+        {
+            return File.ReadAllText(path);
+        }
+        return ip;
     }
 }

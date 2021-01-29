@@ -15,13 +15,15 @@ public class DrumBehaviour : ZGameBehaviour
 
     private const float MoveLimit = 2f; // 脖子移动多少触发滑板移动
     private const float stakeboardMoveSpeed = 0.04f; // 滑板移动速度
-    private const float stakeboardMoveLimit = 0.7f; //滑板移动上限
+    private const float _humanXMoveLimit = 0.7f; //滑板移动上限
     private const float BarrierMoveSpeed = 1; // 障碍物移动速度
     private const float stopSpeed = 1f; // 障碍物停止的速度
     private const float frontMoveSpeed = 1.1f; //先前倾斜的速度
     private const float backMoveSpeed = 1.1f; // 向后倾斜的速度
 
     private const float head_hip_ratio = 0.7f; // 头和躯干造成移动的权重
+
+    public float _humanXDefaultX;
 
     public GameObject HandLeft = null;
     public GameObject HandRight = null;
@@ -65,6 +67,8 @@ public class DrumBehaviour : ZGameBehaviour
         b3 = FootRight.transform.parent;
         b2 = b3.parent;
         b1 = b2.parent;
+
+        _humanXDefaultX = GameManager.Instance.PoseHelper.transform.position.x;
 
         if (HandLeft == null | HandRight == null)
         {
@@ -139,7 +143,7 @@ public class DrumBehaviour : ZGameBehaviour
 
     float _headZ = 0; // 头在z轴的偏移量
     float _hipZ = 0;  // 胯，躯干在z轴的偏移量
-    float _stakeboardX = 0; // 滑板移动的位置
+    float _humanX = 0; // 滑板移动的位置
     float moved = 0; // 权重计算之后的偏移量
     float moved_head = 0; // 头部的偏移量
     float moved_hip = 0; // 胯躯干的偏移量
@@ -186,10 +190,9 @@ public class DrumBehaviour : ZGameBehaviour
         moved = moved_head * head_hip_ratio + moved_hip * (1 - head_hip_ratio);
 
         // 通过移动人父物体移动，后续让滑板跟随人的位置
-        _stakeboardX = GameManager.Instance.PoseHelper.transform.position.x - moved;
-        _stakeboardX = Mathf.Clamp(_stakeboardX, -stakeboardMoveLimit, stakeboardMoveLimit);
-
-        GameManager.Instance.PoseHelper.transform.position = new Vector3(_stakeboardX
+        _humanX = GameManager.Instance.PoseHelper.transform.position.x - moved;
+        _humanX = Mathf.Clamp(_humanX, -_humanXMoveLimit+ _humanXDefaultX, _humanXMoveLimit+ _humanXDefaultX);
+        GameManager.Instance.PoseHelper.transform.position = new Vector3(_humanX
             , GameManager.Instance.PoseHelper.transform.position.y
             , GameManager.Instance.PoseHelper.transform.position.z);
         //StakeboardPos.transform.position = new Vector3(_stakeboardX, StakeboardPos.transform.position.y, StakeboardPos.transform.position.z);
