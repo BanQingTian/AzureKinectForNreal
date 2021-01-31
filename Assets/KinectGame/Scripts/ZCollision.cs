@@ -133,7 +133,7 @@ public class ZCollision : MonoBehaviour
 
                 case BarrierTypeEnum.Icon:
                     barrier.Play();
-                    GameManager.Instance.SetScore(ZConstant.BarrierScore);
+                    GameManager.Instance.SetScore(ZConstant.IconScore);
                     break;
 
                 case BarrierTypeEnum.LeftHand:

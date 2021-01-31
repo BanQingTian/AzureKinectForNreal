@@ -85,6 +85,22 @@ public class DrumBehaviour : ZGameBehaviour
         }
 
         ZDisplay();
+
+        // new feature, change stake
+        switch (GameManager.Instance.CurPlayerRoleModel)
+        {
+            case PlayerRoleModel.BlackGirl:
+                GameManager.Instance.Stake_Aottman_gaming.SetActive(false);
+                GameManager.Instance.Stake_Blackgirl_gaming.SetActive(true);
+                break;
+            case PlayerRoleModel.Aottman:
+                GameManager.Instance.Stake_Aottman_gaming.SetActive(true);
+                GameManager.Instance.Stake_Blackgirl_gaming.SetActive(false);
+                break;
+            default:
+                break;
+        }
+
     }
 
     public override void ZDisplay(bool show = true)
@@ -191,7 +207,7 @@ public class DrumBehaviour : ZGameBehaviour
 
         // 通过移动人父物体移动，后续让滑板跟随人的位置
         _humanX = GameManager.Instance.PoseHelper.transform.position.x - moved;
-        _humanX = Mathf.Clamp(_humanX, -_humanXMoveLimit+ _humanXDefaultX, _humanXMoveLimit+ _humanXDefaultX);
+        _humanX = Mathf.Clamp(_humanX, -_humanXMoveLimit + _humanXDefaultX, _humanXMoveLimit + _humanXDefaultX);
         GameManager.Instance.PoseHelper.transform.position = new Vector3(_humanX
             , GameManager.Instance.PoseHelper.transform.position.y
             , GameManager.Instance.PoseHelper.transform.position.z);
@@ -248,6 +264,10 @@ public class DrumBehaviour : ZGameBehaviour
             TempAnim.speed -= stopSpeed * Time.fixedDeltaTime * BarrierMoveSpeed;
             yield return null;
         }
+
+        GameManager.wallMoveaSpeed = 0;
+        GameManager.wallCreateTime = 0;
+
         TempAnim.speed = 0;
     }
 
@@ -262,6 +282,9 @@ public class DrumBehaviour : ZGameBehaviour
         float angle = GetLeftAngle();
         float rate = (170 - angle) / 90;
         TempAnim.speed = BarrierMoveSpeed + rate;
+
+        GameManager.wallMoveaSpeed = TempAnim.speed * 2;
+        GameManager.wallCreateTime = 1 / TempAnim.speed;
     }
 
     /// <summary>
@@ -295,11 +318,11 @@ public class DrumBehaviour : ZGameBehaviour
             {
                 _curLeft = GetLeftAngle();
                 _curRight = GetRightAngle();
-                if (_curLeft - _lastLeft > curveAngle && _curRight-_lastRight > curveAngle)
+                if (_curLeft - _lastLeft > curveAngle && _curRight - _lastRight > curveAngle)
                 {
                     Debug.Log("jump");
                     var j = GameManager.Instance.PoseHelper.GetComponent<RoleJump>();
-                    if(j == null)
+                    if (j == null)
                     {
                         j = GameManager.Instance.PoseHelper.gameObject.AddComponent<RoleJump>();
                     }

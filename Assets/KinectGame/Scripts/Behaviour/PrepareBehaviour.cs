@@ -41,7 +41,7 @@ public class PrepareBehaviour : ZGameBehaviour
         {
             if (choose == null)
             {
-                choose = GameObject.Instantiate(Resources.Load<GameObject>("Model/choose"));
+                choose = GameManager.Instance.ChooseMenu; //GameObject.Instantiate(Resources.Load<GameObject>("Model/choose"));
             }
         }
 
@@ -49,13 +49,15 @@ public class PrepareBehaviour : ZGameBehaviour
 
         HandLeft.GetComponent<Collider>().enabled = show;
         HandRight.GetComponent<Collider>().enabled = show;
+
     }
 
     public override void ZRelease()
     {
         base.ZRelease();
 
-        GameObject.Destroy(choose.gameObject);
+        //GameObject.Destroy(choose.gameObject);
+        choose.SetActive(false);
     }
 
 }

@@ -353,15 +353,6 @@ public class MessageManager
     private void OnCreateANetObjectResp(object obj)
     {
         Debug.Log("[Server Response] OnCreateANetObjectResp --- " + ((Entity)obj).extraInfo);
-
-        //Entity entity = obj as Entity;
-        //var go = GameObject.Instantiate<PlayerNetObj>(GameManager.Instance.PlayerPrefab);
-
-        //go.Init(entity);
-
-        //GameManager.Instance.AddPlayerData(entity.owner, go);
-
-        //GameManager.Instance.AddPlayer(entity.owner, go.GetComponent<PlayerNetObjectEntity>());
     }
 
     private void OnDestroyANetObjectResp(object obj)
@@ -389,7 +380,7 @@ public class MessageManager
         {
             // obj is List<CustomRoomAvailable>
             var roomsAvailable = obj as List<CustomRoomAvailable>;
-            //Debug.Log("OnGetRoomListResp :" + roomsAvailable.Count);
+            Debug.Log("OnGetRoomListResp :" + roomsAvailable.Count);
 
             if (roomsAvailable.Count > 0)
             {

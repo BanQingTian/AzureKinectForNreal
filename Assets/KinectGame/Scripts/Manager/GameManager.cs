@@ -53,6 +53,31 @@ public class GameManager : MonoBehaviour
     public GameObject GameScene;
     public Animator GameAnim;
 
+    /// <summary>
+    /// tmp 资源过大，不做加载
+    /// </summary>
+    public GameObject ChooseMenu;
+    public GameObject AottmanRole;
+
+    // 两个角色对应的滑板 Prepare
+    public GameObject Stake_Blackgirl_prepare;
+    public GameObject Stake_Aottman_prepare;
+
+    // 两个角色对应的滑板 Gaming
+    public GameObject Stake_Blackgirl_gaming;
+    public GameObject Stake_Aottman_gaming;
+
+    // 两个角色对应的转身特效
+    public GameObject Blackgirl_vfx;
+    public GameObject Aottman_vfx;
+
+    public Transform WallParent;
+    public GameObject BlackgirlWall;
+    public GameObject BlackgirlWallEff;
+    public GameObject AottmanWall;
+    public GameObject AottmanWallEff;
+
+
     //public ZBarrierManager BarrierMananger;
 
 
@@ -212,6 +237,12 @@ public class GameManager : MonoBehaviour
     #endregion
 
 
+    public void ResetGame()
+    {
+        wallMoveaSpeed = 1;
+        wallCreateTime = 1;
+    }
+
     #region Game Relevant
 
     bool guidance = false;
@@ -226,21 +257,30 @@ public class GameManager : MonoBehaviour
 
         HideActionTrigger();
 
-        StartCoroutine(PlayReadyAndGuidance(() => 
+        StartCoroutine(PlayReadyAndGuidance(() =>
         {
             // 播放过场&转身动画
             Debug.Log("Play Ready Animation");
             SyncData = false;
+            if (CurPlayerRoleModel == PlayerRoleModel.Aottman)
+            {
+                Aottman_vfx.SetActive(true);
+                Blackgirl_vfx.SetActive(false);
+            }
+            else
+            {
+                Aottman_vfx.SetActive(false);
+                Blackgirl_vfx.SetActive(true);
+            }
 
-
-
-            ResetFaceToFace(true);
-
-        }
-        , () =>
+        }, 1.5f,
+        () =>
         {
+            ResetFaceToFace(false);
             // 加载完游戏场景开始等到新手引导
             LoadGameBehaviour();
+            StopWall();
+            CreateWall();
             SyncData = true;
 
 
@@ -257,11 +297,13 @@ public class GameManager : MonoBehaviour
         }));
     }
 
-    private IEnumerator PlayReadyAndGuidance(Action ReadyPlayEvent = null,Action guidanceEvent = null, float time = 2, Action finishEvent = null)
+    private IEnumerator PlayReadyAndGuidance(Action ReadyPlayEvent = null, float waitTime = 1.5f, Action guidanceEvent = null, float time = 2, Action finishEvent = null)
     {
 
         yield return null;
         ReadyPlayEvent?.Invoke();
+
+        yield return new WaitForSeconds(waitTime);
 
         if (!guidance)
         {
@@ -281,8 +323,6 @@ public class GameManager : MonoBehaviour
         isWaitingToChangeRole = true;
         pm = (int)pm >= System.Enum.GetNames(typeof(PlayerRoleModel)).Length ? 0 : pm;
         MessageManager.Instance.SendChangeRole((int)pm);
-
-      
     }
 
     /// <summary>
@@ -319,7 +359,7 @@ public class GameManager : MonoBehaviour
                 Action1.SetActive(true);
                 Action2.SetActive(false);
                 break;
-            case PlayerRoleModel.CodeMan:
+            case PlayerRoleModel.Aottman:
 
                 Action1.SetActive(false);
                 Action2.SetActive(true);
@@ -357,8 +397,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    #endregion
+    public static float wallCreateTime = 1;
+    public static float wallMoveaSpeed = 1;
+    public void CreateWall()
+    {
+        StartCoroutine("create");
+    }
+    public void StopWall()
+    {
+        StopCoroutine("create");
+    }
+    private IEnumerator create()
+    {
+        GameObject wall;
+        if (CurPlayerRoleModel == PlayerRoleModel.Aottman)
+        {
+            AottmanWallEff.SetActive(true);
+            BlackgirlWallEff.SetActive(false);
+            wall = AottmanWall;
+        }
+        else
+        {
+            AottmanWallEff.SetActive(false);
+            BlackgirlWallEff.SetActive(true);
+            wall = BlackgirlWall;
+        }
 
+        while (true)
+        {
+            GameObject w = PoolManager.Instance.Get(wall);
+            var movewall = w.GetComponent<MoveWall>();
+            if (movewall == null)
+            {
+                movewall = w.AddComponent<MoveWall>();
+            }
+            movewall.Init(WallParent, new Vector3(0, 0, 40));
+
+            yield return new WaitForSeconds(wallCreateTime);
+        }
+    }
+
+    #endregion
 
 
     #region S2C
@@ -378,11 +457,25 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            CurRole = GameObject.Instantiate(Resources.Load<GameObject>("Model/" + role.ToString()));
-            CurRole.SetActive(true);
+            if (role == PlayerRoleModel.Aottman)
+            {
+                CurRole = AottmanRole;
+                CurRole.SetActive(true);
+            }
+            //CurRole = GameObject.Instantiate(Resources.Load<GameObject>("Model/" + role.ToString()));
+            // CurRole.SetActive(true);
             RoleTables[role] = CurRole;
         }
 
+
+        if (role == CurPlayerRoleModel)
+        {
+            isWaitingToChangeRole = false;
+            return;
+        }
+
+
+        // 更新模型数据
         RoleTables[CurPlayerRoleModel].transform.SetParent(RoleDatabase);
         RoleTables[CurPlayerRoleModel].SetActive(false);
 
@@ -399,6 +492,22 @@ public class GameManager : MonoBehaviour
         // 切换人之后，加载开始游戏的button
         AddActionTrigger(CurPlayerRoleModel);
 
+
+        // new feature, change stake
+        switch (CurPlayerRoleModel)
+        {
+            case PlayerRoleModel.BlackGirl:
+                Stake_Aottman_prepare.SetActive(false);
+                Stake_Blackgirl_prepare.SetActive(true);
+                break;
+            case PlayerRoleModel.Aottman:
+                Stake_Aottman_prepare.SetActive(true);
+                Stake_Blackgirl_prepare.SetActive(false);
+                break;
+            default:
+                break;
+        }
+
     }
 
     private void S2C_UpdataPose(string param)
@@ -407,8 +516,12 @@ public class GameManager : MonoBehaviour
 
         //Debug.Log(param);
         ZPose zp = JsonUtility.FromJson<ZPose>(param);
-        //if (zp.role == CurPlayerRoleModel)
-        PoseHelper.UpdataPose(zp);
+        if (zp.role == CurPlayerRoleModel)
+            PoseHelper.UpdataPose(zp);
+        else
+        {
+            ChangePlayerRole(CurPlayerRoleModel);
+        }
 
         if (!resetOnce)
         {
