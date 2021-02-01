@@ -52,6 +52,8 @@ namespace NRKernal
             }
         }
 
+        public static bool isHeadPoseReady { get; private set; }
+
         /// <summary> Gets head pose by time. </summary>
         /// <param name="pose">      [in,out] The pose.</param>
         /// <param name="timestamp"> (Optional) The timestamp.</param>
@@ -61,7 +63,8 @@ namespace NRKernal
         {
             if (SessionStatus == SessionState.Running)
             {
-                return NRSessionManager.Instance.NativeAPI.NativeHeadTracking.GetHeadPose(ref pose, timestamp, predict);
+                isHeadPoseReady = NRSessionManager.Instance.NativeAPI.NativeHeadTracking.GetHeadPose(ref pose, timestamp, predict);
+                return isHeadPoseReady;
             }
             return false;
         }

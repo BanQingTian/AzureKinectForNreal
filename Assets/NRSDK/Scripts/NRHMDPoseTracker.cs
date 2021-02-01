@@ -151,6 +151,24 @@ namespace NRKernal
         public void ChangeTo0Dof() { ChangeTo0Dof(null); }
         public void ChangeTo0Dof(Action<bool> modeChangedCallBack) { ChangeMode(TrackingType.Tracking0Dof, modeChangedCallBack); }
 
+        private Matrix4x4 cachedWorldMatrix = Matrix4x4.identity;
+        /// <summary> Cache the world matrix. </summary>
+        public void CacheWorldMatrix(Pose pose)
+        {
+            Plane horizontal_plane = new Plane(Vector3.up, Vector3.zero);
+            Vector3 forward_use_gravity = horizontal_plane.ClosestPointOnPlane(pose.forward).normalized;
+            Quaternion rotation_use_gravity = Quaternion.LookRotation(forward_use_gravity, Vector3.up);
+            cachedWorldMatrix = ConversionUtility.GetTMatrix(pose.position, rotation_use_gravity);
+        }
+
+        private Pose ApplyWorldMatrix(Pose pose)
+        {
+            var objectMatrix = ConversionUtility.GetTMatrix(pose.position, pose.rotation);
+            var object_in_world = cachedWorldMatrix * objectMatrix;
+            return new Pose(ConversionUtility.GetPositionFromTMatrix(object_in_world),
+                ConversionUtility.GetRotationFromTMatrix(object_in_world));
+        }
+
         /// <summary> Initializes this object. </summary>
         /// <returns> An IEnumerator. </returns>
         private IEnumerator Initialize()
@@ -186,7 +204,7 @@ namespace NRKernal
         /// <summary> Updates the pose by tracking type. </summary>
         private void UpdatePoseByTrackingType()
         {
-            Pose pose = NRFrame.HeadPose;
+            Pose pose = cachedWorldMatrix.Equals(Matrix4x4.identity) ? NRFrame.HeadPose : ApplyWorldMatrix(NRFrame.HeadPose);
             switch (m_TrackingType)
             {
                 case TrackingType.Tracking6Dof:

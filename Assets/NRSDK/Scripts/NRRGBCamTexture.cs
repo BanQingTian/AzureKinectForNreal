@@ -23,9 +23,10 @@ namespace NRKernal
         private Texture2D m_Texture;
 
         /// <summary> Default constructor. </summary>
-        public NRRGBCamTexture():base(CameraImageFormat.RGB_888)
+        public NRRGBCamTexture() : base(CameraImageFormat.RGB_888)
         {
             this.m_Texture = CreateTexture();
+            this.CurrentFrame.texture = this.m_Texture;
         }
 
         /// <summary> Creates the texture. </summary>
@@ -41,7 +42,8 @@ namespace NRKernal
         {
             if (m_Texture == null)
             {
-                m_Texture = CreateTexture();
+                this.m_Texture = CreateTexture();
+                this.CurrentFrame.texture = this.m_Texture;
             }
             return m_Texture;
         }
@@ -50,6 +52,10 @@ namespace NRKernal
         /// <param name="rgbRawDataFrame"> .</param>
         protected override void OnRawDataUpdate(FrameRawData rgbRawDataFrame)
         {
+            if (m_Texture == null)
+            {
+                this.m_Texture = CreateTexture();
+            }
             m_Texture.LoadRawTextureData(rgbRawDataFrame.data);
             m_Texture.Apply();
 
@@ -63,7 +69,8 @@ namespace NRKernal
         protected override void OnStopped()
         {
             GameObject.Destroy(m_Texture);
-            m_Texture = null;
+            this.m_Texture = null;
+            this.CurrentFrame.texture = null;
         }
     }
 }

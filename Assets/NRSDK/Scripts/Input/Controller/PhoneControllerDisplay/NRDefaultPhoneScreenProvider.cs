@@ -9,6 +9,7 @@
 
 namespace NRKernal
 {
+    using System;
     using UnityEngine;
 
     public class NRDefaultPhoneScreenProvider : NRPhoneScreenProviderBase
@@ -25,8 +26,10 @@ namespace NRKernal
             public void OnUpdate(AndroidJavaObject data)
             {
                 SystemButtonState state = new SystemButtonState();
-                byte[] buffer = data.Call<byte[]>("getRawData");
-                state.DeSerialize(buffer);
+                byte[] sbuffer = data.Call<byte[]>("getRawData");
+                //byte[] Bytes = new byte[sbuffer.Length];
+                //Buffer.BlockCopy(sbuffer, 0, Bytes, 0, Bytes.Length);
+                state.DeSerialize(sbuffer);
                 m_Provider.OnSystemButtonDataChanged(state);
             }
         }

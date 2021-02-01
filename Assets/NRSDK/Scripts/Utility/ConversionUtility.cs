@@ -154,5 +154,20 @@ namespace NRKernal
 
             return pm;
         }
+
+        public static Pose GetRelativePoseFromHead(Pose localpose)
+        {
+            var headParent = NRSessionManager.Instance.NRSessionBehaviour.transform.parent;
+            if (headParent == null)
+            {
+                return localpose;
+            }
+            else
+            {
+                var newposition = headParent.TransformDirection(localpose.position);
+                var newrotation = headParent.rotation * localpose.rotation;
+                return new Pose(newposition, newrotation);
+            }
+        }
     }
 }

@@ -153,6 +153,53 @@ in dropdown list of Player Settings > Other Settings > Write Permission, choose 
             }
         }
 
+        /// <summary> Android minSdkVersion should be higher than 26. </summary>
+        private class CkeckAndroidMinAPILevel : Check
+        {
+            public CkeckAndroidMinAPILevel()
+            {
+                key = this.GetType().Name;
+            }
+
+            public override bool IsValid()
+            {
+                if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
+                {
+                    return PlayerSettings.Android.minSdkVersion >= AndroidSdkVersions.AndroidApiLevel26 ||
+                        PlayerSettings.Android.minSdkVersion == AndroidSdkVersions.AndroidApiLevelAuto;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            /// <summary> Draw graphical user interface. </summary>
+            public override void DrawGUI()
+            {
+                EditorGUILayout.HelpBox("Android minSdkVersion should be higher than 26.", MessageType.Error);
+
+                string message = @"In order to run correct on mobile devices, Android minSdkVersion should be higher than 26.";
+                EditorGUILayout.LabelField(message, EditorStyles.textArea);
+            }
+
+            /// <summary> Query if this object is fixable. </summary>
+            /// <returns> True if fixable, false if not. </returns>
+            public override bool IsFixable()
+            {
+                return true;
+            }
+
+            /// <summary> Fixes this object. </summary>
+            public override void Fix()
+            {
+                if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
+                {
+                    PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+                }
+            }
+        }
+
         /// <summary> A ckeck android orientation. </summary>
         private class CkeckAndroidOrientation : Check
         {
@@ -299,7 +346,8 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
         private static Check[] checks = new Check[]
         {
             new CkeckAndroidVsyn(),
-            new CkeckAndroidSDCardPermission(),
+            new CkeckAndroidMinAPILevel(),
+            //new CkeckAndroidSDCardPermission(),
             new CkeckAndroidOrientation(),
             new CkeckAndroidGraphicsAPI(),
             new CkeckColorSpace(),
@@ -335,7 +383,7 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
 
             foreach (Check check in checks)
             {
-                if (!check.IsIgnored() &&!check.IsValid())
+                if (!check.IsIgnored() && !check.IsValid())
                 {
                     show = true;
                 }
@@ -377,7 +425,7 @@ in dropdown list of Player Settings > Other Settings > Color Space, choose 'Line
                     fixableCount++;
                 }
 
-                if (!valid &&!ignored)
+                if (!valid && !ignored)
                 {
                     invalidNotIgnored++;
                 }

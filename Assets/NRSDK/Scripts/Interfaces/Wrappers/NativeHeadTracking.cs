@@ -120,12 +120,9 @@ namespace NRKernal
             {
                 return LostTrackingReason.INITIALIZING;
             }
-            LostTrackingReason lost_tracking_reason = LostTrackingReason.NONE;
+            LostTrackingReason lost_tracking_reason = LostTrackingReason.INITIALIZING;
             var result = NativeApi.NRTrackingPoseGetTrackingReason(m_NativeInterface.TrackingHandle, m_HeadTrackingHandle, ref lost_tracking_reason);
-            if (result != NativeResult.TrackingNotRunning)
-            {
-                NativeErrorListener.Check(result, this, "GetTrackingLostReason");
-            }
+            NativeErrorListener.Check(result, this, "GetTrackingLostReason");
             return lost_tracking_reason;
         }
 

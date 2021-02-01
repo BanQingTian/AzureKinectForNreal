@@ -92,6 +92,7 @@ namespace NRKernal
   <uses-permission android:name='android.permission.CAMERA'/>
   <uses-permission android:name='android.permission.BLUETOOTH'/>
   <uses-permission android:name='android.permission.BLUETOOTH_ADMIN' />
+  <uses-permission android:name='android.permission.QUERY_ALL_PACKAGES' />
 </manifest>
         ";
 
@@ -134,6 +135,7 @@ namespace NRKernal
             var androidManifest = new AndroidManifest(path);
             //bool needrequestLegacyExternalStorage = (GetAndroidTargetApiLevel() >= 29);
             //androidManifest.SetExternalStorage(needrequestLegacyExternalStorage);
+            androidManifest.SetPackageReadPermission();
             androidManifest.SetCameraPermission();
             androidManifest.SetBlueToothPermission();
             androidManifest.SetSDKMetaData();

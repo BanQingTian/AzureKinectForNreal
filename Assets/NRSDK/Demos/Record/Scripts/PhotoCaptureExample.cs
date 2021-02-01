@@ -33,19 +33,9 @@ namespace NRKernal.NRExamples
         /// <summary> Updates this object. </summary>
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.T) || NRInput.GetButtonDown(ControllerButton.TRIGGER))
+            if (Input.GetKeyDown(KeyCode.Space) || NRInput.GetButtonDown(ControllerButton.TRIGGER))
             {
                 TakeAPhoto();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Q) || NRInput.GetButtonDown(ControllerButton.HOME))
-            {
-                Close();
-            }
-
-            if (Input.GetKeyDown(KeyCode.O) || NRInput.GetButtonDown(ControllerButton.APP))
-            {
-                Create();
             }
 
             if (m_PhotoCaptureObject != null)
@@ -59,7 +49,7 @@ namespace NRKernal.NRExamples
         {
             if (m_PhotoCaptureObject != null)
             {
-                NRDebugger.Error("The NRPhotoCapture has already been created.");
+                NRDebugger.Info("The NRPhotoCapture has already been created.");
                 return;
             }
 

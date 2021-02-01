@@ -67,7 +67,7 @@ namespace NRKernal.NRExamples
         /// <summary> Executes the 'home button click' action. </summary>
         private void OnHomeButtonClick()
         {
-            NRHomeMenu.Hide();
+            NRHomeMenu.Toggle();
         }
 
         /// <summary> Executes the 'application button click' action. </summary>
@@ -88,7 +88,9 @@ namespace NRKernal.NRExamples
                 if (m_ButtonPressTimer > BUTTON_LONG_PRESS_DURATION)
                 {
                     m_ButtonPressTimer = float.MinValue;
-                    NRHomeMenu.Show();
+
+                    // Reset layser when long press Home btn.
+                    NRInput.RecenterController();
                 }
             }
             else

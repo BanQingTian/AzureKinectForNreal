@@ -29,6 +29,12 @@ namespace NRKernal
         public const string NRNativeLibrary = "nr_api";
 #endif
 
+#if !UNITY_EDITOR && UNITY_ANDROID
+        public const string NRNativeAnchorPointLib = "nr_tracking";
+#else
+        public const string NRNativeAnchorPointLib = "libnr_tracking";
+#endif
+
 #if UNITY_EDITOR_OSX
         public static string TrackingImageCliBinary = "trackableImageTools_osx";
 #elif UNITY_EDITOR_WIN
@@ -43,7 +49,6 @@ namespace NRKernal
 
         /// <summary> The zip key. </summary>
         public static string ZipKey = "89f55314-6d41-416c-b4d9-4bdbc155e576";
-
         /// <summary> The glasses disconnect error tip. </summary>
         public static string GlassesDisconnectErrorTip = "Please connect your Nreal Light Glasses.";
         /// <summary> The sdk version mismatch error tip. </summary>

@@ -52,6 +52,7 @@ namespace NRKernal.NRExamples
         /// <param name="frame"> The frame.</param>
         private void BindYuvTexture(NRRGBCamTextureYUV.YUVTextureFrame frame)
         {
+            CaptureImage.enabled = true;
             CaptureImage.material.SetTexture("_MainTex", frame.textureY);
             CaptureImage.material.SetTexture("_UTex", frame.textureU);
             CaptureImage.material.SetTexture("_VTex", frame.textureV);
@@ -67,6 +68,7 @@ namespace NRKernal.NRExamples
         public void Stop()
         {
             YuvCamTexture.Stop();
+            CaptureImage.enabled = false;
         }
 
         /// <summary> Executes the 'destroy' action. </summary>
