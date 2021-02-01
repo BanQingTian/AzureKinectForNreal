@@ -57,8 +57,7 @@ public enum BarrierModelEnum
     /// <summary>
     /// 金币模型
     /// </summary>
-    Icon1,
-    Icon2,
+    Coin1,
     /// <summary>
     /// 可拾取障碍物
     /// </summary>
@@ -73,8 +72,8 @@ public enum BarrierModelEnum
 
 public enum SpecialEffectEnum
 {
-    SpecialEffect1,
-    SpecialEffect2,
+    Coin,
+    NeedDestroyBarrier,
     SpecialEffect3,
     SpecialEffect4,
 }

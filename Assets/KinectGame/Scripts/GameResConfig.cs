@@ -13,6 +13,9 @@ public class GameResConfig : MonoBehaviour
     /// 下标对应特效类型顺序
     /// </summary>
     public List<GameObject> SpecialEffList = new List<GameObject>();
+
+    //public Dictionary<BarrierTypeEnum, GameObject> VFXDic = new Dictionary<BarrierTypeEnum, GameObject>();
+
     /// <summary>
     /// 下标对应音频顺序
     /// </summary>

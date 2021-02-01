@@ -177,6 +177,7 @@ public class ZCollision : MonoBehaviour
                         r.isKinematic = true;
                         follower.transform.position = transform.position;
                         follower.transform.SetParent(transform);
+                        follower.transform.localScale = Vector3.one;
                         follower.SetActive(true);
                         follower.GetComponent<Barrier>().isHold = true;
                         ResetDelayFollow();
