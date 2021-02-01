@@ -155,6 +155,10 @@ public class DrumBehaviour : ZGameBehaviour
 
         Drum.SetActive(false);//GameObject.Destroy(Drum.gameObject);
         GameManager.Instance.PoseHelper.transform.localPosition = Vector3.zero;
+        foreach (Transform item in GameManager.Instance.WallParent)
+        {
+            item.gameObject.SetActive(false);
+        }
     }
 
     float _headZ = 0; // 头在z轴的偏移量
@@ -271,6 +275,10 @@ public class DrumBehaviour : ZGameBehaviour
         TempAnim.speed = 0;
     }
 
+
+    /// <summary>
+    /// 加速
+    /// </summary>
     private void GetKneeAngle()
     {
         if (beginStopMove) return;
@@ -287,6 +295,9 @@ public class DrumBehaviour : ZGameBehaviour
         GameManager.wallCreateTime = 1 / TempAnim.speed;
     }
 
+
+
+
     /// <summary>
     /// 跳跃检测
     /// </summary>
@@ -298,8 +309,8 @@ public class DrumBehaviour : ZGameBehaviour
     bool detectioning = false;
     bool jumpSuccess = false;
 
-    float startCurveAngle = 120;// 开始计算弯曲的角度
-    float curveAngle = 30; // 弯曲有效的时间
+    float startCurveAngle = 125;// 开始计算弯曲的角度
+    float curveAngle = 35; // 弯曲有效的时间
     float curveValidTime = 0.3f; // 弯曲时间
     private void jumpDetection()
     {
@@ -333,12 +344,6 @@ public class DrumBehaviour : ZGameBehaviour
             }
 
         }
-
-    }
-
-
-    private void Jump()
-    {
 
     }
 

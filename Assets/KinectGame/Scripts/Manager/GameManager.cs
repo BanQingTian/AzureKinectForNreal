@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.F))
         {
-            ChangeGameMode(GameMode.Drum);
+            ChangeGameMode(CurGameMode + 1);
         }
         if (Input.GetKeyDown(KeyCode.G) && Join)
         {
@@ -291,6 +291,9 @@ public class GameManager : MonoBehaviour
         }, 2,
         () =>
         {
+            Aottman_vfx.SetActive(false);
+            Blackgirl_vfx.SetActive(false);
+
             // 开始游戏
             CurGameBehaviour.ZPlay();
             UIManager.Instance.UpdateScore(totalScore);
@@ -423,17 +426,26 @@ public class GameManager : MonoBehaviour
             wall = BlackgirlWall;
         }
 
+        yield return new WaitForSeconds(1);
+
         while (true)
         {
-            GameObject w = PoolManager.Instance.Get(wall);
-            var movewall = w.GetComponent<MoveWall>();
-            if (movewall == null)
+            if (wallCreateTime == 0)
             {
-                movewall = w.AddComponent<MoveWall>();
+                yield return null;
             }
-            movewall.Init(WallParent, new Vector3(0, 0, 40));
+            else
+            {
+                GameObject w = PoolManager.Instance.Get(wall);
+                var movewall = w.GetComponent<MoveWall>();
+                if (movewall == null)
+                {
+                    movewall = w.AddComponent<MoveWall>();
+                }
+                movewall.Init(WallParent, new Vector3(0, 0, 40));
 
-            yield return new WaitForSeconds(wallCreateTime);
+                yield return new WaitForSeconds(wallCreateTime);
+            }
         }
     }
 

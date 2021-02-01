@@ -178,6 +178,7 @@ public class ZCollision : MonoBehaviour
                         follower.transform.position = transform.position;
                         follower.transform.SetParent(transform);
                         follower.SetActive(true);
+                        follower.GetComponent<Barrier>().isHold = true;
                         ResetDelayFollow();
                         curFollower = follower;
                     }
