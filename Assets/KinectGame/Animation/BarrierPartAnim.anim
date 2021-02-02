@@ -256,7 +256,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 89.46667
+  - time: 88.6
     functionName: Inverse
     data: 
     objectReferenceParameter: {fileID: 0}

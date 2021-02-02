@@ -14,7 +14,7 @@ public class DrumBehaviour : ZGameBehaviour
     private const string StakeboardRotName = "StakeboardRot";
 
     private const float MoveLimit = 2f; // 脖子移动多少触发滑板移动
-    private const float stakeboardMoveSpeed = 0.04f; // 滑板移动速度
+    private const float stakeboardMoveSpeed = 0.07f; // 滑板移动速度
     private const float _humanXMoveLimit = 0.7f; //滑板移动上限
     private const float BarrierMoveSpeed = 1; // 障碍物移动速度
     private const float stopSpeed = 1f; // 障碍物停止的速度
@@ -291,8 +291,8 @@ public class DrumBehaviour : ZGameBehaviour
         float rate = (170 - angle) / 90;
         TempAnim.speed = BarrierMoveSpeed + rate;
 
-        GameManager.wallMoveaSpeed = TempAnim.speed * 2;
-        GameManager.wallCreateTime = 1 / TempAnim.speed;
+        GameManager.wallMoveaSpeed = TempAnim.speed ;
+        GameManager.wallCreateTime = 1.5f / TempAnim.speed;
     }
 
 
@@ -309,9 +309,9 @@ public class DrumBehaviour : ZGameBehaviour
     bool detectioning = false;
     bool jumpSuccess = false;
 
-    float startCurveAngle = 125;// 开始计算弯曲的角度
-    float curveAngle = 35; // 弯曲有效的时间
-    float curveValidTime = 0.3f; // 弯曲时间
+    float startCurveAngle = 140;// 开始计算弯曲的角度
+    float curveAngle = 15; // 弯曲有效的时间
+    float curveValidTime = 0.25f; // 弯曲时间
     private void jumpDetection()
     {
         // left

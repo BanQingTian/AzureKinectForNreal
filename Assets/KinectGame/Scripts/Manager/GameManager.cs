@@ -296,6 +296,7 @@ public class GameManager : MonoBehaviour
         {
             UIManager.Instance.StartCountdown(150, () =>
             {
+                // 游戏结束
                 Debug.Log("gameover");
             });
             Aottman_vfx.SetActive(false);
@@ -309,7 +310,6 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator PlayReadyAndGuidance(Action ReadyPlayEvent = null, float waitTime = 1.5f, Action guidanceEvent = null, float time = 2, Action finishEvent = null)
     {
-
         yield return null;
         ReadyPlayEvent?.Invoke();
 
@@ -436,7 +436,7 @@ public class GameManager : MonoBehaviour
             wall = BlackgirlWall;
         }
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
 
         while (true)
         {

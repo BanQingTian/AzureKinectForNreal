@@ -161,7 +161,6 @@ public class ZCollision : MonoBehaviour
 
                 case BarrierTypeEnum.CanPickUp:
 
-                    Debug.Log(Pickuped + " ---- " + CollisionType + "   adfasdfsafda");
                     if (CollisionType != CollisionTypeEnum.Hand)
                     {
                         barrier.Play();
@@ -296,6 +295,6 @@ public class ZCollision : MonoBehaviour
     }
     private void delayFollow()
     {
-        DelayGO.transform.position = Vector3.MoveTowards(DelayGO.transform.position, transform.position, 0.2f * Time.deltaTime);
+        DelayGO.transform.position = Vector3.MoveTowards(DelayGO.transform.position, transform.position, 0.18f * Time.deltaTime);
     }
 }

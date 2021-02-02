@@ -57,6 +57,7 @@ public class UIManager : MonoBehaviour
         time -= Time.deltaTime;
         if (time <= 0)
         {
+            CountdownLabel.text = "0.00";
             finishEvent?.Invoke();
             run = false;
         }
