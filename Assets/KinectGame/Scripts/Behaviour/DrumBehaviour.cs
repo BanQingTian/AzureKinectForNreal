@@ -122,8 +122,8 @@ public class DrumBehaviour : ZGameBehaviour
 
         Drum.SetActive(show);
 
-        HandLeft.GetComponent<Collider>().enabled = show;
-        HandRight.GetComponent<Collider>().enabled = show;
+        //HandLeft.GetComponent<Collider>().enabled = show;
+        //HandRight.GetComponent<Collider>().enabled = show;
     }
 
     public override void ZPlay()

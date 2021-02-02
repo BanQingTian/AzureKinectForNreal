@@ -82,25 +82,29 @@ public class ZCollision : MonoBehaviour
         switch (GameManager.Instance.CurGameMode)
         {
             case GameMode.Prepare:
-
-                if ((curRole = other.GetComponent<ZRole>()) != null) // model1
+                if (CollisionType == CollisionTypeEnum.Hand)
                 {
-                    if (changeRoleWaitingTime < 1.5f)
-                        return;
-                    changeRoleWaitingTime = 0;
+                    if ((curRole = other.GetComponent<ZRole>()) != null) // model1
+                    {
+                        Debug.Log("11111");
+                        if (changeRoleWaitingTime < 1.5f)
+                            return;
+                        Debug.Log("22222");
 
-                    GameManager.Instance.ChangePlayerRole(curRole.roleModel);
+                        changeRoleWaitingTime = 0;
+                        GameManager.Instance.ChangePlayerRole(curRole.roleModel);
+                    }
+                    else if ((mainsound = other.GetComponent<ZSound>()) != null)
+                    {
+                        if (changeBGSoundWaitingTime < 1.5f)
+                            return;
+                        changeBGSoundWaitingTime = 0;
+
+                        GameManager.Instance.ChangeBgSound(mainsound.clip);
+                    }
+
+                    ActionTriggerEnter(other);
                 }
-                else if ((mainsound = other.GetComponent<ZSound>()) != null)
-                {
-                    if (changeBGSoundWaitingTime < 1.5f)
-                        return;
-                    changeBGSoundWaitingTime = 0;
-
-                    GameManager.Instance.ChangeBgSound(mainsound.clip);
-                }
-
-                ActionTriggerEnter(other);
 
                 break;
 
@@ -157,6 +161,7 @@ public class ZCollision : MonoBehaviour
 
                 case BarrierTypeEnum.CanPickUp:
 
+                    Debug.Log(Pickuped + " ---- " + CollisionType + "   adfasdfsafda");
                     if (CollisionType != CollisionTypeEnum.Hand)
                     {
                         barrier.Play();

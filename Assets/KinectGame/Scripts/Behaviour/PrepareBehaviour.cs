@@ -47,8 +47,8 @@ public class PrepareBehaviour : ZGameBehaviour
 
         choose.SetActive(show);
 
-        HandLeft.GetComponent<Collider>().enabled = show;
-        HandRight.GetComponent<Collider>().enabled = show;
+        //HandLeft.GetComponent<Collider>().enabled = show;
+        //HandRight.GetComponent<Collider>().enabled = show;
 
     }
 

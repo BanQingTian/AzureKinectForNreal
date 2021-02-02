@@ -215,13 +215,12 @@ public class GameManager : MonoBehaviour
     bool once = false;
     public void ResetFaceToFace(bool face = true)
     {
-
         float rotaY;
         float scaleX;
         if (face)
         {
             rotaY = 180;
-            scaleX = -1;
+            scaleX = 1;
         }
         else
         {
@@ -241,6 +240,10 @@ public class GameManager : MonoBehaviour
     {
         wallMoveaSpeed = 1;
         wallCreateTime = 1;
+        A1Hover = false;
+        A2Hover = false;
+        resetOnce = false;
+        updateChangeOnce = false;
     }
 
     #region Game Relevant
@@ -291,6 +294,10 @@ public class GameManager : MonoBehaviour
         }, 2,
         () =>
         {
+            UIManager.Instance.StartCountdown(150, () =>
+            {
+                Debug.Log("gameover");
+            });
             Aottman_vfx.SetActive(false);
             Blackgirl_vfx.SetActive(false);
 
@@ -323,8 +330,11 @@ public class GameManager : MonoBehaviour
     /// <param name="pm"></param>
     public void ChangePlayerRole(PlayerRoleModel pm)
     {
+        A1Hover = false;
+        A2Hover = false;
         isWaitingToChangeRole = true;
         pm = (int)pm >= System.Enum.GetNames(typeof(PlayerRoleModel)).Length ? 0 : pm;
+        Debug.Log("change role ~~~~~~~~~~  " + pm);
         MessageManager.Instance.SendChangeRole((int)pm);
     }
 
@@ -483,6 +493,24 @@ public class GameManager : MonoBehaviour
         if (role == CurPlayerRoleModel)
         {
             isWaitingToChangeRole = false;
+
+            // 切换人之后，加载开始游戏的button
+            AddActionTrigger(CurPlayerRoleModel);
+
+            switch (CurPlayerRoleModel)
+            {
+                case PlayerRoleModel.BlackGirl:
+                    Stake_Aottman_prepare.SetActive(false);
+                    Stake_Blackgirl_prepare.SetActive(true);
+                    break;
+                case PlayerRoleModel.Aottman:
+                    Stake_Aottman_prepare.SetActive(true);
+                    Stake_Blackgirl_prepare.SetActive(false);
+                    break;
+                default:
+                    break;
+            }
+
             return;
         }
 
@@ -522,14 +550,18 @@ public class GameManager : MonoBehaviour
 
     }
 
+    bool updateChangeOnce = true;
     private void S2C_UpdataPose(string param)
     {
         if (isWaitingToChangeRole || !SyncData) return;
 
         //Debug.Log(param);
         ZPose zp = JsonUtility.FromJson<ZPose>(param);
+
         if (zp.role == CurPlayerRoleModel)
+        {
             PoseHelper.UpdataPose(zp);
+        }
         else
         {
             ChangePlayerRole(CurPlayerRoleModel);
