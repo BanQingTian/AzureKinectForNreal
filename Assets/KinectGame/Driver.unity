@@ -14402,7 +14402,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &876155437
 Transform:
   m_ObjectHideFlags: 0
@@ -24398,17 +24398,17 @@ PrefabInstance:
     - target: {fileID: 8486305250231103132, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -5.148602e-14
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103132, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.0000013934977
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103132, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000043904813
+      value: -0.000043630065
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103132, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
@@ -24729,7 +24729,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 9c0372385f896f5469463e9e52fb2220, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -24996,7 +24996,7 @@ PrefabInstance:
     - target: {fileID: 1785379834897675886, guid: 20f2f6e1e0de96e458bdbd603cf0d5a8,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1785379835148952668, guid: 20f2f6e1e0de96e458bdbd603cf0d5a8,
         type: 3}
@@ -36253,7 +36253,7 @@ PrefabInstance:
     - target: {fileID: 4473335915700849084, guid: b1d9c3ae9d603844684c15ae86963680,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4473335915700849085, guid: b1d9c3ae9d603844684c15ae86963680,
         type: 3}
@@ -63706,22 +63706,22 @@ PrefabInstance:
     - target: {fileID: 7702849615295975506, guid: 8b5a034179064024a97771eec11f5f56,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9997352
       objectReference: {fileID: 0}
     - target: {fileID: 7702849615295975506, guid: 8b5a034179064024a97771eec11f5f56,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.00000014521213
       objectReference: {fileID: 0}
     - target: {fileID: 7702849615295975506, guid: 8b5a034179064024a97771eec11f5f56,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.0000003545537
       objectReference: {fileID: 0}
     - target: {fileID: 7702849615295975506, guid: 8b5a034179064024a97771eec11f5f56,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000008800916
+      value: 0.02301287
       objectReference: {fileID: 0}
     - target: {fileID: 7702849615295975506, guid: 8b5a034179064024a97771eec11f5f56,
         type: 3}
@@ -63772,7 +63772,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1762829307161098883
 Transform:
   m_ObjectHideFlags: 0

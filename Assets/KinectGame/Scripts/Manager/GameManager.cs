@@ -208,6 +208,7 @@ public class GameManager : MonoBehaviour
         Vector3 v3 = PoseHelper.transform.rotation.eulerAngles;
         PoseHelper.transform.parent.rotation = Quaternion.Euler(v3.x, v3.y + angle, v3.z);
 
+        BGSound.Play();
         ResetFaceToFace(true);
 
     }
