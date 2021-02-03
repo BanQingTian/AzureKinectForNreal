@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,9 +11,9 @@ public class UIManager : MonoBehaviour
 
     #region UI Label
 
-    public Text ScoreLabel;
+    public TextMeshPro ScoreLabel;
 
-    public Text CountdownLabel;
+    public TextMeshPro CountdownLabel;
 
     #endregion
 
@@ -21,7 +22,7 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        ScoreLabel.gameObject.SetActive(true);
+        //ScoreLabel.gameObject.SetActive(true);
     }
 
     private void Update()

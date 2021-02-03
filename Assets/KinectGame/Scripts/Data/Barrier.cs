@@ -9,7 +9,6 @@ public class Barrier : MonoBehaviour
     [Header("Is Aottaman")]
     public bool isAottaman = false;
 
-
     public Vector3 DefalutScale;
 
     //public int Index;
@@ -25,10 +24,6 @@ public class Barrier : MonoBehaviour
     private void OnEnable()
     {
         DefalutScale = transform.lossyScale;
-        if (isAottaman)
-        {
-
-        }
     }
 
     /// <summary>
@@ -37,6 +32,8 @@ public class Barrier : MonoBehaviour
     public void Play()
     {
         gameObject.SetActive(false);
+
+        GameManager.Instance.PlayBarrierAudio(SoundEff, transform.position);
 
         switch (BarrierType)
         {
@@ -61,14 +58,14 @@ public class Barrier : MonoBehaviour
             default:
                 break;
         }
-       
+
         // load from Res,,, todo
         Debug.Log("Play Eff");
         var eff = GameResConfig.Instance.GetSpecialEff(SpecialEff);
         eff.transform.position = gameObject.transform.position;
         eff.transform.rotation = Quaternion.identity;
         eff.GetComponent<ParticleSystem>().Play();
-        
+
 
         //GameResConfig.Instance.GetAudioEff(SoundEff);
     }

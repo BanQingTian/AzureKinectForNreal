@@ -40,6 +40,11 @@ public class GameManager : MonoBehaviour
     public AudioSource BGSound;
 
     /// <summary>
+    /// 障碍物的音频
+    /// </summary>
+    public GameObject BarrierAS;
+
+    /// <summary>
     /// No.1 action
     /// </summary>
     public GameObject Action1;
@@ -193,6 +198,7 @@ public class GameManager : MonoBehaviour
     Vector3 modelForward; // 模型正方向
     Vector3 cameraForward; // 启动正方向
     bool resetOnce = false;
+    float angAdd = 0;
     public void ResetPositiveDir()
     {
         modelForward = GameObject.FindWithTag("Hip").transform.forward;
@@ -200,10 +206,19 @@ public class GameManager : MonoBehaviour
 
         float angle = Mathf.Acos(Vector3.Dot(cameraForward, modelForward)) * Mathf.Rad2Deg;
 
+
+        Debug.Log(angle);
         if (Vector3.Dot(cameraForward - modelForward, Camera.main.transform.right) < 0)
         {
+            angAdd = angle - 180;
             angle = -angle;
         }
+        else
+        {
+            angAdd = 180 - angle;
+        }
+
+        Debug.Log(angAdd);
 
         Vector3 v3 = PoseHelper.transform.rotation.eulerAngles;
         PoseHelper.transform.parent.rotation = Quaternion.Euler(v3.x, v3.y + angle, v3.z);
@@ -220,16 +235,21 @@ public class GameManager : MonoBehaviour
         float scaleX;
         if (face)
         {
-            rotaY = 180;
+            rotaY = PoseHelper.transform.rotation.eulerAngles.y + 180;
             scaleX = 1;
         }
         else
         {
             rotaY = -180;
             scaleX = -1;
+
+            rotaY = angAdd;
         }
+
+
+
         Vector3 v3 = PoseHelper.transform.rotation.eulerAngles;
-        PoseHelper.transform.parent.rotation = Quaternion.Euler(v3.x, v3.y + rotaY, v3.z);
+        PoseHelper.transform.parent.rotation = Quaternion.Euler(v3.x, rotaY, v3.z);
         v3 = PoseHelper.transform.parent.localScale;
         PoseHelper.transform.parent.localScale = new Vector3(v3.x * scaleX, v3.y, v3.z);
     }
@@ -458,6 +478,22 @@ public class GameManager : MonoBehaviour
                 yield return new WaitForSeconds(wallCreateTime);
             }
         }
+    }
+
+    public void PlayBarrierAudio(SoundEffEnum se, Vector3 pos)
+    {
+        GameObject go = PoolManager.Instance.Get(BarrierAS);
+        go.SetActive(true);
+        go.transform.position = pos;
+        AudioSource au = go.GetComponent<AudioSource>();
+        au.clip = GameResConfig.Instance.GetAudioEff(se);
+        au.Play();
+        StartCoroutine(recycle(go));
+    }
+    private IEnumerator recycle(GameObject audio)
+    {
+        yield return new WaitForSeconds(1);
+        PoolManager.Instance.Release(audio);
     }
 
     #endregion
