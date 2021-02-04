@@ -15,6 +15,8 @@ public class UIManager : MonoBehaviour
 
     public TextMeshPro CountdownLabel;
 
+    public TextMeshPro JumpV;
+
     #endregion
 
 

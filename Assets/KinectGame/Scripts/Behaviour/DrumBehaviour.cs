@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class DrumBehaviour : ZGameBehaviour
 {
+    // 对应触碰节点的Tag标识，方便切换角色后的统一赋值
     private const string HandLeftTagName = "LeftHand";
     private const string HandRightTagName = "RightHand";
     private const string FootLeftTagName = "LeftFoot";
     private const string FootRightTagName = "RightFoot";
     private const string HipTagName = "Hip";
 
+    // 角色脚下滑板的pose控制节点
     private const string StakeboardPosName = "StakeboardPos";
     private const string StakeboardRotName = "StakeboardRot";
 
@@ -23,31 +25,45 @@ public class DrumBehaviour : ZGameBehaviour
 
     private const float head_hip_ratio = 0.7f; // 头和躯干造成移动的权重
 
+    // 人物的默认起始x值，用于人物移动的范围的中心点
     public float _humanXDefaultX;
 
+    // 模型左右手
     public GameObject HandLeft = null;
     public GameObject HandRight = null;
 
+    // 模型左右脚
     public GameObject FootLeft = null;
     public GameObject FootRight = null;
 
+    // 用于计算膝盖位置的夹角而使用的三个节点
     private Transform a1, a2, a3; // for  a2->a1 与 a2->a3 的夹角,for 膝盖弯曲
     private Transform b1, b2, b3; // ditto
 
+    // 控制障碍物的动画机
     private Animator TempAnim;
 
-    public GameObject Drum;
-    public GameObject DrumPlusScene;
+    // 滑板游戏的游戏场景
+    public GameObject GameScene;
 
+    // 眼镜节点的缓存，用于跳跃判断
     public GameObject Head; // for judge Move
+    
+    // 躯干的节点，用于控制人物移动
     public GameObject Hip;
+    
+    // 滑板的控制节点，position and rotation;
     public GameObject StakeboardPos;
     public GameObject StakeboardRot;
 
-    private Vector3 DefaultPos;
-
+    /// <summary>
+    /// 逻辑框架执行的起始
+    /// </summary>
     public override void ZStart()
     {
+        // 主要逻辑初始化人物模型上的数据节点
+
+
         HandLeft = GameObject.FindWithTag(HandLeftTagName);
         HandRight = GameObject.FindWithTag(HandRightTagName);
 
@@ -76,6 +92,7 @@ public class DrumBehaviour : ZGameBehaviour
             return;
         }
 
+        // 对应节点加载碰撞
         if (HandLeft.GetComponent<ZCollision>() == null)
         {
             var zc1 = HandLeft.AddComponent<ZCollision>();
@@ -103,16 +120,19 @@ public class DrumBehaviour : ZGameBehaviour
 
     }
 
+    /// <summary>
+    /// 逻辑框架的显示模块
+    /// </summary>
     public override void ZDisplay(bool show = true)
     {
         base.ZDisplay(show);
 
         if (show)
         {
-            if (Drum == null)
+            if (GameScene == null)
             {
-                Drum = GameManager.Instance.GameScene;//GameObject.Instantiate(Resources.Load<GameObject>("Model/DrumPlus"));
-                Drum.SetActive(true);
+                GameScene = GameManager.Instance.GameScene;//GameObject.Instantiate(Resources.Load<GameObject>("Model/DrumPlus"));
+                GameScene.SetActive(true);
                 StakeboardPos = GameObject.Find(StakeboardPosName);
                 StakeboardRot = GameObject.Find(StakeboardRotName);
                 TempAnim = GameManager.Instance.GameAnim;//GameObject.Find("BarrierPart").GetComponent<Animator>();
@@ -120,12 +140,13 @@ public class DrumBehaviour : ZGameBehaviour
             }
         }
 
-        Drum.SetActive(show);
+        GameScene.SetActive(show);
 
         //HandLeft.GetComponent<Collider>().enabled = show;
         //HandRight.GetComponent<Collider>().enabled = show;
     }
 
+    
     public override void ZPlay()
     {
         base.ZPlay();
@@ -134,6 +155,9 @@ public class DrumBehaviour : ZGameBehaviour
     }
 
 
+    /// <summary>
+    /// 逻辑框架的update刷新
+    /// </summary>
     public override void ZUpdate()
     {
         base.ZUpdate();
@@ -146,14 +170,36 @@ public class DrumBehaviour : ZGameBehaviour
 
         GetKneeAngle();
 
-        jumpDetection();
+        //jumpDetection();
+
+        jump2();
+
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("Editor_Jump");
+            mainJump();
+        }
+#endif
+
+        //Vector2 v = NRKernal.NRInput.GetTouch();
+        //if (v == Vector2.zero) return;
+        //if (v.x > 0.5f)
+        //    jumpV += 0.01f;
+        //else if (v.x < -0.5f)
+        //    jumpV -= 0.01f;
+        //UIManager.Instance.JumpV.text = jumpV.ToString(); ;
+
     }
 
+    /// <summary>
+    /// 逻辑框架的资源释放
+    /// </summary>
     public override void ZRelease()
     {
         base.ZRelease();
 
-        Drum.SetActive(false);//GameObject.Destroy(Drum.gameObject);
+        GameScene.SetActive(false);//GameObject.Destroy(Drum.gameObject);
         GameManager.Instance.PoseHelper.transform.localPosition = Vector3.zero;
         foreach (Transform item in GameManager.Instance.WallParent)
         {
@@ -161,6 +207,10 @@ public class DrumBehaviour : ZGameBehaviour
         }
     }
 
+
+    /// <summary>
+    /// 滑板左右移动逻辑 
+    /// </summary>
     float _headZ = 0; // 头在z轴的偏移量
     float _hipZ = 0;  // 胯，躯干在z轴的偏移量
     float _humanX = 0; // 滑板移动的位置
@@ -218,6 +268,10 @@ public class DrumBehaviour : ZGameBehaviour
         //StakeboardPos.transform.position = new Vector3(_stakeboardX, StakeboardPos.transform.position.y, StakeboardPos.transform.position.z);
     }
 
+
+    /// <summary>
+    /// 滑板的方向刷新，方向根据两脚的方向
+    /// </summary>
     Vector3 center;
     Vector3 dir;
     private void UpdateStakeboardDir()
@@ -277,7 +331,7 @@ public class DrumBehaviour : ZGameBehaviour
 
 
     /// <summary>
-    /// 加速
+    /// 弯曲膝盖 加速（目前加速使用Animator.speed控制
     /// </summary>
     private void GetKneeAngle()
     {
@@ -291,7 +345,7 @@ public class DrumBehaviour : ZGameBehaviour
         float rate = (170 - angle) / 90;
         TempAnim.speed = BarrierMoveSpeed + rate;
 
-        GameManager.wallMoveaSpeed = TempAnim.speed ;
+        GameManager.wallMoveaSpeed = TempAnim.speed;
         GameManager.wallCreateTime = 1.5f / TempAnim.speed;
     }
 
@@ -299,7 +353,7 @@ public class DrumBehaviour : ZGameBehaviour
 
 
     /// <summary>
-    /// 跳跃检测
+    /// 跳跃检测  --------- Invalid
     /// </summary>
     float _curLeft;
     float _lastLeft;
@@ -308,7 +362,6 @@ public class DrumBehaviour : ZGameBehaviour
     float _countdown = 0;
     bool detectioning = false;
     bool jumpSuccess = false;
-
     float startCurveAngle = 140;// 开始计算弯曲的角度
     float curveAngle = 15; // 弯曲有效的时间
     float curveValidTime = 0.25f; // 弯曲时间
@@ -332,12 +385,7 @@ public class DrumBehaviour : ZGameBehaviour
                 if (_curLeft - _lastLeft > curveAngle && _curRight - _lastRight > curveAngle)
                 {
                     Debug.Log("jump");
-                    var j = GameManager.Instance.PoseHelper.GetComponent<RoleJump>();
-                    if (j == null)
-                    {
-                        j = GameManager.Instance.PoseHelper.gameObject.AddComponent<RoleJump>();
-                    }
-                    j.Init();
+                    mainJump();
                 }
                 detectioning = false;
                 _countdown = 0;
@@ -346,16 +394,61 @@ public class DrumBehaviour : ZGameBehaviour
         }
 
     }
-
     private float GetLeftAngle()
     {
         float angle = Vector3.Angle(a3.position - a2.position, a1.position - a2.position);
         return Mathf.Clamp(angle, 80, 170);
     }
-
     private float GetRightAngle()
     {
         float angle = Vector3.Angle(b3.position - b2.position, b1.position - b2.position);
         return Mathf.Clamp(angle, 80, 170);
+    }
+
+
+
+
+    /// <summary>
+    /// 跳跃检测 -- （因为kinect对跳跃检测不明显，所有代码加大跳跃幅度
+    /// 根据头的位置和膝盖弯曲角度判断跳跃
+    /// </summary>
+    float _upV;
+    Vector3 _curPos;
+    Vector3 _lastPos;
+    float jumpV = 0.06f;
+    float jumpInterval = 0.65f;
+    public void jump2()
+    {
+        jumpInterval += Time.deltaTime;
+        if (_lastPos == Vector3.zero)
+        {
+            _lastPos = GameManager.Instance.head.position;
+            return;
+        }
+        _curPos = GameManager.Instance.head.position;
+
+        if (jumpInterval > 0.65f)
+        {
+            if (_curPos.y - _lastPos.y > 0.06f || _curPos.y > GameManager.Instance.HeadStartPos.y + 0.005f)
+            {
+                if (GetLeftAngle() < startCurveAngle && GetRightAngle() < startCurveAngle)
+                {
+                    Debug.Log("jump");
+                    mainJump();
+                    _lastPos = Vector3.zero;
+                    jumpInterval = 0;
+                }
+            }
+        }
+    }
+
+    private void mainJump()
+    {
+        var j = GameManager.Instance.PoseHelper.GetComponent<RoleJump>();
+        if (j == null)
+        {
+            j = GameManager.Instance.PoseHelper.gameObject.AddComponent<RoleJump>();
+        }
+        j.Init(GameManager.Instance.Groud.y);
     }
 }

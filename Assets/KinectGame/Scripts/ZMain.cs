@@ -3,22 +3,31 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+
+/// <summary>
+/// Game 入口
+/// </summary>
 public class ZMain : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
     {
+        //初始化网络框架
         MessageManager.Instance.InitializeMessage();
         string ip = "192.168.68.187";
+        // 获取ip 是否存在本地ip
         ip = GetLocalIP(ip);
+        // 连接sever
         MessageManager.Instance.SendConnectServerMsg(ip, "443");
 
 #if UNITY_EDITOR
         GameManager.Instance.Init();
 #else
+        // 当成功加入房间后，初始化Game
         MessageManager.Instance.JoinRoomSuccessEvent += GameManager.Instance.Init;
 #endif
 
+        // 初始化私有协程
         ZCoroutiner.SetCoroutiner(this);
     }
 
@@ -36,6 +45,7 @@ public class ZMain : MonoBehaviour
     }
 
 
+    // 获取本地ip
     public static string GetLocalIP(string ip)
     {
         string path;

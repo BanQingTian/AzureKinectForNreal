@@ -6,12 +6,12 @@ public class RoleJump : MonoBehaviour
 {
     float defalutY = 0;
     float emulatorG = -9.8f;
-    float emulatorY = 3;
+    float emulatorY = 3f;
     float upward;
     bool jump = true;
-    public void Init()
+    public void Init(float y)
     {
-        defalutY = transform.position.y;
+        defalutY =y;
         upward = emulatorY;
         jump = true;
     }

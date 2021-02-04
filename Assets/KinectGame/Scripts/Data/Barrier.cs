@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class Barrier : MonoBehaviour
 {
+    /// <summary>
+    /// 该障碍物是否被抓住
+    /// </summary>
     public bool isHold = false;
-
-    [Header("Is Aottaman")]
-    public bool isAottaman = false;
-
-    public Vector3 DefalutScale;
 
     //public int Index;
     // 障碍物类型
@@ -18,13 +16,9 @@ public class Barrier : MonoBehaviour
     public BarrierModelEnum BarrierModel;
     // 障碍物特效
     public SpecialEffectEnum SpecialEff;
-
+    // 音频类型
     public SoundEffEnum SoundEff;
 
-    private void OnEnable()
-    {
-        DefalutScale = transform.lossyScale;
-    }
 
     /// <summary>
     /// 播放特效，音频等资源
@@ -63,11 +57,13 @@ public class Barrier : MonoBehaviour
         Debug.Log("Play Eff");
         var eff = GameResConfig.Instance.GetSpecialEff(SpecialEff);
         eff.transform.position = gameObject.transform.position;
+        if(SpecialEff == SpecialEffectEnum.Coin)
+        {
+            eff.transform.position += Vector3.up * 0.061f;
+        }
         eff.transform.rotation = Quaternion.identity;
         eff.GetComponent<ParticleSystem>().Play();
 
-
-        //GameResConfig.Instance.GetAudioEff(SoundEff);
     }
 
 

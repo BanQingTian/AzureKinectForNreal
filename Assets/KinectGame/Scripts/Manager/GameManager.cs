@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     public ZPoseHelper PoseHelper;
     private Vector3 PoseHelperDefaultPose;
 
+    [HideInInspector] public Transform head;
 
     public AudioSource BGSound;
 
@@ -45,11 +46,16 @@ public class GameManager : MonoBehaviour
     public GameObject BarrierAS;
 
     /// <summary>
-    /// No.1 action
+    /// blackgirl action trigger
     /// </summary>
     public GameObject Action1;
+    /// <summary>
+    /// aottman action trigger
+    /// </summary>
     public GameObject Action2;
+    // 触碰点A1
     public bool A1Hover = false;
+    // 触碰点A2
     public bool A2Hover = false;
 
     /// <summary>
@@ -59,7 +65,7 @@ public class GameManager : MonoBehaviour
     public Animator GameAnim;
 
     /// <summary>
-    /// tmp 资源过大，不做加载
+    /// tmp 资源过大，不做动态加载
     /// </summary>
     public GameObject ChooseMenu;
     public GameObject AottmanRole;
@@ -76,12 +82,19 @@ public class GameManager : MonoBehaviour
     public GameObject Blackgirl_vfx;
     public GameObject Aottman_vfx;
 
+    // 对应角色的边框父节点
     public Transform WallParent;
+    // blackgirl角色的边框
     public GameObject BlackgirlWall;
+    // blackgiRL角色的边框特效
     public GameObject BlackgirlWallEff;
+    //
     public GameObject AottmanWall;
+    //
     public GameObject AottmanWallEff;
 
+    [HideInInspector] public Vector3 Groud;
+    [HideInInspector] public Vector3 HeadStartPos;
 
     //public ZBarrierManager BarrierMananger;
 
@@ -92,12 +105,14 @@ public class GameManager : MonoBehaviour
     // 是否加入游戏
     public static bool Join = false;
 
+    // 初始化完成
     public bool InitFinish = false;
 
     private void Awake()
     {
         Instance = this;
         //CurRole = PoseHelper.transform.GetChild(0).gameObject;
+       
     }
 
     private void Update()
@@ -105,25 +120,31 @@ public class GameManager : MonoBehaviour
         if (InitFinish)
             CurGameBehaviour.ZUpdate();
 
+        if (CurGameMode == GameMode.Prepare)
+        {
+
+
 #if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            ChangeGameMode(CurGameMode + 1);
-        }
-        if (Input.GetKeyDown(KeyCode.G) && Join)
-        {
-            ChangePlayerRole(CurPlayerRoleModel + 1);
-        }
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                ChangeGameMode(CurGameMode + 1);
+            }
+            if (Input.GetKeyDown(KeyCode.G) && Join)
+            {
+                ChangePlayerRole(CurPlayerRoleModel + 1);
+            }
 #else
-        if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
-        {
-            ChangeGameMode(GameMode.Drum);
-        }
-        if (NRInput.GetButtonDown(ControllerButton.APP) && Join)
-        {
-            ChangePlayerRole(CurPlayerRoleModel + 1);
-        }
+            //if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
+            //{
+            //    ChangeGameMode(GameMode.Drum);
+            //}
+            //if (NRInput.GetButtonDown(ControllerButton.APP) && Join)
+            //{
+            //    ChangePlayerRole(CurPlayerRoleModel + 1);
+            //}
 #endif
+
+        }
 
         UpdateActionTrigger();
 
@@ -159,13 +180,17 @@ public class GameManager : MonoBehaviour
 
     public void InitTables()
     {
+        // 网络消息注册
         S2CFuncTable.Add(S2CFuncName.PoseData, S2C_UpdataPose);
         S2CFuncTable.Add(S2CFuncName.ChangeRole, S2C_UpdatePlayerRole);
 
+        // 角色表注册
         RoleTables.Add(CurPlayerRoleModel, CurRole.gameObject);
     }
 
-
+    /// <summary>
+    /// 主要玩法processing 
+    /// </summary>
     public void LoadGameBehaviour()
     {
         ZGameBehaviour gb;
@@ -195,6 +220,10 @@ public class GameManager : MonoBehaviour
         CurGameBehaviour.ZStart();
     }
 
+
+    /// <summary>
+    /// 方向初始化，保证在眼镜中的模型初始化朝向是正方向（起因 : kinect可能从斜前方检测身体
+    /// </summary>
     Vector3 modelForward; // 模型正方向
     Vector3 cameraForward; // 启动正方向
     bool resetOnce = false;
@@ -224,10 +253,20 @@ public class GameManager : MonoBehaviour
         PoseHelper.transform.parent.rotation = Quaternion.Euler(v3.x, v3.y + angle, v3.z);
 
         BGSound.Play();
+
+
+        head = Camera.main.transform;
+        Groud = PoseHelper.transform.position;
+        HeadStartPos = head.position;
+
+
         ResetFaceToFace(true);
 
     }
 
+    /// <summary>
+    /// 玩家角色朝向，face=ture 面朝camera， false背对camera
+    /// </summary>
     bool once = false;
     public void ResetFaceToFace(bool face = true)
     {
@@ -502,6 +541,9 @@ public class GameManager : MonoBehaviour
     #region S2C
 
     bool isWaitingToChangeRole = false;
+    /// <summary>
+    /// 接受server转发的消息，更新玩家角色
+    /// </summary>
     private void S2C_UpdatePlayerRole(string param)
     {
         PlayerRoleModel role = (PlayerRoleModel)int.Parse(param);
@@ -587,6 +629,9 @@ public class GameManager : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 接受server转发的消息，更新位置信息
+    /// </summary>
     bool updateChangeOnce = true;
     private void S2C_UpdataPose(string param)
     {

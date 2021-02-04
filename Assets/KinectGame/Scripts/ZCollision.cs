@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// 主要碰撞逻辑检测
+/// </summary>
 public class ZCollision : MonoBehaviour
 {
     protected bool ddd = true;
@@ -17,37 +21,13 @@ public class ZCollision : MonoBehaviour
         CollisionType = ct;
     }
 
-    //public void OnCollisionEnter(Collision collision)
-    //{
-    //    switch (GameManager.Instance.CurGameMode)
-    //    {
-    //        case GameMode.Football:
-
-    //            if (!collision.collider.name.Contains("football")) return;
-
-    //            float power = (_curPos - _lastPos).magnitude * 4222;
-    //            //Vector3 dir = ((collision.transform.position - collision.contacts[0].point) - (_curPos - _lastPos)).normalized;
-
-    //            Vector3 dir = (collision.transform.position - collision.contacts[0].point).normalized;
-
-    //            dir = new Vector3(dir.x * 0.5f, 0.2f, Mathf.Abs(dir.z));
-
-    //            collision.rigidbody.AddForce(dir * power);
-
-    //            Debug.DrawRay(collision.contacts[0].point, dir * power * 0.004f, Color.yellow, 6);
-
-    //            StartCoroutine(ResetFootballPos(collision.transform.GetComponent<Football>()));
-
-    //            break;
-    //        case GameMode.Drum:
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //}
-
-
     private void FixedUpdate()
+    {
+        ThrowBarrier();  
+    }
+
+    // 扔手上的障碍物
+    private void ThrowBarrier()
     {
         // update data
         _lastPos = _curPos;
@@ -84,16 +64,16 @@ public class ZCollision : MonoBehaviour
             case GameMode.Prepare:
                 if (CollisionType == CollisionTypeEnum.Hand)
                 {
+                    // 切换角色
                     if ((curRole = other.GetComponent<ZRole>()) != null) // model1
                     {
-                        Debug.Log("11111");
                         if (changeRoleWaitingTime < 1.5f)
                             return;
-                        Debug.Log("22222");
 
                         changeRoleWaitingTime = 0;
                         GameManager.Instance.ChangePlayerRole(curRole.roleModel);
                     }
+                    // 切换声音 ---- Invalid
                     else if ((mainsound = other.GetComponent<ZSound>()) != null)
                     {
                         if (changeBGSoundWaitingTime < 1.5f)
@@ -108,9 +88,6 @@ public class ZCollision : MonoBehaviour
 
                 break;
 
-            //case GameMode.Football:
-
-            //    break;
             case GameMode.Drum:
 
                 barrierDetection(other);
@@ -121,6 +98,11 @@ public class ZCollision : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 障碍物碰撞检测
+    /// </summary>
+    bool Pickuped = false;
+    GameObject curFollower = null;
     private void barrierDetection(Collider other)
     {
         var barrier = other.GetComponent<Barrier>();
@@ -197,11 +179,6 @@ public class ZCollision : MonoBehaviour
     }
 
 
-
-
-    bool Pickuped = false;
-    GameObject curFollower = null;
-
     public void OnTriggerExit(Collider other)
     {
         switch (GameManager.Instance.CurGameMode)
@@ -219,7 +196,9 @@ public class ZCollision : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// 角色切换Trigger Enter
+    /// </summary>
     private void ActionTriggerEnter(Collider other)
     {
         switch (CollisionType)
@@ -244,6 +223,9 @@ public class ZCollision : MonoBehaviour
                 break;
         }
     }
+    /// <summary>
+    /// 角色切换Trigger Exit
+    /// </summary>
     private void ActionTriggerExit(Collider other)
     {
         switch (CollisionType)
@@ -269,20 +251,9 @@ public class ZCollision : MonoBehaviour
         }
     }
 
-
-    bool isDoing = false;
-    private IEnumerator ResetFootballPos(Football fb)
-    {
-        if (isDoing) yield break;
-        isDoing = true;
-        yield return new WaitForSeconds(6);
-        isDoing = false;
-        fb.transform.position = fb.defaultPos;
-        fb.Rig.isKinematic = true;
-        fb.Rig.isKinematic = false;
-        fb.Rig.AddForce(new Vector3(1, 1, -0.5f));
-    }
-
+    /// <summary>
+    /// 重置扔东西逻辑的判断节点
+    /// </summary>
     bool follow = false;
     private void ResetDelayFollow()
     {
@@ -293,6 +264,9 @@ public class ZCollision : MonoBehaviour
         DelayGO.transform.position = transform.position;
         follow = true;
     }
+    /// <summary>
+    /// 扔东西判断节点位置更新
+    /// </summary>
     private void delayFollow()
     {
         DelayGO.transform.position = Vector3.MoveTowards(DelayGO.transform.position, transform.position, 0.18f * Time.deltaTime);

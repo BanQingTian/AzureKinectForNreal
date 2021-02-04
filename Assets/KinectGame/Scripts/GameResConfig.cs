@@ -26,6 +26,9 @@ public class GameResConfig : MonoBehaviour
         Instance = this;
     }
 
+    /// <summary>
+    /// 获取特效预制体
+    /// </summary>
     public GameObject GetSpecialEff(SpecialEffectEnum se, bool destroySelf = true, float destroyTime = 2f)
     {
         GameObject go = PoolManager.Instance.Get(SpecialEffList[(int)se]);
@@ -42,6 +45,9 @@ public class GameResConfig : MonoBehaviour
         PoolManager.Instance.Release(g);
     }
 
+    /// <summary>
+    /// 获取音频预制体
+    /// </summary>
     public AudioClip GetAudioEff(SoundEffEnum se)
     {
         return AudioClipList[(int)se];
