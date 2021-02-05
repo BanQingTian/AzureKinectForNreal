@@ -4,15 +4,18 @@ using UnityEngine;
 
 public struct BarrierData
 {
-    public BarrierPose[] bp;
-    public float startZ;
+    public BarrierInfo[] bp;
+    // 总体的移动速度
     public float moveSpeed;
-    public float intervalTime;
+    // 一次的加载数量
+    public int intervalCount;
+    // 加载条件
+    public int needLoadCount;
 
-    public struct BarrierPose
+    public struct BarrierInfo
     {
         public int barrierType;
-        public Vector2 barrierPos;
+        public Vector3 barrierPos;
     }
 }
 
@@ -23,29 +26,47 @@ public class ZBarrierManager : MonoBehaviour
     /// 障碍物模型预制体
     /// </summary>
     public List<Barrier> BarriersPrefab = new List<Barrier>();
+
     /// <summary>
     /// 障碍物模型预制体字典
     /// </summary>
     public Dictionary<BarrierTypeEnum, Barrier> BarriersPrefabDic = new Dictionary<BarrierTypeEnum, Barrier>();
+
+    /// <summary>
+    /// 当前存在的总数
+    /// </summary>
+    public static int CurTotalCount;
+
     /// <summary>
     /// 配表数据类
     /// </summary>
     public BarrierData mBarrierData;
-    /// <summary>
-    /// 障碍物起始z点
-    /// </summary>
-    public float StartZ;
+    public BarrierData.BarrierInfo[] mBarrierInfo;
+
+    public Transform BarrierParents;
+
     /// <summary>
     /// 移动速度
     /// </summary>
-    public float MoveSpeed;
-    /// <summary>
-    /// 生成的间隔时间
-    /// </summary>
-    public float IntervalTime;
+    private float MoveSpeed;
 
+    /// <summary>
+    /// 一次最多生成的数量
+    /// </summary>
+    private int IntervalCount;
+
+    /// <summary>
+    /// 低于这个数量是加载新的障碍物
+    /// </summary>
+    private int NeedLoadCount;
+
+    /// <summary>
+    /// 加载手机中的配置表
+    /// </summary>
+    /// <returns></returns>
     public string GetBarrierConfig()
     {
+        // 从文件中加载数据
         string data = "";
         return data;
     }
@@ -54,9 +75,10 @@ public class ZBarrierManager : MonoBehaviour
     private void UpdateBarrierData()
     {
         mBarrierData = JsonUtility.FromJson<BarrierData>(GetBarrierConfig());
-        StartZ = mBarrierData.startZ;
+        mBarrierInfo = mBarrierData.bp;
         MoveSpeed = mBarrierData.moveSpeed;
-        IntervalTime = mBarrierData.intervalTime;
+        IntervalCount = mBarrierData.intervalCount;
+        NeedLoadCount = mBarrierData.needLoadCount;
     }
 
     /// <summary>
@@ -76,32 +98,62 @@ public class ZBarrierManager : MonoBehaviour
     /// </summary>
     public void BarrierCreator()
     {
-        for (int i = 0; i < mBarrierData.bp.Length; i++)
-        {
-
-        }   
+        StartCoroutine(CheckBarrierCount());
     }
 
-    private IEnumerator BarrierCreatorCor()
+    bool pause = false;
+    bool stop = false;
+    int curIndex = 0;
+    private IEnumerator CheckBarrierCount()
     {
-        int curIndex =0;
         while (true)
         {
+            if (stop)
+            {
+                yield break;
+            }
+            if (CurTotalCount < NeedLoadCount)
+            {
+                
+                loadBarrier(curIndex, IntervalCount);
+            }
 
-
-
-            yield return new WaitForSeconds(IntervalTime);
             yield return null;
         }
     }
 
+    private void loadBarrier(int startIndex, int count)
+    {
+        if (startIndex >= mBarrierInfo.Length)
+        {
+            startIndex = 0;
+        }
+
+        count += startIndex + count;
+
+        for (int i = startIndex; i < count; i++)
+        {
+            if(startIndex >= mBarrierInfo.Length)
+            {
+                startIndex = 0;
+                break;
+            }
+
+            GetNewBarrier(mBarrierInfo[i].barrierType, mBarrierInfo[i].barrierPos);
+
+            startIndex++;
+            CurTotalCount++;
+        }
+    }
+
     // 获取障碍物
-    private Barrier GetNewBarrier(int barrierType, Vector2 pos)
+    private Barrier GetNewBarrier(int barrierType, Vector3 pos)
     {
         Barrier b = GameObject.Instantiate<Barrier>(BarriersPrefabDic[(BarrierTypeEnum)barrierType]);
-        b.transform.localPosition = new Vector3(pos.x, pos.y, mBarrierData.startZ);
+        b.transform.localPosition = new Vector3(pos.x, pos.y, pos.z);
+
         return b;
     }
 
-   
+
 }
