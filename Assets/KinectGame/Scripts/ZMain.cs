@@ -2,19 +2,35 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-
+using LitJson;
 
 /// <summary>
 /// Game 入口
 /// </summary>
 public class ZMain : MonoBehaviour
 {
+    private string ip = "";
+    public static string configData = "";
+    private class JsonData
+    {
+        public JsonData(string x_data, string y_data, string z_data)
+        {
+            x = x_data;
+            y = y_data;
+            z = z_data;
+        }
+
+        public string x;
+        public string y;
+        public string z;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         //初始化网络框架
         MessageManager.Instance.InitializeMessage();
-        string ip = "192.168.68.187";
+        ip = "192.168.71.225";
         // 获取ip 是否存在本地ip
         ip = GetLocalIP(ip);
         // 连接sever
@@ -59,6 +75,26 @@ public class ZMain : MonoBehaviour
         {
             return File.ReadAllText(path);
         }
+        Debug.Log("ip ============ " + ip);
         return ip;
+    }
+
+    // 获取本地配置
+    public static string GetLocalConfig()
+    {
+        string path;
+#if UNITY_EDITOR
+        path = Directory.GetParent(Application.dataPath).FullName + "/Config.txt";
+#elif UNITY_ANDROID
+        path = Application.persistentDataPath + "/Config.txt";
+#endif
+        if (File.Exists(path))
+        {
+            return File.ReadAllText(path);
+        }
+        else
+        {
+            return "";
+        }
     }
 }

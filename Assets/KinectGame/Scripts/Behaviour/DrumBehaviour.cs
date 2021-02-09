@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using LitJson;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class DrumBehaviour : ZGameBehaviour
@@ -20,8 +22,8 @@ public class DrumBehaviour : ZGameBehaviour
     private const float _humanXMoveLimit = 0.7f; //滑板移动上限
     private const float BarrierMoveSpeed = 1; // 障碍物移动速度
     private const float stopSpeed = 1f; // 障碍物停止的速度
-    private const float frontMoveSpeed = 1.1f; //先前倾斜的速度
-    private const float backMoveSpeed = 1.1f; // 向后倾斜的速度
+    private float frontMoveSpeed = 2f; //先前倾斜的速度
+    private float backMoveSpeed = -2f; // 向后倾斜的速度
 
     private const float head_hip_ratio = 0.7f; // 头和躯干造成移动的权重
 
@@ -55,6 +57,8 @@ public class DrumBehaviour : ZGameBehaviour
     // 滑板的控制节点，position and rotation;
     public GameObject StakeboardPos;
     public GameObject StakeboardRot;
+
+    private string configData = "";
 
     /// <summary>
     /// 逻辑框架执行的起始
@@ -118,6 +122,29 @@ public class DrumBehaviour : ZGameBehaviour
                 break;
         }
 
+        //configData = ZMain.configData;
+        //Debug.LogError("configData ===================== " + configData);
+        //if (configData != "")
+        //{
+        //    JsonData jsonData = JsonMapper.ToObject<JsonData>(configData);
+        //    jsonData.frontSpeed = jsonData.frontSpeed.Trim();
+        //    jsonData.backSpeed = jsonData.backSpeed.Trim();
+        //    if (jsonData.frontSpeed != "")
+        //    {
+        //        frontMoveSpeed = float.Parse(jsonData.frontSpeed);
+        //    }
+
+        //    if (jsonData.backSpeed != "")
+        //    {
+        //        backMoveSpeed = float.Parse(jsonData.backSpeed);
+        //    }
+        //}
+    }
+
+    public class JsonData
+    {
+        public string frontSpeed;
+        public string backSpeed;
     }
 
     /// <summary>
@@ -189,7 +216,6 @@ public class DrumBehaviour : ZGameBehaviour
         //else if (v.x < -0.5f)
         //    jumpV -= 0.01f;
         //UIManager.Instance.JumpV.text = jumpV.ToString(); ;
-
     }
 
     /// <summary>
@@ -207,12 +233,13 @@ public class DrumBehaviour : ZGameBehaviour
         }
     }
 
-
     /// <summary>
     /// 滑板左右移动逻辑 
     /// </summary>
     float _headZ = 0; // 头在z轴的偏移量
     float _hipZ = 0;  // 胯，躯干在z轴的偏移量
+    float _hipX = 0;  // 胯，躯干在x轴的偏移量
+    bool isCanMove = false;
     float _humanX = 0; // 滑板移动的位置
     float moved = 0; // 权重计算之后的偏移量
     float moved_head = 0; // 头部的偏移量
@@ -220,7 +247,7 @@ public class DrumBehaviour : ZGameBehaviour
     float leftOrRight_front = 0; // 大于0 left在前 反之
     private void StakeboardMove()
     {
-        leftOrRight_front = FootLeft.transform.position.z - FootLeft.transform.position.z;
+        leftOrRight_front = FootLeft.transform.position.z - FootRight.transform.position.z;
 
         // 头部倾斜计算
         _headZ = Head.transform.rotation.eulerAngles.z;
@@ -229,32 +256,64 @@ public class DrumBehaviour : ZGameBehaviour
         if (_headZ > MoveLimit)
         {
             moved_head = (_headZ - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-            moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
+            //moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
         }
         else if (_headZ < -MoveLimit)
         {
             moved_head = (_headZ + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-            moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
+            //moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
         }
-        moved_head *= Mathf.Clamp(1 + Mathf.Abs(_headZ) - MoveLimit, 1, 1.2f);
+        moved_head *= Mathf.Clamp(1 + Mathf.Abs(_headZ) - MoveLimit, 1, 1.2f) * 0.1f;
 
 
         // 身体倾斜计算
-        _hipZ = Hip.transform.rotation.eulerAngles.z;
-        _hipZ = _hipZ > 300 ? _hipZ - 360 : _hipZ;
-        moved_hip = 0;
-        if (_hipZ > MoveLimit)
-        {
-            moved_hip = (_hipZ - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-            moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
-        }
-        else if (_hipZ < -MoveLimit)
-        {
-            moved_hip = (_hipZ + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-            moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
-        }
-        moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipZ) - MoveLimit, 1, 1.1f);
+        //_hipZ = Hip.transform.rotation.eulerAngles.z;
+        //_hipZ = _hipZ > 300 ? _hipZ - 360 : _hipZ;
+        //moved_hip = 0;
+        //if (_hipZ > MoveLimit)
+        //{
+        //    moved_hip = (_hipZ - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+        //    moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+        //}
+        //else if (_hipZ < -MoveLimit)
+        //{
+        //    moved_hip = (_hipZ + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+        //    moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+        //}
+        //moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipZ) - MoveLimit, 1, 1.1f);
 
+        //float hipX = Hip.transform.rotation.eulerAngles.x;
+        //hipX = hipX > 300 ? hipX - 360 : hipX;
+        //if (hipX >= 20f || hipX <= -8f)
+        //{
+        //    moved_hip = 0f;
+        //}
+
+        if (!isCanMove)
+        {
+            return;
+        }
+
+        // 身体倾斜计算
+        _hipX = Hip.transform.rotation.eulerAngles.x;
+        _hipX = _hipX > 300 ? _hipX - 360 : _hipX;
+        moved_hip = 0;
+        if (_hipX > MoveLimit)
+        {
+            moved_hip = (_hipX - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+        }
+        else if (_hipX < -MoveLimit)
+        {
+            moved_hip = (_hipX + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+        }
+        moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipX) - MoveLimit, 1, 1.1f);
+
+        if (_hipX <= -1f)
+        {
+            moved_hip *= 1.5f;
+        }
 
         // 综合权重
         moved = moved_head * head_hip_ratio + moved_hip * (1 - head_hip_ratio);
@@ -295,16 +354,19 @@ public class DrumBehaviour : ZGameBehaviour
     private void StopMove()
     {
         ea = (Mathf.Abs(StakeboardRot.transform.localRotation.eulerAngles.y) + 90) % 180;
-        if (ea < 20 || ea > 160)
+        if (ea < 40 || ea > 140)
         {
+            isCanMove = false;
             if (!beginStopMove)
             {
                 cor = ZCoroutiner.StartCoroutine(stopMoveCor());
                 beginStopMove = true;
+                // 金币暂停单独写
             }
         }
         else
         {
+            isCanMove = true;
             if (beginStopMove)
             {
                 ZCoroutiner.StopCoroutine(cor);
@@ -335,6 +397,7 @@ public class DrumBehaviour : ZGameBehaviour
     /// </summary>
     private void GetKneeAngle()
     {
+        // 金币加速
         if (beginStopMove) return;
 
         if (TempAnim.speed < curAnimSpeed)

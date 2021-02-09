@@ -123,7 +123,6 @@ public class GameManager : MonoBehaviour
         if (CurGameMode == GameMode.Prepare)
         {
 
-
 #if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.F))
             {
@@ -256,6 +255,7 @@ public class GameManager : MonoBehaviour
 
 
         head = Camera.main.transform;
+        Debug.LogError("Camera.main.transform ======= " + Camera.main.transform);
         Groud = PoseHelper.transform.position;
         HeadStartPos = head.position;
 
@@ -452,17 +452,25 @@ public class GameManager : MonoBehaviour
     float actionTriggerTime = 0;
     public void UpdateActionTrigger()
     {
+        if (NRInput.GetButtonDown(ControllerButton.TRIGGER) || NRInput.GetButtonDown(ControllerButton.TOUCHPAD_BUTTON))
+        {
+            ChangeGameMode(GameMode.Drum);
+            A1Hover = false;
+            A2Hover = false;
+            actionTriggerTime = 0;
+        }
+
         if (A1Hover && A2Hover)
         {
-            actionTriggerTime += Time.fixedDeltaTime;
-            if (actionTriggerTime >= ZConstant.HoldTime)
-            {
+            //actionTriggerTime += Time.fixedDeltaTime;
+            //if (actionTriggerTime >= ZConstant.HoldTime)
+            //{
                 ChangeGameMode(GameMode.Drum);
 
                 A1Hover = false;
                 A2Hover = false;
                 actionTriggerTime = 0;
-            }
+            //}
         }
         else
         {

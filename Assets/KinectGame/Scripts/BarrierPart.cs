@@ -72,7 +72,7 @@ public class BarrierPart : MonoBehaviour
 
     public void Inverse()
     {
-        GetComponent<Animator>().speed += 1f;
+        GetComponent<Animator>().speed += 10f;
 
         Part1.transform.localScale = new Vector3(-1, 1, 1);
         Part2.transform.localScale = new Vector3(-1, 1, 1);

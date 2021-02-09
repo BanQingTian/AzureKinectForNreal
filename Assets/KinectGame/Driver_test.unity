@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.45142627, g: 0.5008169, b: 0.57177824, a: 1}
+  m_IndirectSpecularColor: {r: 0.4514262, g: 0.5008168, b: 0.57177836, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -993,8 +993,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -1098,32 +1096,32 @@ PrefabInstance:
     - target: {fileID: 1481807866196312082, guid: e71c1e50c38c5724baf655b268d58c56,
         type: 3}
       propertyPath: m_text
-      value: Yue He
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1481807866196312082, guid: e71c1e50c38c5724baf655b268d58c56,
         type: 3}
       propertyPath: m_textInfo.lineCount
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1481807866196312082, guid: e71c1e50c38c5724baf655b268d58c56,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1481807866196312082, guid: e71c1e50c38c5724baf655b268d58c56,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1481807866196312082, guid: e71c1e50c38c5724baf655b268d58c56,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1481807866196312082, guid: e71c1e50c38c5724baf655b268d58c56,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1481807866196312092, guid: e71c1e50c38c5724baf655b268d58c56,
         type: 3}
@@ -1572,8 +1570,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -1763,8 +1759,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -2112,8 +2106,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -2243,8 +2235,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -2553,8 +2543,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -8542,8 +8530,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -13620,8 +13606,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -13758,12 +13742,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7227587909555377789, guid: 3cd3982b65e7ca84a81516a0180902bf,
     type: 3}
   m_PrefabInstance: {fileID: 606725017}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &624444044 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8002777455585311555, guid: 4558c573ef67141749585e928e5f942e,
-    type: 3}
-  m_PrefabInstance: {fileID: 7713744471849314069}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &628894180 stripped
 Transform:
@@ -13990,8 +13968,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -14055,8 +14031,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -14126,8 +14100,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -14488,8 +14460,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -14700,8 +14670,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -14765,8 +14733,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -15330,8 +15296,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -15502,8 +15466,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -15903,7 +15865,8 @@ MonoBehaviour:
   Blackgirl_vfx: {fileID: 832280540}
   Aottman_vfx: {fileID: 2145605956}
   WallParent: {fileID: 2407232801285890592}
-  BlackgirlWall: {fileID: 624444044}
+  BlackgirlWall: {fileID: 8002777455585311555, guid: 4558c573ef67141749585e928e5f942e,
+    type: 3}
   BlackgirlWallEff: {fileID: 1205648346}
   AottmanWall: {fileID: 345686581}
   AottmanWallEff: {fileID: 831552280}
@@ -16070,8 +16033,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -16135,8 +16096,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -25962,6 +25921,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103128, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.89270926
+      objectReference: {fileID: 0}
+    - target: {fileID: 8486305250231103128, guid: 71b730349cb76b0479cdab794d0bdacd,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0.44931158
       objectReference: {fileID: 0}
@@ -25973,7 +25937,7 @@ PrefabInstance:
     - target: {fileID: 8486305250231103128, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.011663468
+      value: -0.011663466
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103130, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
@@ -26003,17 +25967,17 @@ PrefabInstance:
     - target: {fileID: 8486305250231103132, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -5.148602e-14
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103132, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.0000013934977
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103132, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000043630065
+      value: -0.000043904813
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103132, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
@@ -26062,18 +26026,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103150, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9996084
+      objectReference: {fileID: 0}
+    - target: {fileID: 8486305250231103150, guid: 71b730349cb76b0479cdab794d0bdacd,
+        type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.018387076
+      value: -0.018387074
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103150, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.0007064106
+      value: -0.00070641056
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103150, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.021083614
+      value: 0.021083612
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103184, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
@@ -26197,6 +26166,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103202, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9997451
+      objectReference: {fileID: 0}
+    - target: {fileID: 8486305250231103202, guid: 71b730349cb76b0479cdab794d0bdacd,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.008013182
+      objectReference: {fileID: 0}
+    - target: {fileID: 8486305250231103202, guid: 71b730349cb76b0479cdab794d0bdacd,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.00058358564
+      objectReference: {fileID: 0}
+    - target: {fileID: 8486305250231103202, guid: 71b730349cb76b0479cdab794d0bdacd,
+        type: 3}
       propertyPath: m_LocalRotation.z
       value: -0.021100791
       objectReference: {fileID: 0}
@@ -26208,7 +26192,7 @@ PrefabInstance:
     - target: {fileID: 8486305250231103210, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.000028693234
+      value: 0.000028693232
       objectReference: {fileID: 0}
     - target: {fileID: 8486305250231103210, guid: 71b730349cb76b0479cdab794d0bdacd,
         type: 3}
@@ -26904,8 +26888,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -27096,8 +27078,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -27389,8 +27369,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -27505,8 +27483,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -27776,8 +27752,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -27847,8 +27821,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -28210,8 +28182,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -28428,8 +28398,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -28493,8 +28461,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -28558,8 +28524,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -28623,8 +28587,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -34191,8 +34153,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -34407,8 +34367,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -34592,8 +34550,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -34822,8 +34778,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -34887,8 +34841,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -35066,8 +35018,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -35267,8 +35217,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -40389,8 +40337,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -40682,8 +40628,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -40790,8 +40734,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -41000,8 +40942,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -41104,8 +41044,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -41469,8 +41407,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -46445,8 +46381,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -46624,8 +46558,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -56360,8 +56292,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 0
   BarrierModel: 0
   SpecialEff: 0
@@ -56611,8 +56541,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -56676,8 +56604,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -61753,8 +61679,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -61818,8 +61742,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -62068,8 +61990,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -62605,8 +62525,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -67448,8 +67366,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -67513,8 +67429,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -67699,8 +67613,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -67827,8 +67739,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -78726,8 +78636,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -93094,8 +93002,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -107484,8 +107390,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -112327,8 +112231,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -112438,8 +112340,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -117266,8 +117166,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -144163,8 +144061,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -144283,8 +144179,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -147401,8 +147295,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -147525,8 +147417,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
@@ -147605,8 +147495,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isHold: 0
-  isAottaman: 0
-  DefalutScale: {x: 0, y: 0, z: 0}
   BarrierType: 1
   BarrierModel: 4
   SpecialEff: 0
