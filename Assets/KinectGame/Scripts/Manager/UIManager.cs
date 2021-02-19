@@ -37,10 +37,16 @@ public class UIManager : MonoBehaviour
 
     public void UpdateScore(int score)
     {
-        if (!run) return;
+        //if (!run) return;
 
         ScoreLabel.gameObject.SetActive(true);
-        ScoreLabel.text = score.ToString();
+        //ScoreLabel.text = score.ToString();
+    }
+
+    public void UpdateScore()
+    {
+        int temp = int.Parse(ScoreLabel.text);
+        ScoreLabel.text = (temp + 1).ToString();
     }
 
     bool run = false;
@@ -54,14 +60,54 @@ public class UIManager : MonoBehaviour
         CountdownLabel.gameObject.SetActive(true);
     }
 
+    string s = "00";
+    string m = "00";
     private void UpdateCountdown()
     {
-        CountdownLabel.text = time.ToString("00.00");
+        if (time >= 60f)
+        {
+            s = (time / 60f).ToString();
+            if (s.Contains("."))
+            {
+                string[] temp1 = s.Split('.');
+                s = temp1[0].ToString();
+            }
+
+            if ((time - int.Parse(s) * 60f) > 0)
+            {
+                m = (time - int.Parse(s) * 60f).ToString();
+            }
+        }
+        else
+        {
+            s = "00";
+            m = time.ToString();
+        }
+
+        if (m.Contains("."))
+        {
+            m = m.Split('.')[0];
+        }
+
+        if (int.Parse(s) < 10 && int.Parse(s) != 0)
+        {
+            s = "0" + s;
+        }
+
+        if (int.Parse(m) < 10)
+        {
+            m = "0" + m;
+        }
+
+        CountdownLabel.text = "00" + ":" + s + ":" + m;
         time -= Time.deltaTime;
         if (time <= 0)
         {
-            CountdownLabel.text = "0.00";
+            ScoreLabel.text = "0";
+            CountdownLabel.text = "00:00:00";
             finishEvent?.Invoke();
+            ScoreLabel.gameObject.SetActive(false);
+            CountdownLabel.gameObject.SetActive(false);
             run = false;
         }
     }

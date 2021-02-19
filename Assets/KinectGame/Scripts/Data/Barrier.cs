@@ -8,6 +8,8 @@ public class Barrier : MonoBehaviour
     /// 该障碍物是否被抓住
     /// </summary>
     public bool isHold = false;
+    [HideInInspector]
+    public bool isCanMove = false;
 
     //public int Index;
     // 障碍物类型
@@ -19,6 +21,15 @@ public class Barrier : MonoBehaviour
     // 音频类型
     public SoundEffEnum SoundEff;
 
+    private float speed = 0f;
+    public float speedTemp
+    {
+        get { return speed; }
+        set { speed = value; }
+
+    }
+    public GameObject obj;
+
 
     /// <summary>
     /// 播放特效，音频等资源
@@ -26,6 +37,7 @@ public class Barrier : MonoBehaviour
     public void Play()
     {
         gameObject.SetActive(false);
+        BarrierController.Instance.AddIconList(gameObject);
 
         GameManager.Instance.PlayBarrierAudio(SoundEff, transform.position);
 
@@ -63,7 +75,27 @@ public class Barrier : MonoBehaviour
         }
         eff.transform.rotation = Quaternion.identity;
         eff.GetComponent<ParticleSystem>().Play();
+    }
 
+    public void SetPostion(Vector3 pos)
+    {
+        transform.position = pos;
+        isCanMove = true;
+    }
+
+    private void Update()
+    {
+         transform.position += transform.forward * Time.deltaTime * speedTemp;
+
+        //zOffset += 1f;
+        //float sinValue = Mathf.Sin(zOffset * Mathf.Deg2Rad);
+        //Debug.LogError("sinValue ==== " + sinValue);
+        //transform.position = new Vector3(transform.position.x + sinValue * 0.02f, transform.position.y + sinValue * 0.02f, ddd + zOffset * 0.02f);
+        //GameObject.Instantiate(obj,transform.position,Quaternion.identity);
+        if (transform.position.z <= -2f)
+        {
+            BarrierController.Instance.AddIconList(gameObject);
+        }
     }
 
 

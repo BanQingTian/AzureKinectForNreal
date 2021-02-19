@@ -9,8 +9,53 @@ using LitJson;
 /// </summary>
 public class ZMain : MonoBehaviour
 {
-    private string ip = "";
-    public static string configData = "";
+    public class GameData
+    {
+        public GameConfig gameConfig;
+        public GnerateConfig gnerateConfig;
+    }
+
+    public class GameConfig
+    {
+        public string ip;
+        public string gameTime;
+        public string gatherRatio;
+        //public string moveSpeedMin;
+        public string moveSpeed;
+        public string sceneHight;
+        public string forward;
+        public string backward;
+        public string rate;
+    }
+
+    public class GnerateConfig
+    {
+        public List<GnerateData> gnerateList = new List<GnerateData>();
+    }
+
+    public class GnerateData
+    {
+        public string name;
+        public string count;
+        public string posx;
+        public string posy;
+        public string posz;
+        public string offsetx;
+        public string offsety;
+        public string offsetz;
+        public string time;
+    }
+
+    private string ip = "192.168.1.111";
+    public string gameData = "";
+    public string generateTime = "";
+    public static float gameTime = 0f;
+    public static int gatherRatio = 0;
+    //public static float moveSpeedMin = 0;
+    public static float moveSpeedMax = 0f;
+    public static float forward = 0f;
+    public static float backward = 0f;
+    public static float rate = 0f;
     private class JsonData
     {
         public JsonData(string x_data, string y_data, string z_data)
@@ -30,11 +75,33 @@ public class ZMain : MonoBehaviour
     {
         //初始化网络框架
         MessageManager.Instance.InitializeMessage();
-        ip = "192.168.71.225";
         // 获取ip 是否存在本地ip
-        ip = GetLocalIP(ip);
+        //ip = GetLocalIP(ip);
+        // 获取游戏配置文件
+        gameData = GetLocalConfig("GameConfig");
+        if (gameData != "")
+        {
+            GameData gd = JsonMapper.ToObject<GameData>(gameData);
+            ip = gd.gameConfig.ip;
+            gameTime = float.Parse(gd.gameConfig.gameTime);
+            gatherRatio = int.Parse(gd.gameConfig.gatherRatio);
+            //moveSpeedMin = float.Parse(gd.gameConfig.moveSpeedMin);
+            moveSpeedMax = float.Parse(gd.gameConfig.moveSpeed);
+            forward = float.Parse(gd.gameConfig.forward);
+            backward = float.Parse(gd.gameConfig.backward);
+            rate = float.Parse(gd.gameConfig.rate);
+
+
+            Transform sceneTran = GameManager.Instance.GameScene.transform.Find("Scene");
+            sceneTran.transform.localPosition = new Vector3(sceneTran.transform.localPosition.x, 
+                float.Parse(gd.gameConfig.sceneHight), sceneTran.transform.localPosition.z);
+
+            BarrierController.Instance.InitBarrierData(gd);
+        }
+        
         // 连接sever
         MessageManager.Instance.SendConnectServerMsg(ip, "443");
+        
 
 #if UNITY_EDITOR
         GameManager.Instance.Init();
@@ -80,13 +147,13 @@ public class ZMain : MonoBehaviour
     }
 
     // 获取本地配置
-    public static string GetLocalConfig()
+    public static string GetLocalConfig(string name)
     {
         string path;
 #if UNITY_EDITOR
-        path = Directory.GetParent(Application.dataPath).FullName + "/Config.txt";
+        path = Directory.GetParent(Application.dataPath).FullName + "/" + name + ".json";
 #elif UNITY_ANDROID
-        path = Application.persistentDataPath + "/Config.txt";
+        path = Application.persistentDataPath + "/" + name + ".json";
 #endif
         if (File.Exists(path))
         {

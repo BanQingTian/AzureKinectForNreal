@@ -12,7 +12,7 @@ public class MoveWall : MonoBehaviour
     }
     void FixedUpdate()
     {
-        gameObject.transform.localPosition += -Vector3.forward * GameManager.wallMoveaSpeed * 3 * Time.fixedDeltaTime;
+        gameObject.transform.localPosition += -Vector3.forward * GameManager.wallMoveaSpeed * 10 * Time.fixedDeltaTime;
         if (transform.localPosition.z <= 0)
         {
             PoolManager.Instance.Release(gameObject);

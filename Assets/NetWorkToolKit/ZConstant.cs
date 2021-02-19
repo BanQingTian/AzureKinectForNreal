@@ -28,7 +28,7 @@ public static class ZConstant
     /// <summary>
     /// 保持姿势时间
     /// </summary>
-    public const float HoldTime = 3;
+    public const float HoldTime = 1;
 
 
 

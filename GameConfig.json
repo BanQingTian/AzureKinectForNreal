@@ -1,0 +1,65 @@
+{
+	"gameConfig": {
+		"ip": "192.168.71.225",
+		"gameTime": "60",
+		"gatherRatio": "10",
+		"moveSpeed": "2",
+		"sceneHight": "1",
+		"forward": "0.7",
+		"backward": "0.9",
+		"rate":"0.2"
+	},
+	"gnerateConfig": {
+		"gnerateList": [{
+			"name": "Barrier_icon",
+			"count": "30",
+			"posx":"0",
+			"posy":"-0.3",
+			"posz":"10",
+			"offsetx": "0.01",
+			"offsety": "0",
+			"offsetz": "0.05",
+			"time": "5"
+		}, {
+			"name": "Barrier_icon",
+			"count": "30",
+			"posx":"0",
+			"posy":"-0.3",
+			"posz":"20",
+			"offsetx": "0.01",
+			"offsety": "0",
+			"offsetz": "0.05",
+			"time": "15"
+		}, {
+			"name": "Barrier_icon",
+			"count": "30",
+			"posx":"0",
+			"posy":"-0.3",
+			"posz":"30",
+			"offsetx": "0.01",
+			"offsety": "0",
+			"offsetz": "0.05",
+			"time": "25"
+		},{
+			"name": "Barrier_icon",
+			"count": "30",
+			"posx":"0",
+			"posy":"-0.3",
+			"posz":"10",
+			"offsetx": "0",
+			"offsety": "0.01",
+			"offsetz": "0.05",
+			"time": "35"
+		},{
+			"name": "Barrier_icon",
+			"count": "30",
+			"posx":"0",
+			"posy":"-0.3",
+			"posz":"10",
+			"offsetx": "0",
+			"offsety": "0.01",
+			"offsetz": "0.05",
+			"time": "45"
+		}]
+	}
+}

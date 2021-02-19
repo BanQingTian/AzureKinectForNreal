@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using static BarrierController;
 
 public class DrumBehaviour : ZGameBehaviour
 {
@@ -17,7 +18,7 @@ public class DrumBehaviour : ZGameBehaviour
     private const string StakeboardPosName = "StakeboardPos";
     private const string StakeboardRotName = "StakeboardRot";
 
-    private const float MoveLimit = 2f; // 脖子移动多少触发滑板移动
+    private const float MoveLimit = 1f; // 脖子移动多少触发滑板移动
     private const float stakeboardMoveSpeed = 0.07f; // 滑板移动速度
     private const float _humanXMoveLimit = 0.7f; //滑板移动上限
     private const float BarrierMoveSpeed = 1; // 障碍物移动速度
@@ -25,7 +26,7 @@ public class DrumBehaviour : ZGameBehaviour
     private float frontMoveSpeed = 2f; //先前倾斜的速度
     private float backMoveSpeed = -2f; // 向后倾斜的速度
 
-    private const float head_hip_ratio = 0.7f; // 头和躯干造成移动的权重
+    private float head_hip_ratio = 0.7f; // 头和躯干造成移动的权重
 
     // 人物的默认起始x值，用于人物移动的范围的中心点
     public float _humanXDefaultX;
@@ -59,6 +60,8 @@ public class DrumBehaviour : ZGameBehaviour
     public GameObject StakeboardRot;
 
     private string configData = "";
+
+    public static bool isReset = false;
 
     /// <summary>
     /// 逻辑框架执行的起始
@@ -141,11 +144,7 @@ public class DrumBehaviour : ZGameBehaviour
         //}
     }
 
-    public class JsonData
-    {
-        public string frontSpeed;
-        public string backSpeed;
-    }
+    
 
     /// <summary>
     /// 逻辑框架的显示模块
@@ -178,7 +177,7 @@ public class DrumBehaviour : ZGameBehaviour
     {
         base.ZPlay();
 
-        TempAnim.gameObject.SetActive(true);
+        //TempAnim.gameObject.SetActive(true);
     }
 
 
@@ -245,6 +244,8 @@ public class DrumBehaviour : ZGameBehaviour
     float moved_head = 0; // 头部的偏移量
     float moved_hip = 0; // 胯躯干的偏移量
     float leftOrRight_front = 0; // 大于0 left在前 反之
+
+    private float ratio = 0f;
     private void StakeboardMove()
     {
         leftOrRight_front = FootLeft.transform.position.z - FootRight.transform.position.z;
@@ -294,6 +295,11 @@ public class DrumBehaviour : ZGameBehaviour
             return;
         }
 
+        if (isReset)
+        {
+            return;
+        }
+
         // 身体倾斜计算
         _hipX = Hip.transform.rotation.eulerAngles.x;
         _hipX = _hipX > 300 ? _hipX - 360 : _hipX;
@@ -308,15 +314,32 @@ public class DrumBehaviour : ZGameBehaviour
             moved_hip = (_hipX + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
             moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
         }
-        moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipX) - MoveLimit, 1, 1.1f);
 
-        if (_hipX <= -1f)
+        //moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipX) - MoveLimit, 1, 1.1f);
+
+        //if (_hipX <= -0.01f)
+        //{
+        //    head_hip_ratio = -0.2f;
+        //}
+        //else
+        //{
+        //    head_hip_ratio = 0f;
+        //}
+
+        if (_hipX <= -0.001f)
         {
-            moved_hip *= 1.5f;
+            ratio = ZMain.backward;
+        }
+        else
+        {
+            ratio = ZMain.forward;
         }
 
         // 综合权重
-        moved = moved_head * head_hip_ratio + moved_hip * (1 - head_hip_ratio);
+        //moved = moved_head * head_hip_ratio + moved_hip * (0.7f - head_hip_ratio);
+        //moved =  moved_hip * (0.7f - head_hip_ratio);
+        moved = moved_hip * ratio;
+        moved = moved * (1f - rate);
 
         // 通过移动人父物体移动，后续让滑板跟随人的位置
         _humanX = GameManager.Instance.PoseHelper.transform.position.x - moved;
@@ -361,11 +384,16 @@ public class DrumBehaviour : ZGameBehaviour
             {
                 cor = ZCoroutiner.StartCoroutine(stopMoveCor());
                 beginStopMove = true;
-                // 金币暂停单独写
+                BarrierController.Instance.SetIconMoveType(MoveType.stop);
             }
         }
         else
         {
+            if (GameManager.Instance.CurGameMode == GameMode.Drum)
+            {
+                BarrierController.Instance.StartGenerate();
+            }
+            
             isCanMove = true;
             if (beginStopMove)
             {
@@ -391,7 +419,7 @@ public class DrumBehaviour : ZGameBehaviour
         TempAnim.speed = 0;
     }
 
-
+    float rate = 0f;
     /// <summary>
     /// 弯曲膝盖 加速（目前加速使用Animator.speed控制
     /// </summary>
@@ -405,15 +433,21 @@ public class DrumBehaviour : ZGameBehaviour
             TempAnim.speed += stopSpeed * Time.fixedDeltaTime;
         }
         float angle = GetLeftAngle();
-        float rate = (170 - angle) / 90;
+        rate = (170 - angle) / 90;
+        if ((rate + ZMain.rate) <= 1f)
+        {
+            rate += ZMain.rate;
+        }
+        else
+        {
+            rate = 1f;
+        }
         TempAnim.speed = BarrierMoveSpeed + rate;
 
         GameManager.wallMoveaSpeed = TempAnim.speed;
-        GameManager.wallCreateTime = 1.5f / TempAnim.speed;
+        GameManager.wallCreateTime = 1f;//1.5f / TempAnim.speed;
+        BarrierController.Instance.SetIconMoveType(MoveType.accelerate);
     }
-
-
-
 
     /// <summary>
     /// 跳跃检测  --------- Invalid
