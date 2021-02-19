@@ -357,16 +357,18 @@ public class GameManager : MonoBehaviour
             {
                 //游戏结束
                 StopWall();
-                ResetFaceToFace(true);
-                ResetScene();
-                ChooseMenu.SetActive(true);
-                GameObject go = ChooseMenu.transform.Find("ActionTrigger/Action1").gameObject;
-                go.SetActive(true);
-                CurGameMode = GameMode.Prepare;
-                RoleDatabase.parent.localScale = new Vector3(-1f,1f,1f);
-                PoseHelper.transform.localPosition = new Vector3(0f, 0f, 0f);
-                DrumBehaviour.isReset = true;
+                //ResetFaceToFace(true);
+                //ResetScene();
+                //ChooseMenu.SetActive(true);
+                //GameObject go = ChooseMenu.transform.Find("ActionTrigger/Action1").gameObject;
+                //go.SetActive(true);
+                //CurGameMode = GameMode.Prepare;
+                //RoleDatabase.parent.localScale = new Vector3(-1f,1f,1f);
+                //PoseHelper.transform.localPosition = new Vector3(0f, 0f, 0f);
+                //DrumBehaviour.isReset = true;
+                CurGameMode = GameMode.Over;
                 BarrierController.Instance.TimeOutResetLogic();
+                Invoke("WaitResetGame", 7f);
             });
 
             Aottman_vfx.SetActive(false);
@@ -376,6 +378,19 @@ public class GameManager : MonoBehaviour
             CurGameBehaviour.ZPlay();
             UIManager.Instance.UpdateScore(totalScore);
         }));
+    }
+
+    private void WaitResetGame()
+    {
+        ResetFaceToFace(true);
+        ResetScene();
+        ChooseMenu.SetActive(true);
+        GameObject go = ChooseMenu.transform.Find("ActionTrigger/Action1").gameObject;
+        go.SetActive(true);
+        CurGameMode = GameMode.Prepare;
+        RoleDatabase.parent.localScale = new Vector3(-1f, 1f, 1f);
+        PoseHelper.transform.localPosition = new Vector3(0f, 0f, 0f);
+        DrumBehaviour.isReset = true;
     }
 
     private void ResetScene()

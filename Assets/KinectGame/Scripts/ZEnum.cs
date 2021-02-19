@@ -11,6 +11,7 @@ public enum GameMode
 {
     Prepare,
     Drum,
+    Over
     //Football,
 }
 
