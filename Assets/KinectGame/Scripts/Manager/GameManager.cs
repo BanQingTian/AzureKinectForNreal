@@ -367,8 +367,9 @@ public class GameManager : MonoBehaviour
                 //PoseHelper.transform.localPosition = new Vector3(0f, 0f, 0f);
                 //DrumBehaviour.isReset = true;
                 CurGameMode = GameMode.Over;
+                UIManager.Instance.UpdateOverScore();
                 BarrierController.Instance.TimeOutResetLogic();
-                Invoke("WaitResetGame", 7f);
+                Invoke("WaitResetGame", 10f);
             });
 
             Aottman_vfx.SetActive(false);
@@ -382,6 +383,7 @@ public class GameManager : MonoBehaviour
 
     private void WaitResetGame()
     {
+        UIManager.Instance.CloseOverScore();
         ResetFaceToFace(true);
         ResetScene();
         ChooseMenu.SetActive(true);

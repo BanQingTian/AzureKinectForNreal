@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
 
     public TextMeshPro JumpV;
 
+    public GameObject overScore;
+
     #endregion
 
 
@@ -43,10 +45,12 @@ public class UIManager : MonoBehaviour
         //ScoreLabel.text = score.ToString();
     }
 
+    private int scoreCount = 0;
+
     public void UpdateScore()
     {
-        int temp = int.Parse(ScoreLabel.text);
-        ScoreLabel.text = (temp + 1).ToString();
+        scoreCount = int.Parse(ScoreLabel.text);
+        ScoreLabel.text = (scoreCount + 1).ToString();
     }
 
     bool run = false;
@@ -110,5 +114,42 @@ public class UIManager : MonoBehaviour
             CountdownLabel.gameObject.SetActive(false);
             run = false;
         }
+    }
+
+    int index = 0;
+    List<string> tempList = new List<string>();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="score"></param>
+    public void UpdateOverScore()
+    {
+        tempList.Clear();
+
+        for (int i = 0; i < overScore.transform.childCount; i++)
+        {
+            tempList.Add(overScore.transform.GetChild(i).GetComponent<TextMeshPro>().text);
+        }
+
+        for (int i = 0; i < overScore.transform.childCount; i++)
+        {
+            if (i == 0)
+            {
+                overScore.transform.GetChild(0).GetComponent<TextMeshPro>().text = (scoreCount + 1).ToString();
+            }
+            else
+            {
+                overScore.transform.GetChild(i).GetComponent<TextMeshPro>().text = tempList[i - 1];
+            }
+        }
+
+        overScore.SetActive(true);
+    }
+
+    public void CloseOverScore()
+    {
+        overScore.SetActive(false);
+        scoreCount = 0;
     }
 }
