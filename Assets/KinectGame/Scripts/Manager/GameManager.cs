@@ -157,8 +157,9 @@ public class GameManager : MonoBehaviour
 
         if (CurGameMode == GameMode.Prepare)
         {
-            actionTrigger.eulerAngles = new Vector3(actionTrigger.eulerAngles.x,
-               180f + Hip.transform.eulerAngles.y, actionTrigger.eulerAngles.z);
+            //actionTrigger.localPosition = Vector3.zero;
+            actionTrigger.localEulerAngles = new Vector3(actionTrigger.localEulerAngles.x,
+               -Hip.transform.localEulerAngles.y, actionTrigger.localEulerAngles.z);
         }
 
         UpdateActionTrigger();
