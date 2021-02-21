@@ -136,6 +136,10 @@ public class UIManager : MonoBehaviour
         {
             if (i == 0)
             {
+                if (scoreCount == 0)
+                {
+                    scoreCount = -1;
+                }
                 overScore.transform.GetChild(0).GetComponent<TextMeshPro>().text = (scoreCount + 1).ToString();
             }
             else
@@ -144,12 +148,12 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        overScore.SetActive(true);
+        overScore.transform.parent.gameObject.SetActive(true);
     }
 
     public void CloseOverScore()
     {
-        overScore.SetActive(false);
+        overScore.transform.parent.gameObject.SetActive(false);
         scoreCount = 0;
     }
 }

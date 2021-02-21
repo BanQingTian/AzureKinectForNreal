@@ -109,11 +109,20 @@ public class GameManager : MonoBehaviour
     // 初始化完成
     public bool InitFinish = false;
 
+    private const string HipTagName = "Hip";
+    private GameObject Hip;
+    public Transform actionTrigger;
+
     private void Awake()
     {
         Instance = this;
         //CurRole = PoseHelper.transform.GetChild(0).gameObject;
        
+    }
+
+    private void Start()
+    {
+        Hip = GameObject.FindWithTag(HipTagName);
     }
 
     private void Update()
@@ -144,6 +153,12 @@ public class GameManager : MonoBehaviour
             //}
 #endif
 
+        }
+
+        if (CurGameMode == GameMode.Prepare)
+        {
+            actionTrigger.eulerAngles = new Vector3(actionTrigger.eulerAngles.x,
+               180f + Hip.transform.eulerAngles.y, actionTrigger.eulerAngles.z);
         }
 
         UpdateActionTrigger();
@@ -308,6 +323,11 @@ public class GameManager : MonoBehaviour
     bool guidance = false;
     public void ChangeGameMode(GameMode gm)
     {
+        if (CurPlayerRoleModel == PlayerRoleModel.Aottman)
+        {
+            return;
+        }
+
         if (CurGameBehaviour != null)
         {
             CurGameBehaviour.ZDisplay(false);

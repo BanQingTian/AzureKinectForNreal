@@ -239,6 +239,7 @@ public class BarrierController : MonoBehaviour
                     item.speedTemp = ZMain.moveSpeedMax;
                     if (GameManager.Instance.CurGameMode == GameMode.Drum)
                     {
+                        //GameManager.Instance.isCanMove = true;
                         StartGenerate();
                     }
                 }
@@ -249,6 +250,7 @@ public class BarrierController : MonoBehaviour
                     item.speedTemp = 0f;
                     if (GameManager.Instance.CurGameMode == GameMode.Drum)
                     {
+                        //GameManager.Instance.isCanMove = false;
                         isStart = false;
                     }
                 }

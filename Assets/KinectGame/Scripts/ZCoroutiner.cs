@@ -58,7 +58,7 @@ public class ZCoroutiner : System.Object
     /// </summary>
     public static void StopCoroutine(Coroutine routine)
     {
-        if (coroutiner == null) return;
+        if (coroutiner == null || routine == null) return;
         coroutiner.StopCoroutine(routine);
     }
 
