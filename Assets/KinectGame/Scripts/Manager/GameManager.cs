@@ -94,6 +94,9 @@ public class GameManager : MonoBehaviour
     //
     public GameObject AottmanWallEff;
 
+    [HideInInspector]
+    public bool isCanMove = true;
+
     [HideInInspector] public Vector3 Groud;
     [HideInInspector] public Vector3 HeadStartPos;
 
@@ -109,20 +112,11 @@ public class GameManager : MonoBehaviour
     // 初始化完成
     public bool InitFinish = false;
 
-    private const string HipTagName = "Hip";
-    private GameObject Hip;
-    public Transform actionTrigger;
-
     private void Awake()
     {
         Instance = this;
         //CurRole = PoseHelper.transform.GetChild(0).gameObject;
        
-    }
-
-    private void Start()
-    {
-        Hip = GameObject.FindWithTag(HipTagName);
     }
 
     private void Update()
@@ -155,15 +149,7 @@ public class GameManager : MonoBehaviour
 
         }
 
-        if (CurGameMode == GameMode.Prepare)
-        {
-            //actionTrigger.localPosition = Vector3.zero;
-            actionTrigger.localEulerAngles = new Vector3(actionTrigger.localEulerAngles.x,
-               -Hip.transform.localEulerAngles.y, actionTrigger.localEulerAngles.z);
-        }
-
         UpdateActionTrigger();
-
     }
 
     #region Init
@@ -300,8 +286,6 @@ public class GameManager : MonoBehaviour
             rotaY = angAdd;
         }
 
-
-
         Vector3 v3 = PoseHelper.transform.rotation.eulerAngles;
         PoseHelper.transform.parent.rotation = Quaternion.Euler(v3.x, rotaY, v3.z);
         v3 = PoseHelper.transform.parent.localScale;
@@ -310,15 +294,15 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    public void ResetGame()
-    {
-        wallMoveaSpeed = 1;
-        wallCreateTime = 1;
-        A1Hover = false;
-        A2Hover = false;
-        resetOnce = false;
-        updateChangeOnce = false;
-    }
+    //public void ResetGame()
+    //{
+    //    wallMoveaSpeed = 1;
+    //    wallCreateTime = 1;
+    //    A1Hover = false;
+    //    A2Hover = false;
+    //    resetOnce = false;
+    //    updateChangeOnce = false;
+    //}
 
     #region Game Relevant
     bool guidance = false;
@@ -335,6 +319,7 @@ public class GameManager : MonoBehaviour
             CurGameBehaviour.ZRelease();
             ChooseMenu.SetActive(false);
         }
+
         DrumBehaviour.isReset = false;
         CurGameMode = (int)gm >= System.Enum.GetNames(typeof(GameMode)).Length ? 0 : gm;
 
@@ -367,7 +352,7 @@ public class GameManager : MonoBehaviour
             SyncData = true;
 
             BarrierController.Instance.StartGenerate();
-            BarrierController.Instance.SetIconMoveType(MoveType.normal);
+            BarrierController.Instance.SetIconMoveType(MoveType.accelerate);
 
             // 新手引导
             // todo
@@ -538,7 +523,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public static float wallCreateTime = 0.3f;
+    public static float wallCreateTime = 0.15f;
     public static float wallMoveaSpeed = 1;
     public void CreateWall()
     {
@@ -553,12 +538,14 @@ public class GameManager : MonoBehaviour
         GameObject wall;
         if (CurPlayerRoleModel == PlayerRoleModel.Aottman)
         {
+            wallCreateTime = 1f;
             AottmanWallEff.SetActive(true);
             BlackgirlWallEff.SetActive(false);
             wall = AottmanWall;
         }
         else
         {
+            wallCreateTime = 0.3f;
             AottmanWallEff.SetActive(false);
             BlackgirlWallEff.SetActive(true);
             wall = BlackgirlWall;

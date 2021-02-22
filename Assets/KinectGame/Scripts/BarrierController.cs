@@ -120,8 +120,11 @@ public class BarrierController : MonoBehaviour
             {
                 if (timer >= float.Parse(gnerateListTemp[i].time))
                 {
-                    GatherPoint(GetSinPoint(gnerateListTemp[i].offsetx, gnerateListTemp[i].offsety, gnerateListTemp[i].offsetz,
-                        gnerateListTemp[i].posx, gnerateListTemp[i].posy, gnerateListTemp[i].posz), gnerateListTemp[i]);
+                    tempPos = GetSinPoint(gnerateListTemp[i].offsetx, gnerateListTemp[i].offsety, gnerateListTemp[i].offsetz,
+                        gnerateListTemp[i].posx, gnerateListTemp[i].posy, gnerateListTemp[i].posz);
+                    gNData = gnerateListTemp[i];
+                    tempCor = StartCoroutine("GatherPoint");
+                    break;
                 }
             }
         }
@@ -159,25 +162,31 @@ public class BarrierController : MonoBehaviour
     }
 
     int index = 0;
-    private void GatherPoint(Vector3 pos, GnerateData data)
+
+    Vector3 tempPos = Vector3.zero;
+    GnerateData gNData;
+    Coroutine tempCor;
+    List<Barrier> tempList = new List<Barrier>();
+    private void GatherPoint()
     {
         if (pointList.Count == 0)
         {
-            pointList.Add(pos);
+            tempList.Clear();
+            pointList.Add(tempPos);
         }
 
         index += 1;
         if (index == ZMain.gatherRatio)
         {
-            if (pointList.Count < int.Parse(data.count))
+            if (pointList.Count < int.Parse(gNData.count))
             {
                 index = 0;
-                pointList.Add(pos);
+                pointList.Add(tempPos);
             }
             else
             {
                 isStart = false;
-                List<GameObject> temp = GetIdleElement(data.name,int.Parse(data.count));
+                List<GameObject> temp = GetIdleElement(gNData.name,int.Parse(gNData.count));
                 if (temp.Count < 0)
                 {
                     return;
@@ -207,8 +216,8 @@ public class BarrierController : MonoBehaviour
                     temp[i].SetActive(true);
                     moveList.Add(temp[i].GetComponent<Barrier>());
                 }
-                gnerateListTempOther.Add(data);
-                gnerateListTemp.Remove(data);
+                gnerateListTempOther.Add(gNData);
+                gnerateListTemp.Remove(gNData);
                 ResetGatherPoint();
             }
         }
@@ -239,7 +248,7 @@ public class BarrierController : MonoBehaviour
                     item.speedTemp = ZMain.moveSpeedMax;
                     if (GameManager.Instance.CurGameMode == GameMode.Drum)
                     {
-                        //GameManager.Instance.isCanMove = true;
+                        GameManager.Instance.isCanMove = true;
                         StartGenerate();
                     }
                 }
@@ -250,7 +259,7 @@ public class BarrierController : MonoBehaviour
                     item.speedTemp = 0f;
                     if (GameManager.Instance.CurGameMode == GameMode.Drum)
                     {
-                        //GameManager.Instance.isCanMove = false;
+                        GameManager.Instance.isCanMove = false;
                         isStart = false;
                     }
                 }
@@ -262,13 +271,17 @@ public class BarrierController : MonoBehaviour
 
     private void ResetGatherPoint()
     {
+        StartGenerate();
+        if (tempCor != null)
+        {
+            StopCoroutine(tempCor);
+        }
         zOffset = 0f;
         index = 0;
         fixZ = 0f;
         once = true;
         targetObj.transform.position = Vector3.zero;
         pointList.Clear();
-        StartGenerate();
     }
 
     // 外界调用控制金币重置

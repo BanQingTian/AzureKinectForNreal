@@ -13,6 +13,7 @@ public class DrumBehaviour : ZGameBehaviour
     private const string FootLeftTagName = "LeftFoot";
     private const string FootRightTagName = "RightFoot";
     private const string HipTagName = "Hip";
+    private const string UpHipTagName = "UpHip";
 
     // 角色脚下滑板的pose控制节点
     private const string StakeboardPosName = "StakeboardPos";
@@ -30,6 +31,7 @@ public class DrumBehaviour : ZGameBehaviour
 
     // 人物的默认起始x值，用于人物移动的范围的中心点
     public float _humanXDefaultX;
+    public float _humanXDefaultX1;
 
     // 模型左右手
     public GameObject HandLeft = null;
@@ -51,10 +53,11 @@ public class DrumBehaviour : ZGameBehaviour
 
     // 眼镜节点的缓存，用于跳跃判断
     public GameObject Head; // for judge Move
-    
+
     // 躯干的节点，用于控制人物移动
     public GameObject Hip;
-    
+    private GameObject upHip;
+
     // 滑板的控制节点，position and rotation;
     public GameObject StakeboardPos;
     public GameObject StakeboardRot;
@@ -80,6 +83,7 @@ public class DrumBehaviour : ZGameBehaviour
         Head = GameObject.Find("CenterCamera");
 #endif
         Hip = GameObject.FindWithTag(HipTagName);
+        upHip = GameObject.FindWithTag(UpHipTagName);
         FootLeft = GameObject.FindWithTag(FootLeftTagName);
         FootRight = GameObject.FindWithTag(FootRightTagName);
 
@@ -92,6 +96,7 @@ public class DrumBehaviour : ZGameBehaviour
         b1 = b2.parent;
 
         _humanXDefaultX = GameManager.Instance.PoseHelper.transform.position.x;
+        _humanXDefaultX1 = GameManager.Instance.PoseHelper.transform.position.x;
 
         if (HandLeft == null | HandRight == null)
         {
@@ -144,7 +149,7 @@ public class DrumBehaviour : ZGameBehaviour
         //}
     }
 
-    
+
 
     /// <summary>
     /// 逻辑框架的显示模块
@@ -172,7 +177,7 @@ public class DrumBehaviour : ZGameBehaviour
         //HandRight.GetComponent<Collider>().enabled = show;
     }
 
-    
+
     public override void ZPlay()
     {
         base.ZPlay();
@@ -239,57 +244,17 @@ public class DrumBehaviour : ZGameBehaviour
     float _hipZ = 0;  // 胯，躯干在z轴的偏移量
     float _hipX = 0;  // 胯，躯干在x轴的偏移量
     bool isCanMove = false;
-    float _humanX = 0; // 滑板移动的位置
+    float _humanX = 0;
+    float _humanX1 = 0;// 滑板移动的位置
     float moved = 0; // 权重计算之后的偏移量
     float moved_head = 0; // 头部的偏移量
     float moved_hip = 0; // 胯躯干的偏移量
+    float moved_hip1 = 0; // 胯躯干的偏移量
     float leftOrRight_front = 0; // 大于0 left在前 反之
 
     private float ratio = 0f;
     private void StakeboardMove()
     {
-        leftOrRight_front = FootLeft.transform.position.z - FootRight.transform.position.z;
-
-        // 头部倾斜计算
-        _headZ = Head.transform.rotation.eulerAngles.z;
-        _headZ = _headZ > 300 ? _headZ - 360 : _headZ;
-        moved_head = 0;
-        if (_headZ > MoveLimit)
-        {
-            moved_head = (_headZ - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-            //moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
-        }
-        else if (_headZ < -MoveLimit)
-        {
-            moved_head = (_headZ + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-            //moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
-        }
-        moved_head *= Mathf.Clamp(1 + Mathf.Abs(_headZ) - MoveLimit, 1, 1.2f) * 0.1f;
-
-
-        // 身体倾斜计算
-        //_hipZ = Hip.transform.rotation.eulerAngles.z;
-        //_hipZ = _hipZ > 300 ? _hipZ - 360 : _hipZ;
-        //moved_hip = 0;
-        //if (_hipZ > MoveLimit)
-        //{
-        //    moved_hip = (_hipZ - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-        //    moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
-        //}
-        //else if (_hipZ < -MoveLimit)
-        //{
-        //    moved_hip = (_hipZ + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-        //    moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
-        //}
-        //moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipZ) - MoveLimit, 1, 1.1f);
-
-        //float hipX = Hip.transform.rotation.eulerAngles.x;
-        //hipX = hipX > 300 ? hipX - 360 : hipX;
-        //if (hipX >= 20f || hipX <= -8f)
-        //{
-        //    moved_hip = 0f;
-        //}
-
         if (!isCanMove)
         {
             return;
@@ -300,22 +265,96 @@ public class DrumBehaviour : ZGameBehaviour
             return;
         }
 
-        // 身体倾斜计算
-        _hipX = Hip.transform.rotation.eulerAngles.x;
-        _hipX = _hipX > 300 ? _hipX - 360 : _hipX;
-        moved_hip = 0;
-        if (_hipX > MoveLimit)
+        leftOrRight_front = FootLeft.transform.position.z - FootRight.transform.position.z;
+
+        // 头部倾斜计算
+        _headZ = Head.transform.rotation.eulerAngles.z;
+        _headZ = _headZ > 300 ? _headZ - 360 : _headZ;
+        moved_head = 0;
+        if (_headZ > MoveLimit)
         {
-            moved_hip = (_hipX - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-            moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+            moved_head = (_headZ - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
         }
-        else if (_hipX < -MoveLimit)
+        else if (_headZ < -MoveLimit)
         {
-            moved_hip = (_hipX + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
-            moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+            moved_head = (_headZ + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            moved_head = leftOrRight_front > 0 ? moved_head * backMoveSpeed : moved_head * frontMoveSpeed;
+        }
+        moved_head *= Mathf.Clamp(1 + Mathf.Abs(_headZ) - MoveLimit, 1, 1.2f) * 0.1f;
+
+        // 身体倾斜计算
+        switch (GameManager.Instance.CurPlayerRoleModel)
+        {
+            case PlayerRoleModel.BlackGirl:
+                _hipX = Hip.transform.rotation.eulerAngles.x;
+                _hipX = _hipX > 300 ? _hipX - 360 : _hipX;
+                moved_hip = 0;
+                if (_hipX > MoveLimit)
+                {
+                    moved_hip = (_hipX - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+                    moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+                }
+                else if (_hipX < -MoveLimit)
+                {
+                    moved_hip = (_hipX + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+                    moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+                }
+                //moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipX) - MoveLimit, 1, 1.1f);
+                if (_hipX <= -0.001f)
+                {
+                    ratio = ZMain.backward;
+                }
+                else
+                {
+                    ratio = ZMain.forward;
+                }
+
+                moved = moved_hip * ratio + moved_head * head_hip_ratio;
+                moved = moved * (1f - rate);
+
+                _humanX = GameManager.Instance.PoseHelper.transform.position.x - moved;
+                _humanX = Mathf.Clamp(_humanX, -_humanXMoveLimit + _humanXDefaultX, _humanXMoveLimit + _humanXDefaultX);
+                GameManager.Instance.PoseHelper.transform.position = new Vector3(_humanX
+                    , GameManager.Instance.PoseHelper.transform.position.y
+                    , GameManager.Instance.PoseHelper.transform.position.z);
+                break;
+            //case PlayerRoleModel.Aottman:
+            //    _hipZ = upHip.transform.rotation.eulerAngles.z;
+            //    _hipZ = _hipZ > 300 ? _hipZ - 360 : _hipZ;
+            //    moved_hip1 = 0;
+            //    if (_hipZ > MoveLimit)
+            //    {
+            //        moved_hip1 = (_hipZ - MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            //        //moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+            //    }
+            //    else if (_hipZ < -MoveLimit)
+            //    {
+            //        moved_hip1 = (_hipZ + MoveLimit) * stakeboardMoveSpeed * Time.fixedDeltaTime;
+            //        //moved_hip = leftOrRight_front > 0 ? moved_hip * backMoveSpeed : moved_hip * frontMoveSpeed;
+            //    }
+            //    //moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipZ) - MoveLimit, 1, 1.1f);
+            //    ratio = 1f;
+
+            //    moved = moved_hip1 * ratio;
+            //    moved = moved * (1f - rate);
+
+            //    _humanX1 = GameManager.Instance.PoseHelper.transform.position.x - moved;
+            //    _humanX1 = Mathf.Clamp(_humanX1, -_humanXMoveLimit + _humanXDefaultX1, _humanXMoveLimit + _humanXDefaultX1);
+            //    GameManager.Instance.PoseHelper.transform.position = new Vector3(_humanX1
+            //        , GameManager.Instance.PoseHelper.transform.position.y
+            //        , GameManager.Instance.PoseHelper.transform.position.z);
+            //    break;
+            default:
+                break;
         }
 
-        //moved_hip *= Mathf.Clamp(1 + Mathf.Abs(_hipX) - MoveLimit, 1, 1.1f);
+        //float hipX = Hip.transform.rotation.eulerAngles.x;
+        //hipX = hipX > 300 ? hipX - 360 : hipX;
+        //if (hipX >= 20f || hipX <= -8f)
+        //{
+        //    moved_hip = 0f;
+        //}
 
         //if (_hipX <= -0.01f)
         //{
@@ -326,30 +365,17 @@ public class DrumBehaviour : ZGameBehaviour
         //    head_hip_ratio = 0f;
         //}
 
-        if (_hipX <= -0.001f)
-        {
-            ratio = ZMain.backward;
-        }
-        else
-        {
-            ratio = ZMain.forward;
-        }
-
         // 综合权重
         //moved = moved_head * head_hip_ratio + moved_hip * (0.7f - head_hip_ratio);
-        //moved =  moved_hip * (0.7f - head_hip_ratio);
-        moved = moved_hip * ratio;
-        moved = moved * (1f - rate);
 
         // 通过移动人父物体移动，后续让滑板跟随人的位置
-        _humanX = GameManager.Instance.PoseHelper.transform.position.x - moved;
-        _humanX = Mathf.Clamp(_humanX, -_humanXMoveLimit + _humanXDefaultX, _humanXMoveLimit + _humanXDefaultX);
-        GameManager.Instance.PoseHelper.transform.position = new Vector3(_humanX
-            , GameManager.Instance.PoseHelper.transform.position.y
-            , GameManager.Instance.PoseHelper.transform.position.z);
+        //_humanX = GameManager.Instance.PoseHelper.transform.position.x - moved;
+        //_humanX = Mathf.Clamp(_humanX, -_humanXMoveLimit + _humanXDefaultX, _humanXMoveLimit + _humanXDefaultX);
+        //GameManager.Instance.PoseHelper.transform.position = new Vector3(_humanX
+        //    , GameManager.Instance.PoseHelper.transform.position.y
+        //    , GameManager.Instance.PoseHelper.transform.position.z);
         //StakeboardPos.transform.position = new Vector3(_stakeboardX, StakeboardPos.transform.position.y, StakeboardPos.transform.position.z);
     }
-
 
     /// <summary>
     /// 滑板的方向刷新，方向根据两脚的方向
@@ -379,25 +405,55 @@ public class DrumBehaviour : ZGameBehaviour
         ea = (Mathf.Abs(StakeboardRot.transform.localRotation.eulerAngles.y) + 90) % 180;
         if (ea < 40 || ea > 140)
         {
-            isCanMove = false;
             if (!beginStopMove)
             {
-                cor = ZCoroutiner.StartCoroutine(stopMoveCor());
+                switch (GameManager.Instance.CurPlayerRoleModel)
+                {
+                    case PlayerRoleModel.BlackGirl:
+                        isCanMove = false;
+                        cor = ZCoroutiner.StartCoroutine(stopMoveCor());
+                        BarrierController.Instance.SetIconMoveType(MoveType.stop);
+                        break;
+                    case PlayerRoleModel.Aottman:
+                        if (GameManager.Instance.CurGameMode == GameMode.Drum)
+                        {
+                            isCanMove = true;
+                            BarrierController.Instance.StartGenerate();
+                            BarrierController.Instance.SetIconMoveType(MoveType.accelerate);
+                            ZCoroutiner.StopCoroutine(cor);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
                 beginStopMove = true;
-                BarrierController.Instance.SetIconMoveType(MoveType.stop);
             }
         }
         else
         {
-            if (GameManager.Instance.CurGameMode == GameMode.Drum)
-            {
-                BarrierController.Instance.StartGenerate();
-            }
-            
-            isCanMove = true;
             if (beginStopMove)
             {
-                ZCoroutiner.StopCoroutine(cor);
+                switch (GameManager.Instance.CurPlayerRoleModel)
+                {
+                    case PlayerRoleModel.BlackGirl:
+                        if (GameManager.Instance.CurGameMode == GameMode.Drum)
+                        {
+                            isCanMove = true;
+                            BarrierController.Instance.StartGenerate();
+                            BarrierController.Instance.SetIconMoveType(MoveType.accelerate);
+                            ZCoroutiner.StopCoroutine(cor);
+                        }
+                        break;
+                    case PlayerRoleModel.Aottman:
+                        isCanMove = false;
+                        cor = ZCoroutiner.StartCoroutine(stopMoveCor());
+                        BarrierController.Instance.SetIconMoveType(MoveType.stop);
+                        break;
+                    default:
+                        break;
+                }
+
                 beginStopMove = false;
             }
         }
@@ -446,7 +502,7 @@ public class DrumBehaviour : ZGameBehaviour
 
         GameManager.wallMoveaSpeed = TempAnim.speed;
         GameManager.wallCreateTime = 1f;//1.5f / TempAnim.speed;
-        BarrierController.Instance.SetIconMoveType(MoveType.accelerate);
+        //BarrierController.Instance.SetIconMoveType(MoveType.accelerate);
     }
 
     /// <summary>

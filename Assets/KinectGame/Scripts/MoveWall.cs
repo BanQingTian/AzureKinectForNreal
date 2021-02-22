@@ -12,10 +12,10 @@ public class MoveWall : MonoBehaviour
     }
     void FixedUpdate()
     {
-        //if (!GameManager.Instance.isCanMove)
-        //{
-        //    return;
-        //}
+        if (!GameManager.Instance.isCanMove)
+        {
+            return;
+        }
 
         //gameObject.transform.localPosition += -Vector3.forward * GameManager.wallMoveaSpeed * 10 * Time.fixedDeltaTime;
         gameObject.transform.localPosition += -Vector3.forward * 10 * Time.fixedDeltaTime;
