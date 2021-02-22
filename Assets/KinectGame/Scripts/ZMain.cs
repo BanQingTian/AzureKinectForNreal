@@ -50,7 +50,6 @@ public class ZMain : MonoBehaviour
     public string gameData = "";
     public string generateTime = "";
     public static float gameTime = 0f;
-    public static int gatherRatio = 0;
     //public static float moveSpeedMin = 0;
     public static float moveSpeedMax = 0f;
     public static float forward = 0f;
@@ -84,7 +83,6 @@ public class ZMain : MonoBehaviour
             GameData gd = JsonMapper.ToObject<GameData>(gameData);
             ip = gd.gameConfig.ip;
             gameTime = float.Parse(gd.gameConfig.gameTime);
-            gatherRatio = int.Parse(gd.gameConfig.gatherRatio);
             //moveSpeedMin = float.Parse(gd.gameConfig.moveSpeedMin);
             moveSpeedMax = float.Parse(gd.gameConfig.moveSpeed);
             forward = float.Parse(gd.gameConfig.forward);
