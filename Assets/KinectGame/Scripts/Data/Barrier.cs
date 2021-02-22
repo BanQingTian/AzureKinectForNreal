@@ -8,8 +8,19 @@ public class Barrier : MonoBehaviour
     /// 该障碍物是否被抓住
     /// </summary>
     public bool isHold = false;
-    [HideInInspector]
-    public bool isCanMove = false;
+    private bool isCanMove = false;
+    public bool canMove
+    {
+        get
+        {
+            return isCanMove;
+        }
+
+        set
+        {
+            isCanMove = value;
+        }
+    }
 
     //public int Index;
     // 障碍物类型
@@ -80,12 +91,17 @@ public class Barrier : MonoBehaviour
     public void SetPostion(Vector3 pos)
     {
         transform.position = pos;
-        isCanMove = true;
     }
 
     private void Update()
     {
-         transform.position += transform.forward * Time.deltaTime * speedTemp;
+        if (canMove)
+        {
+            if (GameManager.Instance.isCanMove)
+            {
+                transform.position += transform.forward * Time.deltaTime * ZMain.moveSpeedMax;
+            }
+        }
 
         //zOffset += 1f;
         //float sinValue = Mathf.Sin(zOffset * Mathf.Deg2Rad);

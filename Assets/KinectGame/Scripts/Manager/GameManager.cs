@@ -372,6 +372,7 @@ public class GameManager : MonoBehaviour
                 //RoleDatabase.parent.localScale = new Vector3(-1f,1f,1f);
                 //PoseHelper.transform.localPosition = new Vector3(0f, 0f, 0f);
                 //DrumBehaviour.isReset = true;
+                PoseHelper.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
                 CurGameMode = GameMode.Over;
                 UIManager.Instance.UpdateOverScore();
                 BarrierController.Instance.TimeOutResetLogic();
@@ -389,6 +390,10 @@ public class GameManager : MonoBehaviour
 
     private void WaitResetGame()
     {
+        if (Stake_Blackgirl_gaming.activeSelf)
+        {
+            Stake_Blackgirl_gaming.SetActive(false);
+        }
         UIManager.Instance.CloseOverScore();
         ResetFaceToFace(true);
         ResetScene();

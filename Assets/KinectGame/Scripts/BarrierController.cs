@@ -113,6 +113,20 @@ public class BarrierController : MonoBehaviour
 
     private void Update()
     {
+        if (isCreate)
+        {
+            waitTime += Time.deltaTime;
+            if (waitTime >= 0.5f)
+            {
+                waitTime = 0f;
+                isCreate = false;
+                for (int i = 0; i < barList.Count; i++)
+                {
+                    barList[i].canMove = true;
+                }
+            }
+        }
+
         if (isStart)
         {
             timer += Time.deltaTime;
@@ -132,7 +146,7 @@ public class BarrierController : MonoBehaviour
         Move();
     }
 
-    float zOffset = 0f;
+    float zOffset = 0;
     // 需重置
     float fixZ = 0f;
     // 需重置
@@ -155,114 +169,187 @@ public class BarrierController : MonoBehaviour
             zOffset += 1f;
             float sinValue = Mathf.Sin(zOffset * Mathf.Deg2Rad);
             targetObj.transform.position = new Vector3(targetObj.transform.position.x + sinValue * float.Parse(x)
-                , targetObj.transform.position.y + sinValue * float.Parse(y), fixZ + zOffset * float.Parse(z));
+                , targetObj.transform.position.y + sinValue * float.Parse(y),
+                targetObj.transform.position.z + float.Parse(z));
         }
 
         return targetObj.transform.position;
     }
 
     int index = 0;
-
     Vector3 tempPos = Vector3.zero;
     GnerateData gNData;
     Coroutine tempCor;
-    List<Barrier> tempList = new List<Barrier>();
+    bool isCreate = false;
+    float waitTime = 0f;
+    List<Barrier> barList = new List<Barrier>();
     private void GatherPoint()
     {
-        if (pointList.Count == 0)
+        //if (pointList.Count == 0)
+        //{
+        //    pointList.Add(tempPos);
+        //}
+
+        //index += 1;
+        //if (index == ZMain.gatherRatio)
+        //{
+        //    if (pointList.Count < int.Parse(gNData.count))
+        //    {
+        //        index = 0;
+        //        pointList.Add(tempPos);
+        //    }
+        //    else
+        //    {
+        //        isStart = false;
+        //        List<GameObject> temp = GetIdleElement(gNData.name,int.Parse(gNData.count));
+        //        if (temp.Count < 0)
+        //        {
+        //            return;
+        //        }
+                
+        //        if (temp.Count > pointList.Count)
+        //        {
+        //            int temp1 = temp.Count - pointList.Count;
+        //            for (int i = 0; i < temp1; i++)
+        //            {
+        //                temp.RemoveAt(temp.Count - 1 - i);
+        //            }
+        //        }
+
+        //        if (temp.Count < pointList.Count)
+        //        {
+        //            int temp1 = pointList.Count - temp.Count;
+        //            for (int i = 0; i < temp1; i++)
+        //            {
+        //                pointList.RemoveAt(pointList.Count - 1 - i);
+        //            }
+        //        }
+
+        //        for (int i = 0; i < pointList.Count; i++)
+        //        {
+        //            temp[i].transform.position = pointList[i];
+        //            temp[i].SetActive(true);
+        //            moveList.Add(temp[i].GetComponent<Barrier>());
+        //        }
+        //        gnerateListTempOther.Add(gNData);
+        //        gnerateListTemp.Remove(gNData);
+        //        ResetGatherPoint();
+        //    }
+        //}
+
+        if (pointList.Count < int.Parse(gNData.count))
         {
-            tempList.Clear();
             pointList.Add(tempPos);
         }
-
-        index += 1;
-        if (index == ZMain.gatherRatio)
+        else
         {
-            if (pointList.Count < int.Parse(gNData.count))
+            if (!isCreate)
             {
-                index = 0;
-                pointList.Add(tempPos);
+                barList.Clear();
+                isCreate = true;
             }
-            else
+
+            isStart = false;
+            List<GameObject> temp = GetIdleElement(gNData.name, int.Parse(gNData.count));
+            if (temp.Count < 0)
             {
-                isStart = false;
-                List<GameObject> temp = GetIdleElement(gNData.name,int.Parse(gNData.count));
-                if (temp.Count < 0)
-                {
-                    return;
-                }
-                
-                if (temp.Count > pointList.Count)
-                {
-                    int temp1 = temp.Count - pointList.Count;
-                    for (int i = 0; i < temp1; i++)
-                    {
-                        temp.RemoveAt(temp.Count - 1 - i);
-                    }
-                }
-
-                if (temp.Count < pointList.Count)
-                {
-                    int temp1 = pointList.Count - temp.Count;
-                    for (int i = 0; i < temp1; i++)
-                    {
-                        pointList.RemoveAt(pointList.Count - 1 - i);
-                    }
-                }
-
-                for (int i = 0; i < pointList.Count; i++)
-                {
-                    temp[i].transform.position = pointList[i];
-                    temp[i].SetActive(true);
-                    moveList.Add(temp[i].GetComponent<Barrier>());
-                }
-                gnerateListTempOther.Add(gNData);
-                gnerateListTemp.Remove(gNData);
-                ResetGatherPoint();
+                return;
             }
+
+            if (temp.Count > pointList.Count)
+            {
+                int temp1 = temp.Count - pointList.Count;
+                for (int i = 0; i < temp1; i++)
+                {
+                    temp.RemoveAt(temp.Count - 1 - i);
+                }
+            }
+
+            if (temp.Count < pointList.Count)
+            {
+                int temp1 = pointList.Count - temp.Count;
+                for (int i = 0; i < temp1; i++)
+                {
+                    pointList.RemoveAt(pointList.Count - 1 - i);
+                }
+            }
+
+            for (int i = 0; i < pointList.Count; i++)
+            {
+                temp[i].transform.position = pointList[i];
+                temp[i].SetActive(true);
+                barList.Add(temp[i].GetComponent<Barrier>());
+                //moveList.Add(temp[i].GetComponent<Barrier>());
+            }
+            gnerateListTempOther.Add(gNData);
+            gnerateListTemp.Remove(gNData);
+            ResetGatherPoint();
         }
     }
 
+    //private void Move()
+    //{
+    //    if (moveList.Count < 0)
+    //    {
+    //        return;
+    //    }
+
+    //    switch (moveType)
+    //    {
+    //        case MoveType.normal:
+    //            foreach (Barrier item in moveList)
+    //            {
+    //                item.speedTemp = 0.5f;//ZMain.moveSpeedMin;
+    //                if (GameManager.Instance.CurGameMode == GameMode.Drum)
+    //                {
+    //                    StartGenerate();
+    //                }
+    //            }
+    //            break;
+    //        case MoveType.accelerate:
+    //            foreach (Barrier item in moveList)
+    //            {
+    //                item.speedTemp = ZMain.moveSpeedMax;
+    //                if (GameManager.Instance.CurGameMode == GameMode.Drum)
+    //                {
+    //                    GameManager.Instance.isCanMove = true;
+    //                    StartGenerate();
+    //                }
+    //            }
+    //            break;
+    //        case MoveType.stop:
+    //            foreach (Barrier item in moveList)
+    //            {
+    //                item.speedTemp = 0f;
+    //                if (GameManager.Instance.CurGameMode == GameMode.Drum)
+    //                {
+    //                    GameManager.Instance.isCanMove = false;
+    //                    isStart = false;
+    //                }
+    //            }
+    //            break;
+    //        default:
+    //            break;
+    //    }
+    //}
+
     private void Move()
     {
-        if (moveList.Count < 0)
-        {
-            return;
-        }
-
         switch (moveType)
         {
-            case MoveType.normal:
-                foreach (Barrier item in moveList)
-                {
-                    item.speedTemp = 0.5f;//ZMain.moveSpeedMin;
-                    if (GameManager.Instance.CurGameMode == GameMode.Drum)
-                    {
-                        StartGenerate();
-                    }
-                }
-                break;
             case MoveType.accelerate:
-                foreach (Barrier item in moveList)
-                {
-                    item.speedTemp = ZMain.moveSpeedMax;
                     if (GameManager.Instance.CurGameMode == GameMode.Drum)
                     {
                         GameManager.Instance.isCanMove = true;
                         StartGenerate();
                     }
-                }
                 break;
             case MoveType.stop:
-                foreach (Barrier item in moveList)
-                {
-                    item.speedTemp = 0f;
                     if (GameManager.Instance.CurGameMode == GameMode.Drum)
                     {
                         GameManager.Instance.isCanMove = false;
                         isStart = false;
                     }
-                }
                 break;
             default:
                 break;
